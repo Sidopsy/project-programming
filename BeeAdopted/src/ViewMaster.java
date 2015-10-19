@@ -40,9 +40,6 @@ public class ViewMaster extends Application{
 		launch(args);
 	}    
 
-
-
-
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");
@@ -77,6 +74,7 @@ public class ViewMaster extends Application{
 
 	}
 
+	//TODO - present agencies on location (see below)
 	private GridPane startAgencies() {
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
@@ -101,15 +99,15 @@ public class ViewMaster extends Application{
 		grid.add(agency3, 0, 3);
 		agency3.setOnAction(e -> window.setScene(sc3));
 
-		//for(object o : DATABASE) { present in tableform }
-
+		//TODO - present agencies on location
+		
 		return grid;
 
 	}
 
 
 
-
+	//TODO - Get ChoiceBox.setValue to work
 	public HBox mainFilter(){
 		HBox hbox = new HBox();
 		hbox.setPadding(new Insets(15, 12, 15, 12));
@@ -128,6 +126,7 @@ public class ViewMaster extends Application{
 		cb4.setValue("Type");
 		
 		tf1 = new TextField();
+		
 		btn1 = new Button("Search");
 
 		hbox.getChildren().addAll(cb1,cb2,cb3,cb4,tf1,btn1);
@@ -136,7 +135,8 @@ public class ViewMaster extends Application{
 
 	}
 
-	private ObservableList<String> getListFromDatabase(String string) {
+	//TODO - Here we get some values from the database with the attribute as the input
+	private ObservableList<String> getListFromDatabase(String attribute) {
 		ObservableList<String> result = 
 			    FXCollections.observableArrayList(
 			        "Option 1",
@@ -163,7 +163,7 @@ public class ViewMaster extends Application{
 		return vbox;
 	}
 
-
+	//TODO - present search results (see below)
 	public GridPane mainResults(){
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
@@ -173,9 +173,12 @@ public class ViewMaster extends Application{
 		HBox filter = mainFilter();
 		grid.add(filter, 0, 0); 
 
+		//TODO - present search results
+		
 		return grid;
 	}
 
+	//TODO - Query the database with global values from ChoiceBox and TextField
 	public void search(){
 		window.setScene(sc2);
 	}
