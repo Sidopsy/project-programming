@@ -33,8 +33,9 @@ public class ViewMaster extends Application{
 	TextField tf1;
 	Button btn1;
 	Stage window;
-	Scene sc1, sc2, sc3;
-	BorderPane layout1, layout2, layout3;
+	Scene sc1, sc2, sc3, sc4;
+	BorderPane layout1, layout2, layout3, layout4;
+	int adID;
 
 	public static void main(String[] args){
 		launch(args);
@@ -67,12 +68,16 @@ public class ViewMaster extends Application{
 		layout3.setTop(head);
 		layout3.setCenter(results);
 		sc3 = new Scene(layout3,800,600);
+		
+		
 
 		window.setScene(sc1);
 		window.show();
 
 
 	}
+
+	
 
 	//TODO - present agencies on location (see below)
 	private GridPane startAgencies() {
@@ -113,7 +118,7 @@ public class ViewMaster extends Application{
 		hbox.setPadding(new Insets(15, 12, 15, 12));
 		hbox.setSpacing(10);
 
-		cb1 = new ChoiceBox<String>(getListFromDatabase("Species"));
+		cb1 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Species"));
 		cb1.setValue("Species");
 		
 		cb2 = new ChoiceBox<String>(getListFromDatabase("Type"));
@@ -173,6 +178,11 @@ public class ViewMaster extends Application{
 		HBox filter = mainFilter();
 		grid.add(filter, 0, 0); 
 
+		Button testAd = new Button("The test ad");
+		grid.add(testAd, 0, 1);
+		testAd.setOnAction(e -> ViewAd.display("Test ad", 0));
+		
+		
 		//TODO - present search results
 		
 		return grid;
