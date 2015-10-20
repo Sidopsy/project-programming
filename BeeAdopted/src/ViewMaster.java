@@ -1,30 +1,21 @@
-import java.awt.font.LayoutPath;
 import java.util.ArrayList;
 
 import javafx.application.Application;
-import javafx.beans.DefaultProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -45,8 +36,12 @@ public class ViewMaster extends Application{
 		window = primaryStage;
 		window.setTitle("Marketplace");
 		StackPane head = new StackPane();
-		Label label = new Label("Header");
-		head.getChildren().add(label);
+	//	Label header = new Label("This is the header");
+		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
+		ImageView header = new ImageView();
+		header.setImage(image);
+		
+		head.getChildren().add(header);
 
 		//Start view - Location
 		layout1 = new BorderPane();
@@ -82,9 +77,9 @@ public class ViewMaster extends Application{
 	//TODO - present agencies on location (see below)
 	private GridPane startAgencies() {
 		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(0,10,0,10));
+		grid.setHgap(200);
+		grid.setVgap(40);
+		grid.setPadding(new Insets(200,100,200,100));
 
 		Text agencyAttribute = new Text("Agency");
 		grid.add(agencyAttribute, 0, 0); 
@@ -156,8 +151,8 @@ public class ViewMaster extends Application{
 
 	public VBox startLocation(){
 		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(10));
-		vbox.setSpacing(8);
+		vbox.setPadding(new Insets(275));
+		vbox.setSpacing(40);
 
 		Label label = new Label("Where are you?");
 		ChoiceBox<String> location = new ChoiceBox<String>(getListFromDatabase("Location"));
@@ -171,9 +166,9 @@ public class ViewMaster extends Application{
 	//TODO - present search results (see below)
 	public GridPane mainResults(){
 		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(0,10,0,10));
+		grid.setHgap(40);
+		grid.setVgap(40);
+		grid.setPadding(new Insets(0,100,0,100));
 
 		HBox filter = mainFilter();
 		grid.add(filter, 0, 0); 

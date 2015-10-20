@@ -3,6 +3,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -18,8 +20,10 @@ public class ViewAd {
 	public static void display(String title, int adID){
 		window = new Stage();
 		StackPane head = new StackPane();
-		Label label = new Label("Header");
-		head.getChildren().add(label);
+		Image image = new Image("iAdopt.png");
+		ImageView header = new ImageView();
+		header.setImage(image);
+		head.getChildren().add(header);
 		
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle(title);
