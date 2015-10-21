@@ -14,7 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -35,13 +34,9 @@ public class ViewMaster extends Application{
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");
-		StackPane head = new StackPane();
+		VBox head = theHead();
 	//	Label header = new Label("This is the header");
-		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
-		ImageView header = new ImageView();
-		header.setImage(image);
 		
-		head.getChildren().add(header);
 
 		//Start view - Location
 		layout1 = new BorderPane();
@@ -72,6 +67,39 @@ public class ViewMaster extends Application{
 
 	}
 
+
+
+	private VBox theHead() {
+		VBox head = new VBox();
+		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
+		ImageView header = new ImageView();
+		header.setImage(image);
+		
+		if(window.getScene() == sc3){
+			HBox filter = mainFilter();
+			head.getChildren().addAll(header, filter);			
+		} else {
+			head.getChildren().add(header);
+		}
+		
+		return head;
+	}
+
+	public VBox startLocation(){
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(275));
+		vbox.setSpacing(40);
+
+		Label label = new Label("Where are you?");
+		ChoiceBox<String> location = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Location"));
+		location.setValue("Location");
+		//TODO - save location and goto sc2
+		location.setOnAction(e -> window.setScene(sc2));
+
+		vbox.getChildren().addAll(label, location);
+		return vbox;
+	}
+
 	
 
 	//TODO - present agencies on location (see below)
@@ -87,18 +115,15 @@ public class ViewMaster extends Application{
 		Text logoAttribute = new Text("Logo");
 		grid.add(logoAttribute, 1, 0);
 
-		Button agency1 = new Button("Agency 1");
-		grid.add(agency1, 0, 1);
-		agency1.setOnAction(e -> window.setScene(sc3));
+		Button testAgency = new Button("Test agency");
+		grid.add(testAgency, 0, 1);
+		testAgency.setOnAction(e -> window.setScene(sc3));
+		
+		Button backToStart = new Button("Go back to the start page");
+		grid.add(backToStart, 1, 3);
+		backToStart.setOnAction(e -> backToStart());
 
-		Button agency2 = new Button("Agency 2");
-		grid.add(agency2, 0, 2);
-		agency2.setOnAction(e -> window.setScene(sc3));
-
-		Button agency3 = new Button("Agency 3");
-		grid.add(agency3, 0, 3);
-		agency3.setOnAction(e -> window.setScene(sc3));
-
+		
 		//TODO - present agencies on location
 		
 		return grid;
@@ -110,58 +135,44 @@ public class ViewMaster extends Application{
 	//TODO - Get ChoiceBox.setValue to work
 	public HBox mainFilter(){
 		HBox hbox = new HBox();
-		hbox.setPadding(new Insets(15, 12, 15, 12));
+		hbox.setPadding(new Insets(10, 100, 10, 100));
 		hbox.setSpacing(10);
 
 		cb1 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Species"));
-		cb1.setValue("Species");
 		
-		cb2 = new ChoiceBox<String>(getListFromDatabase("Type"));
+		cb2 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Type"));
 		cb2.setValue("Type");
 		
-		cb3 = new ChoiceBox<String>(getListFromDatabase("Age"));
+		cb3 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Age"));
 		cb3.setValue("Age");
 		
-		cb4 = new ChoiceBox<String>(getListFromDatabase("Gender"));
+		cb4 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Gender"));
 		cb4.setValue("Type");
 		
-		tf1 = new TextField();
+		tf1 = new TextField("Description");
 		
 		btn1 = new Button("Search");
+		btn1.setOnAction(e -> search());
 
 		hbox.getChildren().addAll(cb1,cb2,cb3,cb4,tf1,btn1);
+		cb1.setValue("Species");
 
 		return hbox;
 
 	}
 
-	//TODO - Here we get some values from the database with the attribute as the input
-	private ObservableList<String> getListFromDatabase(String attribute) {
-		ObservableList<String> result = 
-			    FXCollections.observableArrayList(
-			        "Option 1",
-			        "Option 2",
-			        "Option 3"
-			    );
-		return result;
-	}
+//	//TODO - Here we get some values from the database with the attribute as the input
+//	private ObservableList<String> getListFromDatabase(String attribute) {
+//		ObservableList<String> result = 
+//			    FXCollections.observableArrayList(
+//			        "Option 1",
+//			        "Option 2",
+//			        "Option 3"
+//			    );
+//		return result;
+//	}
 
 
-
-
-	public VBox startLocation(){
-		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(275));
-		vbox.setSpacing(40);
-
-		Label label = new Label("Where are you?");
-		ChoiceBox<String> location = new ChoiceBox<String>(getListFromDatabase("Location"));
-		location.setValue("Location");
-		location.setOnAction(e -> window.setScene(sc2));
-
-		vbox.getChildren().addAll(label, location);
-		return vbox;
-	}
 
 	//TODO - present search results (see below)
 	public GridPane mainResults(){
@@ -170,21 +181,28 @@ public class ViewMaster extends Application{
 		grid.setVgap(40);
 		grid.setPadding(new Insets(0,100,0,100));
 
-		HBox filter = mainFilter();
-		grid.add(filter, 0, 0); 
 
 		Button testAd = new Button("The test ad");
 		grid.add(testAd, 0, 1);
 		testAd.setOnAction(e -> ViewAd.display("Test ad", 0));
 		
+		Button backToStart = new Button("Go back to the start page");
+		grid.add(backToStart, 1, 3);
+		backToStart.setOnAction(e -> backToStart());
+
 		
 		//TODO - present search results
 		
 		return grid;
 	}
+	
+	public void backToStart(){
+		window.setScene(sc1);
+	}
 
 	//TODO - Query the database with global values from ChoiceBox and TextField
 	public void search(){
-		window.setScene(sc2);
+		System.out.println("redirecting..");
+		window.setScene(sc3);
 	}
 }
