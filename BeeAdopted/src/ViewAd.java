@@ -82,6 +82,7 @@ public class ViewAd {
 		closeButton.setOnAction(e -> window.close());
 		
 		return grid;
+		
 	}
 
 	
