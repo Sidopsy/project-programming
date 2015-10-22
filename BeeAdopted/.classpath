@@ -7,6 +7,6 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="src" path="/TestJavaFX"/>
-	<classpathentry kind="lib" path="src/sqlite-jdbc-3.8.11.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Mattias/Documents/GU/Software Engineering and Management/workspace/BeeAdopted/src/sqlite-jdbc-3.8.11.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

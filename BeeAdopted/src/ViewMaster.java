@@ -19,7 +19,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class ViewMaster extends Application{
-	ChoiceBox<String> cb1,cb2,cb3,cb4;
+	
+	ChoiceBox<Object> location, cb1,cb2,cb3,cb4;
+	String city, species, type, age, gender;
 	TextField tf1;
 	Button btn1;
 	Stage window;
@@ -91,10 +93,14 @@ public class ViewMaster extends Application{
 		vbox.setSpacing(40);
 
 		Label label = new Label("Where are you?");
-		ChoiceBox<String> location = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Location"));
-		location.setValue("Location");
+		location = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Location"));
+		location.setValue(location.getItems().get(0));
 		//TODO - save location and goto sc2
-		location.setOnAction(e -> window.setScene(sc2));
+		location.setOnAction(e ->  {
+				city = (String) location.getValue();
+				System.out.println(city);
+				window.setScene(sc2);
+		});
 
 		vbox.getChildren().addAll(label, location);
 		return vbox;
@@ -105,26 +111,38 @@ public class ViewMaster extends Application{
 	//TODO - present agencies on location (see below)
 	private GridPane startAgencies() {
 		GridPane grid = new GridPane();
+		String thisLocation = this.city;
 		grid.setHgap(200);
 		grid.setVgap(40);
 		grid.setPadding(new Insets(200,100,200,100));
 
+		//Column name Agency (this will probably not be in 1.0)
 		Text agencyAttribute = new Text("Agency");
 		grid.add(agencyAttribute, 0, 0); 
 
+		//Column name Logo (this will probably not be in 1.0)
 		Text logoAttribute = new Text("Logo");
 		grid.add(logoAttribute, 1, 0);
-
-		Button testAgency = new Button("Test agency");
-		grid.add(testAgency, 0, 1);
+		
+//		Button getLocation = new Button("Get location");
+//		grid.add(getLocation, 0, 1);
+//		getLocation.setOnAction(e -> thisLocation = this.city);
+//		
+		
+		
+		//A test Agency, here we will have a list of clickable agencies
+		Button testAgency = new Button("Agency in" + thisLocation);
+		grid.add(testAgency, 0, 2);
 		testAgency.setOnAction(e -> window.setScene(sc3));
 		
+		//Return to start page
 		Button backToStart = new Button("Go back to the start page");
 		grid.add(backToStart, 1, 3);
 		backToStart.setOnAction(e -> backToStart());
 
-		
+	//	String[] agencies = DatabaseConnection.getAgencies(thisLocation);
 		//TODO - present agencies on location
+		// ACTIVE OBJECT???
 		
 		return grid;
 
@@ -138,24 +156,29 @@ public class ViewMaster extends Application{
 		hbox.setPadding(new Insets(10, 100, 10, 100));
 		hbox.setSpacing(10);
 
-		cb1 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Species"));
+		cb1 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Species"));
+		cb1.setValue(cb1.getItems().get(0));
+		cb1.setOnAction(e -> species = (String) cb1.getValue());
 		
-		cb2 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Type"));
-		cb2.setValue("Type");
+		cb2 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Type"));
+		cb2.setValue(cb2.getItems().get(0));
+		cb2.setOnAction(e -> type = (String) cb2.getValue());
 		
-		cb3 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Age"));
-		cb3.setValue("Age");
+		cb3 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Age"));
+		cb3.setValue(cb3.getItems().get(0));
+		cb3.setOnAction(e -> age = (String) cb3.getValue());
 		
-		cb4 = new ChoiceBox<String>(DatabaseConnection.getListFromDatabase("Gender"));
-		cb4.setValue("Type");
+		cb4 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Gender"));
+		cb4.setValue(cb4.getItems().get(0));
+		cb4.setOnAction(e -> gender = (String) cb4.getValue());
 		
-		tf1 = new TextField("Description");
+		tf1 = new TextField();
+		tf1.setPromptText("Description");
 		
 		btn1 = new Button("Search");
 		btn1.setOnAction(e -> search());
 
 		hbox.getChildren().addAll(cb1,cb2,cb3,cb4,tf1,btn1);
-		cb1.setValue("Species");
 
 		return hbox;
 
@@ -184,7 +207,7 @@ public class ViewMaster extends Application{
 
 		Button testAd = new Button("The test ad");
 		grid.add(testAd, 0, 1);
-		testAd.setOnAction(e -> ViewAd.display("Test ad", 0));
+		testAd.setOnAction(e -> ViewAd.display("Test ad", 1));
 		
 		Button backToStart = new Button("Go back to the start page");
 		grid.add(backToStart, 1, 3);
@@ -202,7 +225,8 @@ public class ViewMaster extends Application{
 
 	//TODO - Query the database with global values from ChoiceBox and TextField
 	public void search(){
-		System.out.println("redirecting..");
+		String searchStatement = species + ", " + type + ", " + age + ", " + gender + ", " + tf1.getText();
+		System.out.println(searchStatement);
 		window.setScene(sc3);
 	}
 }
