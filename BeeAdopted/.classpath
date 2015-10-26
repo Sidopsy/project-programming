@@ -5,6 +5,5 @@
 		<accessrules>
 			<accessrule kind="accessible" pattern="javafx/**"/>
 		</accessrules>
-	<classpathentry kind="lib" path="C:/Users/Mattias/Documents/GU/Software Engineering and Management/workspace/BeeAdopted/src/sqlite-jdbc-3.8.11.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
