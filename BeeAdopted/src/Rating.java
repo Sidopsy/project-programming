@@ -1,4 +1,5 @@
 
+
 /**
  * Object for ratings, appropriate variables for displaying in the application.
  * 
