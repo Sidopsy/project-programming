@@ -29,10 +29,17 @@ public class ViewMaster extends Application{
 	BorderPane layout1, layout2, layout3, layout4;
 	int adID;
 
+	//Launch the application
 	public static void main(String[] args){
 		launch(args);
 	}    
 
+	/**
+	 * Start method that is launched 
+	 * with Application.launch(args) 
+	 * in main. Building the window.
+	 * @param primaryStage
+	 */
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");
@@ -70,7 +77,11 @@ public class ViewMaster extends Application{
 	}
 
 
-
+	/**
+	 * The header complete with a 
+	 * image in the form of a VBox
+	 * @return head as a VBox
+	 */
 	private VBox theHead() {
 		VBox head = new VBox();
 		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
@@ -87,6 +98,17 @@ public class ViewMaster extends Application{
 		return head;
 	}
 
+	/**
+	 * A VBox element where a location 
+	 * can be choosed from a ChoiceBox 
+	 * item. The choosen value gets saved 
+	 * when pressed.
+	 * 
+	 * Also holds an option to go to the 
+	 * input page.
+	 * 
+	 * @return vbox
+	 */
 	public VBox startLocation(){
 		VBox vbox = new VBox();
 		vbox.setPadding(new Insets(275));
