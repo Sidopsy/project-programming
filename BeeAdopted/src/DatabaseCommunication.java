@@ -58,7 +58,7 @@ public class DatabaseCommunication {
 	    	
 	    	// Connecting to database!
 	    	System.out.println("Attempting to connect to database...");
-	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHiveTest");
+	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
 	    	c.setAutoCommit(false);
 	        System.out.println("Opened database successfully!");
 	        System.out.println();
@@ -115,7 +115,7 @@ public class DatabaseCommunication {
 	    	
 	    	// Connecting to database!
 	    	System.out.println("Attempting to connect to database...");
-	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHiveTest");
+	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
 	    	c.setAutoCommit(false);
 	        System.out.println("Opened database successfully!");
 	        System.out.println();
@@ -165,7 +165,7 @@ public class DatabaseCommunication {
 	    	
 	    	// Connecting to database!
 	    	System.out.println("Attempting to connect to database...");
-	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHiveTest");
+	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
 	    	c.setAutoCommit(false);
 	        System.out.println("Opened database successfully!");
 	        System.out.println();
@@ -214,7 +214,7 @@ public class DatabaseCommunication {
 	    	
 	    	// Connecting to database!
 	    	System.out.println("Attempting to connect to database...");
-	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHiveTest");
+	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
 	    	c.setAutoCommit(false);
 	        System.out.println("Opened database successfully!");
 	        System.out.println();
