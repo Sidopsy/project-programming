@@ -1,3 +1,5 @@
+package View;
+import Database.DatabaseConnection;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
