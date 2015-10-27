@@ -209,7 +209,7 @@ public class DatabaseCommunication {
 			stmt.close();
 			c.close();
 			
-			// Catching any and all exceptions, printing an error message.			
+			// Catching any and all exceptions, printing an error message.
 	    } catch (Exception e) { 
 	    	System.err.println(e.getClass().getName() + ": " + e.getMessage());
 	    	System.exit(0);
