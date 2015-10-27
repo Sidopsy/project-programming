@@ -15,6 +15,6 @@ public class Agency {
 	}
 	
 	public String toString() {
-		return this.name + " " + this.logo;
+		return name + " " + logo;
 	}
 }

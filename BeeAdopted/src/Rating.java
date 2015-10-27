@@ -18,6 +18,6 @@ public class Rating {
 	}
 	
 	public String toString() {
-		return this.rating + " " + this.comment;
+		return rating + " " + comment;
 	}
 }
