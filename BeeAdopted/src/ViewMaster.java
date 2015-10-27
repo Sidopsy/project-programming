@@ -101,8 +101,11 @@ public class ViewMaster extends Application{
 				System.out.println(city);
 				window.setScene(sc2);
 		});
+		
+		Button inputPage = new Button("Go to input page");
+		inputPage.setOnAction(e -> InputPage.display());
 
-		vbox.getChildren().addAll(label, location);
+		vbox.getChildren().addAll(label, location, inputPage);
 		return vbox;
 	}
 
