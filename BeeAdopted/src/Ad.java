@@ -12,7 +12,7 @@ public class Ad {
 	public final int age;
 
 	public Ad(String picture, String name, String gender, String species, String type, 
-			  int age, String description, String start, String end) {
+				int age, String description, String start, String end) {
 		this.picture = picture;
 		this.name = name;
 		this.gender = gender;
@@ -25,7 +25,7 @@ public class Ad {
 	}
 	
 	public String toString() {
-		return this.picture + " " + this.name + " " + this.gender + " " + this.species + " " + 
-				this.type + " " + this.age + " " + this.description + " " + this.startDate + " " + this.endDate;
+		return picture + " " + name + " " + gender + " " + species + " " + 
+				type + " " + age + " " + description + " " + startDate + " " + endDate;
 	}
 }

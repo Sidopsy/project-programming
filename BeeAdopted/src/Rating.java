@@ -1,7 +1,8 @@
 
-
 /**
  * Object for ratings, appropriate variables for displaying in the application.
+ * 
+ * TODO change from int to char.
  * 
  * @author MTs
  * @since 10-26-15

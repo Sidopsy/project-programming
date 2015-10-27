@@ -1,5 +1,4 @@
 
-
 /**
  * Object for agencies, basic information for displaying in the application.
  * 
