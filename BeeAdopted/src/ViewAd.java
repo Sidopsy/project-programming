@@ -54,7 +54,7 @@ public class ViewAd {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(0,10,0,10));
 		
-		String[] adInfo = DatabaseConnection.getAd(adID);
+		//String[] adInfo = DatabaseConnection.getAd(adID);
 		
 		Button adoptButton = new Button("Adopt");
 		grid.add(adoptButton, 1,0);
