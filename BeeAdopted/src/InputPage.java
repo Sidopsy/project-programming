@@ -39,7 +39,7 @@ public class InputPage {
 
 		// Inputs
 		layout1 = new BorderPane();
-		HBox input = theInput();
+		VBox input = theInput();
 		layout1.setTop(head);
 		layout1.setCenter(input);
 		sc1 = new Scene(layout1, 600, 400);
@@ -60,8 +60,8 @@ public class InputPage {
 		return null;
 	}
 
-	private static HBox theInput() {
-		HBox input = new HBox();
+	private static VBox theInput() {
+		VBox input = new VBox();
 		input.setPadding(new Insets(0, 10, 0, 10));
 		input.setSpacing(20);
 
