@@ -29,6 +29,7 @@ public class ViewMaster extends Application{
 	Scene sc1, sc2, sc3, sc4;
 	BorderPane layout1, layout2, layout3, layout4;
 	int adID;
+	boolean isOnView = false;
 
 	//Launch the application
 	public static void main(String[] args){
@@ -44,29 +45,23 @@ public class ViewMaster extends Application{
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");
-		VBox head = theHead();
+		//VBox head = theHead();
 	//	Label header = new Label("This is the header");
 		
 
 		//Start view - Location
 		layout1 = new BorderPane();
 		VBox vbox = startLocation();
-		layout1.setTop(head);
+		layout1.setTop(theHead());
 		layout1.setCenter(vbox);
 		sc1 = new Scene(layout1,800,600);
 
-		//Start view - Agencies
-		layout2 = new BorderPane();
-		GridPane grid = startAgencies();
-		layout2.setTop(head);
-		layout2.setCenter(grid);
-		sc2 = new Scene(layout2,800,600);
+		
 
 		//Main view
 		layout3 = new BorderPane();
-		GridPane results = mainResults();
-		layout3.setTop(head);
-		layout3.setCenter(results);
+		layout3.setTop(theHead());
+		layout3.setCenter(mainCenterView());
 		sc3 = new Scene(layout3,800,600);
 		
 		
@@ -89,7 +84,7 @@ public class ViewMaster extends Application{
 		ImageView header = new ImageView();
 		header.setImage(image);
 		
-		if(window.getScene() == sc3){
+		if(isOnView){
 			HBox filter = mainFilter();
 			head.getChildren().addAll(header, filter);			
 		} else {
@@ -112,7 +107,7 @@ public class ViewMaster extends Application{
 	 */
 	public VBox startLocation(){
 		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(275));
+		vbox.setPadding(new Insets(175));
 		vbox.setSpacing(40);
 
 		Label label = new Label("Where are you?");
@@ -122,6 +117,12 @@ public class ViewMaster extends Application{
 		location.setOnAction(e ->  {
 				city = (String) location.getValue();
 				System.out.println(city);
+				//Start view - Agencies
+				layout2 = new BorderPane();
+				GridPane grid = startAgencies();
+				layout2.setTop(theHead());
+				layout2.setCenter(grid);
+				sc2 = new Scene(layout2,800,600);
 				window.setScene(sc2);
 		});
 		
@@ -159,7 +160,10 @@ public class ViewMaster extends Application{
 		//A test Agency, here we will have a list of clickable agencies
 		Button testAgency = new Button("Agency in" + thisLocation);
 		grid.add(testAgency, 0, 2);
-		testAgency.setOnAction(e -> window.setScene(sc3));
+		testAgency.setOnAction(e -> {
+			isOnView = true;
+			window.setScene(sc3);
+		});
 		
 		//Return to start page
 		Button backToStart = new Button("Go back to the start page");
@@ -179,7 +183,7 @@ public class ViewMaster extends Application{
 	//TODO - Get ChoiceBox.setValue to work
 	public HBox mainFilter(){
 		HBox hbox = new HBox();
-		hbox.setPadding(new Insets(10, 100, 10, 100));
+		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
 
 		cb1 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Species"));
@@ -228,7 +232,7 @@ public class ViewMaster extends Application{
 		GridPane grid = new GridPane();
 		grid.setHgap(40);
 		grid.setVgap(40);
-		grid.setPadding(new Insets(0,100,0,100));
+		grid.setPadding(new Insets(10,10,0,10));
 
 
 		Button testAd = new Button("The test ad");
@@ -243,6 +247,16 @@ public class ViewMaster extends Application{
 		//TODO - present search results
 		
 		return grid;
+	}
+	
+	public VBox mainCenterView(){
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(10));
+		vbox.setSpacing(10);
+		
+		vbox.getChildren().addAll(mainFilter(), mainResults());
+		
+		return vbox;
 	}
 	
 	public void backToStart(){

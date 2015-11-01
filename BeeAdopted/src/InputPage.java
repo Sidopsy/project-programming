@@ -40,7 +40,7 @@ public class InputPage {
 
 		// Inputs
 		layout1 = new BorderPane();
-		VBox input = theInput();
+		GridPane input = theInput();
 		layout1.setTop(head);
 		layout1.setCenter(input);
 		sc1 = new Scene(layout1, 600, 400);
@@ -61,40 +61,64 @@ public class InputPage {
 		return null;
 	}
 
-	private static VBox theInput() {
-		VBox input = new VBox();
+	private static GridPane theInput() {
+		GridPane input = new GridPane();
+		input.setHgap(40);
+		input.setVgap(20);
 		input.setPadding(new Insets(0, 10, 0, 10));
-		input.setSpacing(20);
+		
+		tf = new TextField();
+		tf.setPromptText("Name");
+		tf.setMaxWidth(150);
+		input.add(tf,0,0);
+		
+		cb4 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Age"));
+		cb4.setValue(cb4.getItems().get(0));
+		input.add(cb4, 1, 0);
+		
+		ta = new TextArea();
+		ta.setPromptText("Description");
+		ta.setMaxWidth(150);
+		input.add(ta, 0, 1);
+		
+
+		
+		
 
 		cb1 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Agency"));
 		cb1.setValue(cb1.getItems().get(0));
+		input.add(cb1, 0, 2);
 		// cb1.setOnAction(e -> agency = (String) cb1.getValue());
 
 		cb2 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Species"));
 		cb2.setValue(cb2.getItems().get(0));
+		input.add(cb2, 1, 2);
 		// cb2.setOnAction(e -> species = (String) cb2.getValue());
 
 		cb3 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Type"));
 		cb3.setValue(cb3.getItems().get(0));
+		input.add(cb3, 0, 3);
 		// cb3.setOnAction(e -> type = (String) cb3.getValue());
 
-		cb4 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Age"));
-		cb4.setValue(cb4.getItems().get(0));
+		
 		// cb4.setOnAction(e -> age = (String) cb4.getValue());
 
 		cb5 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Gender"));
 		cb5.setValue(cb5.getItems().get(0));
+		input.add(cb5, 1, 3);
 		// cb5.setOnAction(e -> gender = (String) cb5.getValue());
 
-		tf = new TextField();
-		tf.setPromptText("Name");
+		Label uploadText = new Label("Upload picture");
+		input.add(uploadText, 0,4);
+		
+		Button bowse = new Button("Browse");
+		input.add(bowse, 1, 4);
 
-		ta = new TextArea();
-		ta.setPromptText("Description");
-
+		
 		btn = new Button("Save ad");
+		input.add(btn, 0, 5);
 
-		input.getChildren().addAll(cb1, cb2, cb3, cb4, cb5, tf, ta, btn);
+	//	input.getChildren().addAll(cb1, cb2, cb3, cb4, cb5, tf, ta, btn);
 		btn.setOnAction(e -> inputValues());
 
 		return input;
