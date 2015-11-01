@@ -1,8 +1,6 @@
 
 /**
- * Object for ratings, appropriate variables for displaying in the application.
- * 
- * TODO change from int to char.
+ * Object for ratings, appropriate variables for displaying in the application. Name is for the Agency.
  * 
  * @author MTs
  * @since 10-26-15

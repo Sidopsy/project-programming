@@ -29,7 +29,7 @@ public class DatabaseCommunication {
 			System.out.println(s);
 		}
 		
-		sqlStatement = "SELECT Name,Logo,AVG(Rating) FROM Agencies, Ratings WHERE Agencies.ID = Ratings.AgencyID GROUP BY Agencies.ID;";		
+		sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Ratings WHERE Agencies.ID = Ratings.AgencyID GROUP BY Agencies.ID;";		
 		ArrayList<Agency> result2 = fetchAgency(sqlStatement);
 	
 		// Prints all results from the fetch.		
@@ -37,7 +37,11 @@ public class DatabaseCommunication {
 			System.out.println(t);
 		}
 		
-		sqlStatement = "SELECT Name, Logo, AVG(Rating), OrgNo, Email, Phone, Street, ZIP, City FROM Agencies, Addresses, Ratings WHERE Agencies.ID = Addresses.AgencyID and Addresses.AgencyID = Ratings.AgencyID ORDER BY Agencies.ID;";
+		/*
+		 * TODO Fix query for retrieving extended information (avg. rating is currently the issue).
+		 */
+		
+		sqlStatement = "SELECT Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID GROUP BY Name;";
 		ArrayList<AgencyExtended> result3 = fetchAgencyExtended(sqlStatement);
 		
 		// Prints all results from the fetch.
@@ -45,7 +49,7 @@ public class DatabaseCommunication {
 			System.out.println(u);
 		}
 		
-		sqlStatement = "SELECT * FROM Ratings;";
+		sqlStatement = "SELECT Name,Rating,Comment FROM Ratings, Agencies WHERE Agencies.ID = Ratings.AgencyID;";
 				
 		ArrayList<Rating> result4 = fetchRating(sqlStatement);
 		
@@ -200,13 +204,12 @@ public class DatabaseCommunication {
 	        	String name = rs.getString("Name");
 	        	String logo = rs.getString("Logo");
 	        	String rating = rs.getString("AVG(Rating)");
-	        	String orgNo = rs.getString("OrgNo");
 	        	String email = rs.getString("Email");
 	        	String phone = rs.getString("Phone");
 	        	String street = rs.getString("Street");
 	        	String zip = rs.getString("Zip");
 	        	String city = rs.getString("City");
-	        	AgencyExtended agency = new AgencyExtended(name, logo, rating, orgNo, email, phone, street, zip, city);
+	        	AgencyExtended agency = new AgencyExtended(name, logo, rating, email, phone, street, zip, city);
 	        	result.add(agency);
 	        }
 	        

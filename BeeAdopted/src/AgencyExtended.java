@@ -9,12 +9,11 @@
  */
 
 public class AgencyExtended extends Agency {
-	public final String orgNo, email, phone, street, zip, city;
+	public final String email, phone, street, zip, city;
 	
-	public AgencyExtended(String name, String logo, String rating, String orgNo, String email, 
+	public AgencyExtended(String name, String logo, String rating, String email, 
 							String phone, String street, String zip, String city) {
 		super(name, logo, rating);
-		this.orgNo = orgNo;
 		this.email = email;
 		this.phone = phone;
 		this.street = street;
@@ -23,6 +22,6 @@ public class AgencyExtended extends Agency {
 	}
 		
 	public String toString() {
-		return super.toString() + " " + orgNo + " " + email + " " + phone + " " + street + " " + zip + " " + city;
+		return super.toString() + " " + email + " " + phone + " " + street + " " + zip + " " + city;
 	}
 }

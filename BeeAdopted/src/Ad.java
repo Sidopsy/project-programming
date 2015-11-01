@@ -1,5 +1,4 @@
 
-
 /**
  * Object for ads, appropriate variables for displaying in the application.
  * 
