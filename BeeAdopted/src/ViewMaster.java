@@ -83,15 +83,27 @@ public class ViewMaster extends Application{
 		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
 		ImageView header = new ImageView();
 		header.setImage(image);
+		Button backButton = new Button("Back");
+		backButton.setOnAction(e -> goBack());
+		
 		
 		if(isOnView){
 			HBox filter = mainFilter();
-			head.getChildren().addAll(header, filter);			
+			head.getChildren().addAll(backButton, header, filter);			
 		} else {
-			head.getChildren().add(header);
+			head.getChildren().addAll(backButton,header);
 		}
 		
 		return head;
+	}
+
+	private void goBack() {
+			if(window.getScene() == sc2)
+				window.setScene(sc1);
+			else if (window.getScene() == sc3)
+				window.setScene(sc2);
+			else
+				window.setScene(sc1);
 	}
 
 	/**

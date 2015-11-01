@@ -30,7 +30,7 @@ public class DatabaseConnection {
 	    
 	    try {
 	    	Class.forName("org.sqlite.JDBC"); // Loading the driver!
-	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHiveTest"); // Establishing a connection!
+	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive"); // Establishing a connection!
 	    	c.setAutoCommit(false);
 	        System.out.println("Opened database successfully");
 	        System.out.println();
@@ -75,7 +75,7 @@ public class DatabaseConnection {
 //	    
 //	    try {
 //	    	Class.forName("org.sqlite.JDBC"); // Loading the driver!
-//	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHiveTest"); // Establishing a connection!
+//	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive"); // Establishing a connection!
 //	    	c.setAutoCommit(false);
 //	        System.out.println("Opened database successfully");
 //	        

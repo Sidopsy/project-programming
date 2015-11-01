@@ -19,6 +19,9 @@ public class ViewAd {
 	static BorderPane layout1, layout2;
 	
 	public static void display(String title, int adID){
+		Ad ad = new Ad(title, title, title, title, title, adID, title, title, title);
+		
+		
 		window = new Stage();
 		StackPane head = new StackPane();
 		Image image = new Image("iAdopt.png");
@@ -32,7 +35,7 @@ public class ViewAd {
 		
 		//Ad view
 		layout1 = new BorderPane();
-		GridPane adView = getAd(adID);
+		GridPane adView = getAd(ad);
 		layout1.setTop(head);
 		layout1.setCenter(adView);
 		sc1 = new Scene(layout1,600,400);
@@ -49,16 +52,22 @@ public class ViewAd {
 	}
 
 	
-	private static GridPane getAd(int adID) {
+	private static GridPane getAd(Ad ad) {
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(0,10,0,10));
 		
+		Label name = new Label(ad.name);
+		grid.add(name,1,0);
+		
+		Label species = new Label(ad.species);
+		grid.add(species, 2, 0);
+		
 		//String[] adInfo = DatabaseConnection.getAd(adID);
 		
 		Button adoptButton = new Button("Adopt");
-		grid.add(adoptButton, 1,0);
+		grid.add(adoptButton, 0,3);
 		adoptButton.setOnAction(e -> window.setScene(sc2));
 		
 		
