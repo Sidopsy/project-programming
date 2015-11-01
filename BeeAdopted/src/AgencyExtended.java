@@ -11,9 +11,9 @@
 public class AgencyExtended extends Agency {
 	public final String orgNo, email, phone, street, zip, city;
 	
-	public AgencyExtended(String name, String logo, String orgNo, String email, 
+	public AgencyExtended(String name, String logo, String rating, String orgNo, String email, 
 							String phone, String street, String zip, String city) {
-		super(name, logo);
+		super(name, logo, rating);
 		this.orgNo = orgNo;
 		this.email = email;
 		this.phone = phone;

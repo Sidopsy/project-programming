@@ -7,14 +7,15 @@
  */
 
 public class Agency {
-	public final String name, logo;
+	public final String name, logo, rating;
 	
-	public Agency(String name, String logo) {
+	public Agency(String name, String logo, String rating) {
 		this.name = name;
 		this.logo = logo;
+		this.rating = rating;
 	}
 	
 	public String toString() {
-		return name + " " + logo;
+		return name + " " + logo + " " + rating;
 	}
 }

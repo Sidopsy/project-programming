@@ -9,15 +9,15 @@
  */
 
 public class Rating {
-	public final int rating;
-	public final String comment;
+	public final String name, rating, comment;
 	
-	public Rating(int rating, String comment) {
+	public Rating(String name, String rating, String comment) {
+		this.name = name;
 		this.rating = rating;
 		this.comment = comment;
 	}
 	
 	public String toString() {
-		return rating + " " + comment;
+		return name + " " + rating + " " + comment;
 	}
 }
