@@ -179,7 +179,10 @@ public class ViewMaster extends Application{
 
 		//A test Agency, here we will have a list of clickable agencies
 		Button testAgency = new Button("Agency in " + thisLocation);
-		testAgency.setOnAction(e -> window.setScene(sc3));
+		testAgency.setOnAction(e -> {
+			search();
+			window.setScene(sc3);
+	});
 
 		//Return to start page
 		Button backToStart = new Button("Go back to the start page");
@@ -294,19 +297,23 @@ public class ViewMaster extends Application{
 
 	//TODO - Query the database with global values from ChoiceBox and TextField
 	public static void search(){
-		String startStatement = "SELECT * FROM Ads;";
-		
-		if(!isSearch){
-			theSearch = DatabaseCommunication.fetchAd(startStatement); 
+		String startStatement;
+		String searchStatement;
+//		if(theSearch == null){
+//			theSearch = DatabaseCommunication.fetchAd(startStatement); 
+//		} else {
+		if(tf1 == null){	
+			searchStatement = "SELECT * FROM Ads;";
 		} else {
-			String searchStatement = "SELECT * FROM Ads WHERE "
+			searchStatement = "SELECT * FROM Ads WHERE "
 					+ "Species == '" + species + "' and "
 					+ "Type == '" + type + "' and "
-					+ "Age == '" + age + "' and " 
-					+ "Gender == '" + gender + "' and " 
-					+ "Description == '%" + tf1.getText() + "%' ;"; 
-			theSearch = DatabaseCommunication.fetchAd(searchStatement); 
-			System.out.println(theSearch.toString());
+					+ "Age == " + age + " and " 
+					+ "Gender == '" + gender + "';";
 		}
+			theSearch = DatabaseCommunication.fetchAd(searchStatement);
+			System.out.println(searchStatement);
+			System.out.println(theSearch.toString());
+//		}
 	}
 }
