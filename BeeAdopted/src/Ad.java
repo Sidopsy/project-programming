@@ -25,6 +25,22 @@ public class Ad {
 		this.endDate = new SimpleStringProperty(end);
 	}
 	
+	public String getName(){
+		return name.get();
+	}
+	
+	public String getPicture(){
+		return picture.get();
+	}
+	
+	public String getType(){
+		return type.get();
+	}
+	
+	public String getGender(){
+		return gender.get();
+	}
+	
 	public String toString() {
 		return picture + " " + name + " " + gender + " " + species + " " + 
 				type + " " + age + " " + description + " " + startDate + " " + endDate;
