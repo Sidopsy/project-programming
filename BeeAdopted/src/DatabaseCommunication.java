@@ -281,6 +281,14 @@ public class DatabaseCommunication {
 	    return result;
 	}
 	
+	/**
+	 * Method for returning specific attributes, for example for displaying all available species in the application. Also
+	 * used for displaying all cities that we have agencies at. 
+	 * 
+	 * @param table, attribute
+	 * @return ObservableList<Object>
+	 */
+	
 	public static ObservableList<Object> fetchAttribute(String table, String column) {
 		ObservableList<Object> result = FXCollections.observableArrayList(column, new Separator());
 		String sqlStatement = "SELECT Distinct " + column + " FROM " + table + " ORDER BY " + column + ";";
@@ -326,7 +334,7 @@ public class DatabaseCommunication {
 	/**
 	 * Method for saving input information to the database.
 	 * 
-	 * Foreign key (PRAGMA) constraints are activated for this DB connection.
+	 * Foreign key (PRAGMA) constraints are activated for this DB connection, otherwise the constraints will not be enforced.
 	 * 
 	 * @param sqlStatement
 	 * @return void
