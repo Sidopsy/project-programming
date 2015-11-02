@@ -87,18 +87,20 @@ public class ViewMaster extends Application{
 		backButton.setOnAction(e -> goBack());
 
 
-//		if(isOnView){
-//			HBox filter = mainFilter();
-//			head.getChildren().addAll(backButton, header, filter);			
-//		} else {
-			head.getChildren().addAll(backButton,header);
-//		}
+		//		if(isOnView){
+		//			HBox filter = mainFilter();
+		//			head.getChildren().addAll(backButton, header, filter);			
+		//		} else {
+		head.getChildren().addAll(backButton,header);
+		//		}
 
 		return head;
 	}
 
 
-
+	/**
+	 * Go to previous scene.
+	 */
 	private void goBack() {
 		if(window.getScene() == sc2){
 			window.setScene(sc1);
@@ -148,8 +150,6 @@ public class ViewMaster extends Application{
 		return vbox;
 	}
 
-
-
 	//TODO - present agencies on location (see below)
 	private GridPane startAgencies() {
 		GridPane grid = new GridPane();
@@ -193,8 +193,6 @@ public class ViewMaster extends Application{
 
 	}
 
-
-
 	//TODO - Get ChoiceBox.setValue to work
 	public HBox mainFilter(){
 		HBox hbox = new HBox();
@@ -235,38 +233,25 @@ public class ViewMaster extends Application{
 
 	}
 
-	//	//TODO - Here we get some values from the database with the attribute as the input
-	//	private ObservableList<String> getListFromDatabase(String attribute) {
-	//		ObservableList<String> result = 
-	//			    FXCollections.observableArrayList(
-	//			        "Option 1",
-	//			        "Option 2",
-	//			        "Option 3"
-	//			    );
-	//		return result;
-	//	}
-
-
-
 	//TODO - present search results (see below)
 	public VBox mainResults(){
 		VBox grid = new VBox();
 		grid.setPadding(new Insets(10,10,10,10));
 
-		
+
 		TableView<Ad> table = new TableView<Ad>();
 		TableColumn<Ad, String> pictureCol = new TableColumn<Ad, String>("Picture");
 		TableColumn<Ad, String> typeCol = new TableColumn<Ad, String>("Type");
 		TableColumn<Ad, String> genderCol = new TableColumn<Ad, String>("Gender");
-		
-	
+
+
 		if(theSearch != null){
 			ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
 			for(Ad ad: theSearch){
-			pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
-			typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
-			genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
-			table.setItems(adList);
+				pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
+				typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
+				genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
+				table.setItems(adList);
 
 			}
 		}
