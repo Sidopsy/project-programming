@@ -32,7 +32,6 @@ public class DatabaseCommunication {
 			System.out.println(s);
 		}
 		
-		
 		sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Ratings WHERE "
 				+ "Agencies.ID = Ratings.AgencyID GROUP BY Agencies.ID;";		
 		ArrayList<Agency> result2 = fetchAgency(sqlStatement);
