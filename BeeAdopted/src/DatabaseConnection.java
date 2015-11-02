@@ -11,14 +11,12 @@ import javafx.scene.control.Separator;
 
 public class DatabaseConnection {
 
-	public static ObservableList<Object> getListFromDatabase(String string) {
+	public static ObservableList<Object> getListFromDatabase(String table, String string) {
 		ObservableList<Object> result = 
 				FXCollections.observableArrayList(
 						string,
 						new Separator(),
-			        "Option 1",
-			        "Option 2",
-			        "Option 3");
+			        DatabaseCommunication.fetchAttribute(table, string));
 		return result;
 	}
 	

@@ -35,7 +35,8 @@ public class ViewMaster extends Application{
 	private static ArrayList<Ad> theSearch;
 	private static int adID;
 	static boolean isOnView = false;
-	private static TableView<Ad> table = new TableView<Ad>();
+
+
 
 	//Launch the application
 	public static void main(String[] args){
@@ -86,12 +87,12 @@ public class ViewMaster extends Application{
 		backButton.setOnAction(e -> goBack());
 
 
-		if(isOnView){
-			HBox filter = mainFilter();
-			head.getChildren().addAll(backButton, header, filter);			
-		} else {
+//		if(isOnView){
+//			HBox filter = mainFilter();
+//			head.getChildren().addAll(backButton, header, filter);			
+//		} else {
 			head.getChildren().addAll(backButton,header);
-		}
+//		}
 
 		return head;
 	}
@@ -99,12 +100,13 @@ public class ViewMaster extends Application{
 
 
 	private void goBack() {
-		if(window.getScene() == sc2)
+		if(window.getScene() == sc2){
 			window.setScene(sc1);
-		else if (window.getScene() == sc3)
+		} else if (window.getScene() == sc3 || window.getScene() == sc4){
 			window.setScene(sc2);
-		else
+		} else {
 			window.setScene(sc1);
+		}
 	}
 
 	/**
@@ -124,7 +126,7 @@ public class ViewMaster extends Application{
 		vbox.setSpacing(40);
 
 		Label label = new Label("Where are you?");
-		location = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Location"));
+		location = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Addresses", "City"));
 		location.setValue(location.getItems().get(0));
 		//TODO - save location and goto sc2
 		location.setOnAction(e ->  {
@@ -194,24 +196,24 @@ public class ViewMaster extends Application{
 
 
 	//TODO - Get ChoiceBox.setValue to work
-	public static HBox mainFilter(){
+	public HBox mainFilter(){
 		HBox hbox = new HBox();
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
 
-		cb1 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Species"));
+		cb1 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Species"));
 		cb1.setValue(cb1.getItems().get(0));
 		cb1.setOnAction(e -> species = (String) cb1.getValue());
 
-		cb2 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Type"));
+		cb2 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Type"));
 		cb2.setValue(cb2.getItems().get(0));
 		cb2.setOnAction(e -> type = (String) cb2.getValue());
 
-		cb3 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Age"));
+		cb3 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Age"));
 		cb3.setValue(cb3.getItems().get(0));
 		cb3.setOnAction(e -> age = (String) cb3.getValue());
 
-		cb4 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Gender"));
+		cb4 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Gender"));
 		cb4.setValue(cb4.getItems().get(0));
 		cb4.setOnAction(e -> gender = (String) cb4.getValue());
 
@@ -219,7 +221,13 @@ public class ViewMaster extends Application{
 		tf1.setPromptText("Description");
 
 		btn1 = new Button("Search");
-		btn1.setOnAction(e -> search());
+		btn1.setOnAction(e -> {
+			layout4 = new BorderPane();
+			layout4.setTop(header());
+			layout4.setCenter(mainCenterView());
+			sc4 = new Scene(layout4,800,600);
+			window.setScene(sc4);
+		});
 
 		hbox.getChildren().addAll(cb1,cb2,cb3,cb4,tf1,btn1);
 
@@ -245,19 +253,22 @@ public class ViewMaster extends Application{
 		VBox grid = new VBox();
 		grid.setPadding(new Insets(10,10,10,10));
 
+		
+		TableView<Ad> table = new TableView<Ad>();
 		TableColumn<Ad, String> pictureCol = new TableColumn<Ad, String>("Picture");
 		TableColumn<Ad, String> typeCol = new TableColumn<Ad, String>("Type");
 		TableColumn<Ad, String> genderCol = new TableColumn<Ad, String>("Gender");
-
+		
+	
 		if(theSearch != null){
 			ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
-			//for(Ad ad: theSearch){
+			for(Ad ad: theSearch){
 			pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
 			typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
 			genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
 			table.setItems(adList);
 
-			//}
+			}
 		}
 
 		table.getColumns().addAll(pictureCol, typeCol, genderCol);
