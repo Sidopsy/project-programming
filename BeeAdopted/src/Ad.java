@@ -9,8 +9,8 @@ import javafx.beans.property.SimpleStringProperty;
  */
 
 public class Ad {
-	public final SimpleStringProperty picture, name, gender, species, type, description, startDate, endDate;
-	public final SimpleIntegerProperty age;
+	private final SimpleStringProperty picture, name, gender, species, type, description, startDate, endDate;
+	private final SimpleIntegerProperty age;
 
 	public Ad(String picture, String name, String gender, String species, String type, 
 				int age, String description, String start, String end) {
@@ -25,16 +25,12 @@ public class Ad {
 		this.endDate = new SimpleStringProperty(end);
 	}
 	
-	public String getName(){
-		return name.get();
-	}
-	
 	public String getPicture(){
 		return picture.get();
 	}
 	
-	public String getType(){
-		return type.get();
+	public String getName(){
+		return name.get();
 	}
 	
 	public String getGender(){
@@ -43,6 +39,26 @@ public class Ad {
 	
 	public String getSpecies(){
 		return species.get();
+	}
+	
+	public String getType(){
+		return type.get();
+	}
+	
+	public int getAge(){
+		return age.get();
+	}
+	
+	public String getDescription(){
+		return description.get();
+	}
+	
+	public String getStartDate(){
+		return startDate.get();
+	}
+	
+	public String getEndDate(){
+		return endDate.get();
 	}
 	
 	public String toString() {
