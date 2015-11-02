@@ -136,9 +136,8 @@ public class ViewMaster extends Application{
 			System.out.println(city);
 			//Start view - Agencies
 			layout2 = new BorderPane();
-			GridPane grid = startAgencies();
 			layout2.setTop(header());
-			layout2.setCenter(grid);
+			layout2.setCenter(startAgencies());
 			sc2 = new Scene(layout2,800,600);
 			window.setScene(sc2);
 		});
@@ -151,40 +150,35 @@ public class ViewMaster extends Application{
 	}
 
 	//TODO - present agencies on location (see below)
-	private GridPane startAgencies() {
-		GridPane grid = new GridPane();
+	private VBox startAgencies() {
+		VBox grid = new VBox();
 		String thisLocation = this.city;
-		grid.setHgap(200);
-		grid.setVgap(40);
-		grid.setPadding(new Insets(200,100,200,100));
+		String sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Addresses, Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID GROUP BY Name;";
+		grid.setPadding(new Insets(10,10,10,10));
 
-		//Column name Agency (this will probably not be in 1.0)
-		Text agencyAttribute = new Text("Agency");
-		grid.add(agencyAttribute, 0, 0); 
-
-		//Column name Logo (this will probably not be in 1.0)
-		Text logoAttribute = new Text("Logo");
-		grid.add(logoAttribute, 1, 0);
-
-		//		Button getLocation = new Button("Get location");
-		//		grid.add(getLocation, 0, 1);
-		//		getLocation.setOnAction(e -> thisLocation = this.city);
-		//		
-
+		ObservableList<Agency> agencyList = FXCollections.observableArrayList(DatabaseCommunication.fetchAgency(sqlStatement));
+		
+		TableView<Agency> table = new TableView<>();
+		TableColumn<Agency, String> logoCol = new TableColumn<>("Logo");
+		TableColumn<Agency, String> agencyCol = new TableColumn<>("Agency");
+		TableColumn<Agency, String> ratingCol = new TableColumn<>("Rating");
+		
+		logoCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("logo"));
+		agencyCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("agency"));
+		ratingCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("rating"));
+		table.setItems(agencyList);
+		
+		table.getColumns().addAll(logoCol, agencyCol, ratingCol);
 
 		//A test Agency, here we will have a list of clickable agencies
-		Button testAgency = new Button("Agency in" + thisLocation);
-		grid.add(testAgency, 0, 2);
-		testAgency.setOnAction(e -> {
-			isOnView = true;
-			window.setScene(sc3);
-		});
+		Button testAgency = new Button("Agency in " + thisLocation);
+		testAgency.setOnAction(e -> window.setScene(sc3));
 
 		//Return to start page
 		Button backToStart = new Button("Go back to the start page");
-		grid.add(backToStart, 1, 3);
 		backToStart.setOnAction(e -> backToStart());
 
+		grid.getChildren().addAll(table, testAgency, backToStart);
 		//	String[] agencies = DatabaseConnection.getAgencies(thisLocation);
 		//TODO - present agencies on location
 		// ACTIVE OBJECT???
@@ -247,13 +241,13 @@ public class ViewMaster extends Application{
 
 		if(theSearch != null){
 			ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
-			for(Ad ad: theSearch){
+		//	for(Ad ad: theSearch){
 				pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
 				typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
 				genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
 				table.setItems(adList);
 
-			}
+			//}
 		}
 
 		table.getColumns().addAll(pictureCol, typeCol, genderCol);

@@ -72,7 +72,7 @@ public class InputPage {
 		tf.setMaxWidth(150);
 		input.add(tf,0,0);
 		
-		cb4 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Ads", "Age"));
+		cb4 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Age"));
 		cb4.setValue(cb4.getItems().get(0));
 		input.add(cb4, 1, 0);
 		
@@ -85,17 +85,17 @@ public class InputPage {
 		
 		
 
-		cb1 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Ads", "Agency"));
+		cb1 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Agencies", "Name"));
 		cb1.setValue(cb1.getItems().get(0));
 		input.add(cb1, 0, 2);
 		// cb1.setOnAction(e -> agency = (String) cb1.getValue());
 
-		cb2 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Ads", "Species"));
+		cb2 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Species"));
 		cb2.setValue(cb2.getItems().get(0));
 		input.add(cb2, 1, 2);
 		// cb2.setOnAction(e -> species = (String) cb2.getValue());
 
-		cb3 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Ads", "Type"));
+		cb3 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Type"));
 		cb3.setValue(cb3.getItems().get(0));
 		input.add(cb3, 0, 3);
 		// cb3.setOnAction(e -> type = (String) cb3.getValue());
@@ -103,7 +103,7 @@ public class InputPage {
 		
 		// cb4.setOnAction(e -> age = (String) cb4.getValue());
 
-		cb5 = new ChoiceBox<>(DatabaseConnection.getListFromDatabase("Ads", "Gender"));
+		cb5 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Gender"));
 		cb5.setValue(cb5.getItems().get(0));
 		input.add(cb5, 1, 3);
 		// cb5.setOnAction(e -> gender = (String) cb5.getValue());
@@ -125,7 +125,7 @@ public class InputPage {
 	}
 
 	private static void inputValues() {
-		String insert = "INSERT INTO Listings (Name,Gender,Species,Type,Age,Description)";
+		String insert = "INSERT INTO Ads (Name,Gender,Species,Type,Age,Description)";
 		String values = 
 				" VALUES ('" + tf.getText()  + "', '"+ cb2.getValue() + "', '" 
 				+ cb3.getValue() + "', '" + cb4.getValue() + "', "
