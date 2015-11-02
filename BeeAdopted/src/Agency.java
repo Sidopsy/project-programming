@@ -1,3 +1,4 @@
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Object for agencies, basic information for displaying in the application.
@@ -7,12 +8,24 @@
  */
 
 public class Agency {
-	public final String name, logo, rating;
+	public final SimpleStringProperty name, logo, rating;
 	
 	public Agency(String name, String logo, String rating) {
-		this.name = name;
-		this.logo = logo;
-		this.rating = rating;
+		this.name = new SimpleStringProperty(name);
+		this.logo = new SimpleStringProperty(logo);
+		this.rating = new SimpleStringProperty(rating);
+	}
+	
+	public String getName(){
+		return name.get();
+	}
+	
+	public String getLogo(){
+		return logo.get();
+	}
+	
+	public String getRating(){
+		return rating.get();
 	}
 	
 	public String toString() {

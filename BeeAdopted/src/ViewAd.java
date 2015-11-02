@@ -58,10 +58,10 @@ public class ViewAd {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(0,10,0,10));
 		
-		Label name = new Label(ad.name);
+		Label name = new Label();
 		grid.add(name,1,0);
 		
-		Label species = new Label(ad.species);
+		Label species = new Label();
 		grid.add(species, 2, 0);
 		
 		//String[] adInfo = DatabaseConnection.getAd(adID);

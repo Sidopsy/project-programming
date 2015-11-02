@@ -1,4 +1,6 @@
 
+import java.util.ArrayList;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -125,11 +127,12 @@ public class InputPage {
 	}
 
 	private static void inputValues() {
-		String insert = "INSERT INTO Ads (Name,Gender,Species,Type,Age,Description)";
+		ArrayList<Agency> agencyID = DatabaseCommunication.fetchAgency("SELECT ID FROM Agencies WHERE Name == " + cb1.getValue() + ";");
+		String insert = "INSERT INTO Ads (Name,Gender,Species,Type,Age,Description,AgencyID)";
 		String values = 
 				" VALUES ('" + tf.getText()  + "', '"+ cb2.getValue() + "', '" 
 				+ cb3.getValue() + "', '" + cb4.getValue() + "', "
-				+ cb5.getValue() + ", '" + ta.getText() + "');";
+				+ cb5.getValue() + ", '" + ta.getText() + "', " + agencyID.get(0) + ");";
 		
 		DatabaseCommunication.insertUpdateDelete(insert + values);
 		System.out.println(values);

@@ -34,7 +34,7 @@ public class ViewMaster extends Application{
 	private static BorderPane layout1, layout2, layout3, layout4;
 	private static ArrayList<Ad> theSearch;
 	private static int adID;
-	static boolean isOnView = false;
+	static boolean isSearch = false;
 
 
 
@@ -64,6 +64,7 @@ public class ViewMaster extends Application{
 
 		//Main view
 		layout3 = new BorderPane();
+		search();
 		layout3.setTop(header());
 		layout3.setCenter(mainCenterView());
 		sc3 = new Scene(layout3,800,600);
@@ -153,22 +154,28 @@ public class ViewMaster extends Application{
 	private VBox startAgencies() {
 		VBox grid = new VBox();
 		String thisLocation = this.city;
-		String sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Addresses, Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID GROUP BY Name;";
+		String sqlStatement = "SELECT Name,Logo,AVG(Rating) FROM Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Addresses.City == '" + thisLocation + "';";
 		grid.setPadding(new Insets(10,10,10,10));
 
 		ObservableList<Agency> agencyList = FXCollections.observableArrayList(DatabaseCommunication.fetchAgency(sqlStatement));
-		
+		System.out.println(agencyList.toString());
 		TableView<Agency> table = new TableView<>();
+		table.setEditable(true);
 		TableColumn<Agency, String> logoCol = new TableColumn<>("Logo");
 		TableColumn<Agency, String> agencyCol = new TableColumn<>("Agency");
 		TableColumn<Agency, String> ratingCol = new TableColumn<>("Rating");
-		
-		logoCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("logo"));
-		agencyCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("agency"));
+
+		agencyCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("name"));
+		logoCol.setCellValueFactory(new PropertyValueFactory<Agency, String>("logo"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("rating"));
+
+		agencyCol.setOnEditCommit(e -> System.out.println("Hi agency!"));
+		logoCol.setOnEditCommit(e -> System.out.println("Hi logo!"));
+		ratingCol.setOnEditCommit(e -> System.out.println("Hi rating!"));
+
 		table.setItems(agencyList);
-		
 		table.getColumns().addAll(logoCol, agencyCol, ratingCol);
+
 
 		//A test Agency, here we will have a list of clickable agencies
 		Button testAgency = new Button("Agency in " + thisLocation);
@@ -214,9 +221,11 @@ public class ViewMaster extends Application{
 
 		btn1 = new Button("Search");
 		btn1.setOnAction(e -> {
+			isSearch = true;
 			layout4 = new BorderPane();
 			layout4.setTop(header());
 			layout4.setCenter(mainCenterView());
+			System.out.println(theSearch.toString());
 			sc4 = new Scene(layout4,800,600);
 			window.setScene(sc4);
 		});
@@ -239,16 +248,16 @@ public class ViewMaster extends Application{
 		TableColumn<Ad, String> genderCol = new TableColumn<Ad, String>("Gender");
 
 
-		if(theSearch != null){
-			ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
-		//	for(Ad ad: theSearch){
-				pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
-				typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
-				genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
-				table.setItems(adList);
 
-			//}
-		}
+		ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
+		//	for(Ad ad: theSearch){
+		pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
+		typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
+		genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
+		table.setItems(adList);
+
+		//}
+
 
 		table.getColumns().addAll(pictureCol, typeCol, genderCol);
 
@@ -282,13 +291,19 @@ public class ViewMaster extends Application{
 
 	//TODO - Query the database with global values from ChoiceBox and TextField
 	public static void search(){
-		String searchStatement = "SELECT * FROM Ads WHERE "
-				+ "Species == '" + species + "' and "
-				+ "Type == '" + type + "' and "
-				+ "Age == '" + age + "' and " 
-				+ "Gender == '" + gender + "' and " 
-				+ "Description == '%" + tf1.getText() + "%' ;"; 
-		System.out.println(searchStatement);
-		theSearch = DatabaseCommunication.fetchAd(searchStatement); 
+		String startStatement = "SELECT * FROM Ads;";
+		
+		if(!isSearch){
+			theSearch = DatabaseCommunication.fetchAd(startStatement); 
+		} else {
+			String searchStatement = "SELECT * FROM Ads WHERE "
+					+ "Species == '" + species + "' and "
+					+ "Type == '" + type + "' and "
+					+ "Age == '" + age + "' and " 
+					+ "Gender == '" + gender + "' and " 
+					+ "Description == '%" + tf1.getText() + "%' ;"; 
+			theSearch = DatabaseCommunication.fetchAd(searchStatement); 
+			System.out.println(theSearch.toString());
+		}
 	}
 }
