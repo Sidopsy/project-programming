@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -24,17 +25,17 @@ import javafx.stage.Stage;
 
 public class ViewMaster extends Application{
 
-	ChoiceBox<Object> location, cb1,cb2,cb3,cb4;
-	String city, species, type, age, gender;
-	TextField tf1;
-	Button btn1;
-	Stage window;
-	Scene sc1, sc2, sc3, sc4;
-	BorderPane layout1, layout2, layout3, layout4;
-	ArrayList<Ad> theSearch;
-	int adID;
-	boolean isOnView = false;
-	private TableView<Ad> table = new TableView<Ad>();
+	private static ChoiceBox<Object> location, cb1,cb2,cb3,cb4;
+	private static String city, species, type, age, gender;
+	private static TextField tf1;
+	private static  Button btn1;
+	private static Stage window;
+	private static Scene sc1, sc2, sc3, sc4;
+	private static BorderPane layout1, layout2, layout3, layout4;
+	private static ArrayList<Ad> theSearch;
+	private static int adID;
+	static boolean isOnView = false;
+	private static TableView<Ad> table = new TableView<Ad>();
 
 	//Launch the application
 	public static void main(String[] args){
@@ -56,13 +57,13 @@ public class ViewMaster extends Application{
 		//Start view - Location
 		layout1 = new BorderPane();
 		VBox vbox = startLocation();
-		layout1.setTop(theHead());
+		layout1.setTop(header());
 		layout1.setCenter(vbox);
 		sc1 = new Scene(layout1,800,600);
 
 		//Main view
 		layout3 = new BorderPane();
-		layout3.setTop(theHead());
+		layout3.setTop(header());
 		layout3.setCenter(mainCenterView());
 		sc3 = new Scene(layout3,800,600);
 
@@ -76,7 +77,7 @@ public class ViewMaster extends Application{
 	 * image in the form of a VBox
 	 * @return head as a VBox
 	 */
-	private VBox theHead() {
+	private VBox header(){
 		VBox head = new VBox();
 		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
 		ImageView header = new ImageView();
@@ -94,6 +95,8 @@ public class ViewMaster extends Application{
 
 		return head;
 	}
+
+
 
 	private void goBack() {
 		if(window.getScene() == sc2)
@@ -130,7 +133,7 @@ public class ViewMaster extends Application{
 			//Start view - Agencies
 			layout2 = new BorderPane();
 			GridPane grid = startAgencies();
-			layout2.setTop(theHead());
+			layout2.setTop(header());
 			layout2.setCenter(grid);
 			sc2 = new Scene(layout2,800,600);
 			window.setScene(sc2);
@@ -191,7 +194,7 @@ public class ViewMaster extends Application{
 
 
 	//TODO - Get ChoiceBox.setValue to work
-	public HBox mainFilter(){
+	public static HBox mainFilter(){
 		HBox hbox = new HBox();
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
@@ -240,23 +243,23 @@ public class ViewMaster extends Application{
 	//TODO - present search results (see below)
 	public VBox mainResults(){
 		VBox grid = new VBox();
-		grid.setPadding(new Insets(10,10,0,10));
+		grid.setPadding(new Insets(10,10,10,10));
 
-		TableColumn pictureCol = new TableColumn("Picture");
-		TableColumn typeCol = new TableColumn("Type");
-		TableColumn genderCol = new TableColumn("Gender");
-		
+		TableColumn<Ad, String> pictureCol = new TableColumn<Ad, String>("Picture");
+		TableColumn<Ad, String> typeCol = new TableColumn<Ad, String>("Type");
+		TableColumn<Ad, String> genderCol = new TableColumn<Ad, String>("Gender");
+
 		if(theSearch != null){
 			ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
-			for(Ad ad: theSearch){
-				pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
-				typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
-				genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
-				table.setItems(adList);
-				
-			}
+			//for(Ad ad: theSearch){
+			pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
+			typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
+			genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
+			table.setItems(adList);
+
+			//}
 		}
-		
+
 		table.getColumns().addAll(pictureCol, typeCol, genderCol);
 
 		Button testAd = new Button("The test ad");
@@ -264,7 +267,7 @@ public class ViewMaster extends Application{
 
 		Button backToStart = new Button("Go back to the start page");
 		backToStart.setOnAction(e -> backToStart());
-		
+
 
 		grid.getChildren().addAll(table, testAd, backToStart);
 
@@ -288,13 +291,13 @@ public class ViewMaster extends Application{
 	}
 
 	//TODO - Query the database with global values from ChoiceBox and TextField
-	public void search(){
-		String searchStatement = "SELECT * FROM Listings WHERE "
-				+ "Species == " + species + " && "
-				+ "Type == " + type + " && "
-				+ "Age == " + age + " && " 
-				+ "Gender == " + gender + " && " 
-				+ "Description == %" + tf1.getText() + "% ;"; 
+	public static void search(){
+		String searchStatement = "SELECT * FROM Ads WHERE "
+				+ "Species == '" + species + "' and "
+				+ "Type == '" + type + "' and "
+				+ "Age == '" + age + "' and " 
+				+ "Gender == '" + gender + "' and " 
+				+ "Description == '%" + tf1.getText() + "%' ;"; 
 		System.out.println(searchStatement);
 		theSearch = DatabaseCommunication.fetchAd(searchStatement); 
 	}

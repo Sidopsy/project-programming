@@ -125,11 +125,11 @@ public class InputPage {
 	}
 
 	private static void inputValues() {
-		String insert = "INSERT INTO Listings (Picture,Name,Gender,Species,Type,Age,Description)";
+		String insert = "INSERT INTO Listings (Name,Gender,Species,Type,Age,Description)";
 		String values = 
-				" VALUES (null, " + tf.getText()  + ", "+ cb2.getValue() + ", " 
-				+ cb3.getValue() + ", " + cb4.getValue() + ", "
-				+ cb5.getValue() + ", " + ta.getText() + ");";
+				" VALUES ('" + tf.getText()  + "', '"+ cb2.getValue() + "', '" 
+				+ cb3.getValue() + "', '" + cb4.getValue() + "', "
+				+ cb5.getValue() + ", '" + ta.getText() + "');";
 		
 		DatabaseCommunication.insertUpdateDelete(insert + values);
 		System.out.println(values);
