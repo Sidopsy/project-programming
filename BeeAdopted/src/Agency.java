@@ -3,32 +3,34 @@ import javafx.beans.property.SimpleStringProperty;
 /**
  * Object for agencies, basic information for displaying in the application.
  * 
+ * Getters are available for all class variables.
+ * 
  * @author MTs
  * @since 10-26-15
  */
 
 public class Agency {
-	public final SimpleStringProperty name, logo, rating;
+	private final SimpleStringProperty logo, name, rating;
 	
-	public Agency(String name, String logo, String rating) {
-		this.name = new SimpleStringProperty(name);
+	public Agency(String logo, String name, String rating) {
 		this.logo = new SimpleStringProperty(logo);
+		this.name = new SimpleStringProperty(name);
 		this.rating = new SimpleStringProperty(rating);
+	}
+
+	public String getLogo(){
+		return logo.get();
 	}
 	
 	public String getName(){
 		return name.get();
 	}
-	
-	public String getLogo(){
-		return logo.get();
-	}
-	
+		
 	public String getRating(){
 		return rating.get();
 	}
 	
 	public String toString() {
-		return name + " " + logo + " " + rating;
+		return logo + " " + name + " " + rating;
 	}
 }
