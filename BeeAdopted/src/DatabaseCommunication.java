@@ -7,7 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Separator;
 
 /**
- * Class for database fetching and insertion.
+ * Class for database fetching/insertion/deletion and so on.
  * 
  * @methods fetchAd, fetchAgency, fetchAgencyExtended, fetchRating, insertUpdateDelete
  * 

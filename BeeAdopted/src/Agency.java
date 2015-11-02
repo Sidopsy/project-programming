@@ -3,8 +3,6 @@ import javafx.beans.property.SimpleStringProperty;
 /**
  * Object for agencies, basic information for displaying in the application.
  * 
- * Getters are available for all class variables.
- * 
  * @author MTs
  * @since 10-26-15
  */
