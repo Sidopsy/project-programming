@@ -24,34 +24,34 @@ public class DatabaseCommunication {
 
 	public static void main(String args[]) {
 		
-		// Use the String sqlStatement to create your query and test it towards the DB if you have any doubts!
-		String sqlStatement = "SELECT * FROM Ads;";	
+		String sqlStatement = "SELECT * FROM Ads;";
+		
 		ArrayList<Ad> result1 = fetchAd(sqlStatement);
-
-		// Prints all results from the fetch.		
+		
 		for (Ad s : result1) {
 			System.out.println(s);
 		}
 		
-		sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Ratings WHERE Agencies.ID = Ratings.AgencyID GROUP BY Agencies.ID;";		
+		
+		sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Ratings WHERE "
+				+ "Agencies.ID = Ratings.AgencyID GROUP BY Agencies.ID;";		
 		ArrayList<Agency> result2 = fetchAgency(sqlStatement);
 	
 		// Prints all results from the fetch.		
 		for (Agency t : result2) {
 			System.out.println(t);
 		}
+
 		
-		/*
-		 * TODO Fix query for retrieving extended information (avg. rating is currently the issue).
-		 */
-		
-		sqlStatement = "SELECT Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID GROUP BY Name;";
+		sqlStatement = "SELECT Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE "
+				+ "Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID GROUP BY Name;";
 		ArrayList<AgencyExtended> result3 = fetchAgencyExtended(sqlStatement);
 		
 		// Prints all results from the fetch.
 		for (AgencyExtended u : result3) {
 			System.out.println(u);
 		}
+		
 		
 		sqlStatement = "SELECT Name,Rating,Comment FROM Ratings, Agencies WHERE Agencies.ID = Ratings.AgencyID;";
 				
@@ -62,8 +62,31 @@ public class DatabaseCommunication {
 			System.out.println(v);
 		}
 		
-		sqlStatement = "INSERT INTO Ads (AgencyID,Name,Gender,Species,Type,Age,Description) "
-				+ "VALUES (6,'Lucifer','Male','Devil','Tasmanian',666,'Bringer of death');";
+		/*
+		 * TODO, figure out how to get the insert to work without returning an error, it stops the program in its progress...
+		 * Do NOT run it until fixed, that is when this comment is removed.
+		 * 
+		 */
+		
+//		sqlStatement = "INSERT INTO Ads (AgencyID,Name,Gender,Species,Type,Age,Description) VALUES "
+//				+ "(6,'Lucifer','Male','Devil','Red',666,'Omg so evil');";
+//		
+//		insertUpdateDelete(sqlStatement);
+//		
+//		ArrayList<Ad> result5 = fetchAd(sqlStatement);
+//		
+//		for (Ad s : result5) {
+//			System.out.println(s);
+//		}
+//		
+//		sqlStatement = "DELETE FROM Ads WHERE Name = 'Lucifer';";
+//		
+//		ArrayList<Ad> result6 = fetchAd(sqlStatement);
+//		
+//		for (Ad t : result6) {
+//			System.out.println(t);
+//		}
+		
 	}
 			
 	/**
@@ -358,12 +381,9 @@ public class DatabaseCommunication {
 	        System.out.println();
 	        
 	        // Activate foreign key constraints before executing updates, deletions or inserts! VERY IMPORTANT!
-	        stmt = c.createStatement();
-	        stmt.executeQuery("PRAGMA foreign_keys = ON;");
-	        
 	        // Executing incoming query.	        
 	        stmt = c.createStatement();
-	        stmt.executeQuery(sqlStatement);
+	        stmt.executeUpdate("PRAGMA foreign_keys = ON; " + sqlStatement);
 	        
 	        // Closing result sets and statements.
 	        stmt.close();
