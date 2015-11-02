@@ -277,6 +277,50 @@ public class DatabaseCommunication {
 	    return result;
 	}
 	
+	public static ArrayList<String> fetchAttribute(String table, String column) {
+		ArrayList<String> result = new ArrayList<>();
+		String sqlStatement = "SELECT Distinct " + column + " FROM " + table + " ORDER BY " + column + ";";
+		Connection c = null;
+		Statement stmt = null;
+	    
+	    try {
+	    	// Loading the driver!
+	    	System.out.println("Loading JDBC driver...");
+	    	Class.forName("org.sqlite.JDBC");
+	    	System.out.println("Driver loaded successfully!");
+	    	
+	    	// Connecting to database!
+	    	System.out.println("Attempting to connect to database...");
+	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
+	    	c.setAutoCommit(false);
+	        System.out.println("Opened database successfully!");
+	        System.out.println();
+	        
+	        // Executing incoming query.	        
+	        stmt = c.createStatement();
+	        ResultSet rs = stmt.executeQuery(sqlStatement);
+
+	        // This while-loop adds the results to the arrayList.	        
+	        while (rs.next()) {
+	        	String attribute = rs.getString(column);
+	        	result.add(attribute);
+	        }
+	        
+	        // Closing result sets and statements.	        
+			rs.close();
+			stmt.close();
+			c.close();
+			
+			// Catching any and all exceptions, printing an error message.			
+	    } catch (Exception e) { 
+	    	System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	    	System.exit(0);
+	    }
+	    return result;
+		
+		
+	}
+	
 	/**
 	 * Method for saving input information to the database.
 	 * 
