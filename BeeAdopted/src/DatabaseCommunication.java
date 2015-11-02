@@ -2,6 +2,10 @@
 import java.sql.*;
 import java.util.ArrayList;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Separator;
+
 /**
  * Class for database fetching and insertion.
  * 
@@ -277,8 +281,8 @@ public class DatabaseCommunication {
 	    return result;
 	}
 	
-	public static ArrayList<String> fetchAttribute(String table, String column) {
-		ArrayList<String> result = new ArrayList<>();
+	public static ObservableList<Object> fetchAttribute(String table, String column) {
+		ObservableList<Object> result = FXCollections.observableArrayList(column, new Separator());
 		String sqlStatement = "SELECT Distinct " + column + " FROM " + table + " ORDER BY " + column + ";";
 		Connection c = null;
 		Statement stmt = null;
@@ -317,8 +321,6 @@ public class DatabaseCommunication {
 	    	System.exit(0);
 	    }
 	    return result;
-		
-		
 	}
 	
 	/**
