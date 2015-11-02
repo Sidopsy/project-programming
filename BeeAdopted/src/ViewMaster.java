@@ -243,23 +243,26 @@ public class ViewMaster extends Application{
 
 
 		TableView<Ad> table = new TableView<Ad>();
-		TableColumn<Ad, String> pictureCol = new TableColumn<Ad, String>("Picture");
-		TableColumn<Ad, String> typeCol = new TableColumn<Ad, String>("Type");
-		TableColumn<Ad, String> genderCol = new TableColumn<Ad, String>("Gender");
+		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
+		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
+		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
+		TableColumn<Ad, String> genderCol = new TableColumn<>("Gender");
 
 
 
 		ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
-		//	for(Ad ad: theSearch){
+		
 		pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
+		speciesCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
 		genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
+		
 		table.setItems(adList);
 
-		//}
+		
 
 
-		table.getColumns().addAll(pictureCol, typeCol, genderCol);
+		table.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol);
 
 		Button testAd = new Button("The test ad");
 		testAd.setOnAction(e -> ViewAd.display("Test ad", 1));

@@ -41,6 +41,10 @@ public class Ad {
 		return gender.get();
 	}
 	
+	public String getSpecies(){
+		return species.get();
+	}
+	
 	public String toString() {
 		return picture + " " + name + " " + gender + " " + species + " " + 
 				type + " " + age + " " + description + " " + startDate + " " + endDate;
