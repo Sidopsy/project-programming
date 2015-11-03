@@ -93,17 +93,11 @@ public class ViewMaster extends Application{
 	 */
 	
 	private VBox header(){
-<<<<<<< HEAD
+
 		VBox head = new VBox();				// The Vbox to be returned.
-		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));	// Specifying header image.
+		Image image = new Image(getClass().getResourceAsStream("BeeAdopted.png"));	// Specifying header image.
 		ImageView header = new ImageView();	
 		header.setImage(image);				// Adding image to ImageView to be able to be viewed.
-=======
-		VBox head = new VBox();
-		Image image = new Image(getClass().getResourceAsStream("BeeAdopted.png"));
-		ImageView header = new ImageView();
-		header.setImage(image);
->>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
 
 		// Buttons for navigation inside the header element.
 		Button backButton = new Button("Back");
