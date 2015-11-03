@@ -153,8 +153,11 @@ public class ViewMaster extends Application{
 		TableColumn<Agency, String> ratingCol = new TableColumn<>("Rating");
 
 		agencyCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("name"));
+		agencyCol.setMinWidth(300);
 		logoCol.setCellValueFactory(new PropertyValueFactory<Agency, String>("logo"));
+		logoCol.setMinWidth(250);
 		ratingCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("rating"));
+		ratingCol.setMinWidth(250);
 
 		table.setRowFactory( tv -> {
 			TableRow<Agency> row = new TableRow<>();
