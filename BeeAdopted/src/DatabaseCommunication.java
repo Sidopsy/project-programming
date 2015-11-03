@@ -24,8 +24,15 @@ public class DatabaseCommunication {
 
 	public static void main(String args[]) {
 		
-		String sqlStatement = "SELECT * FROM Ads;";
-//		
+		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM Agencies, Addresses, Ratings WHERE "
+				+ "Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and City = 'Götlaborg';";
+
+		ArrayList<Agency> result = fetchAgency(sqlStatement);
+		
+		for (Agency s : result) {
+			System.out.println(s); 
+		}
+		
 //		ArrayList<Ad> result1 = fetchAd(sqlStatement);
 //		
 //		for (Ad s : result1) {
@@ -66,11 +73,11 @@ public class DatabaseCommunication {
 		 * Do NOT run it until fixed, that is when this comment is removed.
 		 * 
 		 */
-		
-		sqlStatement = "INSERT INTO Ads (AgencyID,Name,Gender,Species,Type,Age,Description) VALUES "
-				+ "(6,'Lucifer','Male','Devil','Red',666,'Omg so evil');";
-		
-		insertUpdateDelete(sqlStatement);
+//		
+//		sqlStatement = "INSERT INTO Ads (AgencyID,Name,Gender,Species,Type,Age,Description) VALUES "
+//				+ "(6,'Lucifer','Male','Devil','Red',666,'Omg so evil');";
+//		
+//		insertUpdateDelete(sqlStatement);
 	}
 			
 	/**
@@ -104,7 +111,7 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
-	        	int id = rs.getInt("Agencies.ID");
+	        	int id = rs.getInt("ID");
 	        	String picture = rs.getString("Picture");
 	        	String name = rs.getString("Name");
 	        	String gender = rs.getString("Gender");
@@ -162,7 +169,7 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
-	        	int id = rs.getInt("Agencies.ID");
+	        	int id = rs.getInt("ID");
 	        	String name = rs.getString("Name");
 	        	String rating = rs.getString("AVG(Rating)");
 	        	String logo = rs.getString("Logo");
@@ -214,7 +221,7 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
-	        	int id = rs.getInt("Agencies.ID");
+	        	int id = rs.getInt("ID");
 	        	String name = rs.getString("Name");
 	        	String logo = rs.getString("Logo");
 	        	String rating = rs.getString("AVG(Rating)");
