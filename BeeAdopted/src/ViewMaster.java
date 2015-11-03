@@ -36,8 +36,11 @@ public class ViewMaster extends Application{
 	private static Stage window;
 	private static Scene sc1, sc2, sc3, sc4;
 	private static BorderPane layout1, layout2, layout3, layout4;
-	private static ArrayList<Ad> theSearch;
-	private static Agency chosenAgency;
+	private static ArrayList<Ad> theSearch = null;
+	private static Agency chosenAgency = null;
+	private static String description;
+	private static boolean firstSearch;
+	private static TableView<Ad> table = new TableView<Ad>();
 
 	//Launch the application
 	public static void main(String[] args){
@@ -60,13 +63,6 @@ public class ViewMaster extends Application{
 		layout1.setTop(header());
 		layout1.setCenter(vbox);
 		sc1 = new Scene(layout1,800,600);
-
-		//Main view
-		layout3 = new BorderPane();
-		search(0,null,null,null,null,null);
-		layout3.setTop(header());
-		layout3.setCenter(mainCenterView());
-		sc3 = new Scene(layout3,800,600);
 
 		window.setScene(sc1);
 		window.show();
@@ -140,13 +136,12 @@ public class ViewMaster extends Application{
 	//TODO - present agencies on location (see below)
 
 	private TableView<Agency> startAgencies() {
-		String thisLocation = city;
-		String sqlStatement = "SELECT Name,Logo,AVG(Rating) FROM Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Addresses.City == '" + thisLocation + "';";
+		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Addresses.City == '" + city + "';";
 
-		TableView<Agency> table = new TableView<>();
+		TableView<Agency> agencyTable = new TableView<>();
 		ObservableList<Agency> agencyList = FXCollections.observableArrayList(DatabaseCommunication.fetchAgency(sqlStatement));
 
-		table.setEditable(true);
+		agencyTable.setEditable(true);
 		TableColumn<Agency, String> logoCol = new TableColumn<>("Logo");
 		TableColumn<Agency, String> agencyCol = new TableColumn<>("Agency");
 		TableColumn<Agency, String> ratingCol = new TableColumn<>("Rating");
@@ -158,21 +153,27 @@ public class ViewMaster extends Application{
 		ratingCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("rating"));
 		ratingCol.setMinWidth(250);
 
-		table.setRowFactory( tv -> {
+		agencyTable.setRowFactory( tv -> {
 			TableRow<Agency> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
 					chosenAgency = row.getItem();
+					firstSearch = true;
+					search();
+					layout3 = new BorderPane();
+					layout3.setTop(header());
+					layout3.setCenter(mainCenterView());
+					sc3 = new Scene(layout3,800,600);
 					window.setScene(sc3);
 				}
 			});
 			return row ;
 		});
 
-		table.setItems(agencyList);
-		table.getColumns().addAll(logoCol, agencyCol, ratingCol);
+		agencyTable.setItems(agencyList);
+		agencyTable.getColumns().addAll(logoCol, agencyCol, ratingCol);
 
-		return table;
+		return agencyTable;
 	}
 
 	//TODO - Get ChoiceBox.setValue to work
@@ -207,10 +208,11 @@ public class ViewMaster extends Application{
 
 		btn1 = new Button("Search");
 		btn1.setOnAction(e -> {
-			search(chosenAgency.getID(), (String)cb1.getValue(), (String)cb2.getValue(), (String)cb3.getValue(), (String)cb4.getValue(), tf1.getText());
+			search();
 			layout4 = new BorderPane();
 			layout4.setTop(header());
 			layout4.setCenter(mainCenterView());
+			table.refresh();
 			sc4 = new Scene(layout4,800,600);
 			window.setScene(sc4);
 			//			table.refresh();
@@ -226,36 +228,38 @@ public class ViewMaster extends Application{
 
 	//TODO - present search results (see below)
 	public TableView<Ad> searchResults(){
-		TableView<Ad> table = new TableView<Ad>();
+		
 
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
 		TableColumn<Ad, String> genderCol = new TableColumn<>("Gender");
-
-		ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
-
-		pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
 		pictureCol.setMinWidth(190);
-		speciesCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("species"));
 		speciesCol.setMinWidth(190);
-		typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
 		typeCol.setMinWidth(190);
-		genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
 		genderCol.setMinWidth(190);
+		
+	//	if(theSearch != null){
+			ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
 
-		table.setRowFactory( tv -> {
-			TableRow<Ad> row = new TableRow<>();
-			row.setOnMouseClicked(event -> {
-				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
-					Ad ad = row.getItem();
-					ViewAd.display(ad.getName(), ad);;
-				}
+			pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
+			speciesCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("species"));
+			typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
+			genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
+
+			table.setRowFactory( tv -> {
+				TableRow<Ad> row = new TableRow<>();
+				row.setOnMouseClicked(event -> {
+					if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
+						Ad ad = row.getItem();
+						ViewAd.display(ad.getName(), ad);;
+					}
+				});
+				return row ;
 			});
-			return row ;
-		});
 
-		table.setItems(adList);
+			table.setItems(adList);
+	//	}
 		table.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol);
 
 		return table;
@@ -297,43 +301,35 @@ public class ViewMaster extends Application{
 	/**
 	 * Search the database for the chosen values
 	 */
-	public static void search(int agencyID, String species, String type, String age, String gender, String description){
+	public static void search(){
 		String searchStatement, s, t, a, g, d;
 		if(species != null){
-			s = species;
+			s = " and Species == '" + species + "'";
 		} else {
 			s = "";
 		}
 		if(type != null){
-			t = type;
+			t = "and Type == '" + type + "'";
 		} else {
 			t = "";
 		}
 		if(age != null){
-			a = age;
+			a = " and Age == " + age;
 		} else {
 			a = "";
 		}
 		if(gender != null){
-			g = gender;
+			g = " and Gender == '" + gender + "'";;
 		} else {
 			g = "";
 		}
-		if(description != null){
-			d = description;
-		} else {
-			d = "";
-		}
-		if((s + t + a + g + d) == ""){	
-			searchStatement = "SELECT * FROM Ads, Agencies WHERE Agencies.ID == " + agencyID + ";";
+		if(firstSearch == true){	
+			searchStatement = "SELECT * FROM Ads, Agencies WHERE Agencies.ID == " + chosenAgency.getID() +";";
+			firstSearch = false;
 		} else {
 			searchStatement = "SELECT * FROM Ads, Agencies WHERE "
-					+ "Agencies.ID == " + agencyID + " and "
-					+ "Species == '%" + s + "%' and "
-					+ "Type == '%" + t + "%' and "
-					+ "Age == '%" + a + "%' and " 
-					+ "Gender == '%" + g + "%' and "
-					+ "Description == '%" + d + "%';";
+					+ "Agencies.ID == " + chosenAgency.getID() + s + t + a + g + ";";
+
 		}
 
 		theSearch = DatabaseCommunication.fetchAd(searchStatement);
