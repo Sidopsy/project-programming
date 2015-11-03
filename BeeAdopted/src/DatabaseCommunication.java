@@ -83,28 +83,21 @@ public class DatabaseCommunication {
 	
 	public static ArrayList<Ad> fetchAd(String sqlStatement) {
 		ArrayList<Ad> result = new ArrayList<>();
-		Connection c = null;
+		Connection conn = null;
 		Statement stmt = null;
 	    
-	    try {
-	    	// Loading the driver!
-	    	System.out.println("Loading JDBC driver...");
-	    	Class.forName("org.sqlite.JDBC");
-	    	System.out.println("Driver loaded successfully!");
-	    	
-	    	// Connecting to database!
-	    	System.out.println("Attempting to connect to database...");
-	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
-	    	c.setAutoCommit(false);
-	        System.out.println("Opened database successfully!");
-	        System.out.println();
-	        
-	        // Executing incoming query.	        
-	        stmt = c.createStatement();
-	        ResultSet rs = stmt.executeQuery(sqlStatement);
+		System.out.println("Attempting to retrieve ads...");
+		
+		try {
+	    	Class.forName("org.sqlite.JDBC");	    					// Loading the driver!
 
-	        // This while-loop adds the results to the arrayList.	        
-	        while (rs.next()) {
+	    	conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");	// Connecting to database!
+	    	conn.setAutoCommit(false);									// AutoCommit should never be used.	        
+
+	    	stmt = conn.createStatement();								// Executing incoming query.
+	    	ResultSet rs = stmt.executeQuery(sqlStatement);				// Adding results of the query to the ResultSet object.
+
+	        while (rs.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
 	        	int id = rs.getInt("ID");
 	        	String picture = rs.getString("Picture");
 	        	String name = rs.getString("Name");
@@ -116,19 +109,19 @@ public class DatabaseCommunication {
 	        	String startDate = rs.getString("StartDate");
 	        	String endDate = rs.getString("EndDate");
 	        	Ad ad = new Ad(id, picture, name, gender, species, type, age, description, startDate, endDate);
-	        	result.add(ad);
+	        	result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
-	        
-	        // Closing result sets and statements.	        
-	        rs.close();
+	        rs.close();			// It is good practice to always close all connections when the information has been retrieved.
 	        stmt.close();
-	        c.close();
+	        conn.close();
 	        
-	        // Catching any and all exceptions, printing an error message.	        
 	    } catch (Exception e) { 
 	    	System.err.println(e.getClass().getName() + ": " + e.getMessage());
 	    	System.exit(0);
 	    }
+		
+		System.out.println("Retrieved ads!");
+		
 	    return result;
 	}
 	
