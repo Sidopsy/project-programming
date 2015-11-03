@@ -67,12 +67,6 @@ public class DatabaseCommunication {
 //		for (Rating v : result4) {
 //			System.out.println(v);
 //		}
-		
-		/*
-		 * TODO, figure out how to get the insert to work without returning an error, it stops the program in its progress...
-		 * Do NOT run it until fixed, that is when this comment is removed.
-		 * 
-		 */
 //		
 //		sqlStatement = "INSERT INTO Ads (AgencyID,Name,Gender,Species,Type,Age,Description) VALUES "
 //				+ "(6,'Lucifer','Male','Devil','Red',666,'Omg so evil');";
