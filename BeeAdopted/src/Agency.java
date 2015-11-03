@@ -1,3 +1,4 @@
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
@@ -9,13 +10,19 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Agency {
 	private final SimpleStringProperty logo, name, rating;
+	private final SimpleIntegerProperty id;
 	
-	public Agency(String logo, String name, String rating) {
+	public Agency(int id, String logo, String name, String rating) {
+		this.id = new SimpleIntegerProperty(id);
 		this.logo = new SimpleStringProperty(logo);
 		this.name = new SimpleStringProperty(name);
 		this.rating = new SimpleStringProperty(rating);
 	}
 
+	public int getID(){
+		return id.get();
+	}
+	
 	public String getLogo(){
 		return logo.get();
 	}
