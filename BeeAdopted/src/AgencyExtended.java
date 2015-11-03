@@ -12,14 +12,18 @@ import javafx.beans.property.SimpleStringProperty;
 public class AgencyExtended extends Agency {
 	private final SimpleStringProperty email, phone, street, zip, city;
 	
-	public AgencyExtended(String logo, String name, String rating, String email, 
+	public AgencyExtended(int id, String logo, String name, String rating, String email, 
 							String phone, String street, String zip, String city) {
-		super(logo, name, rating);
+		super(id, logo, name, rating);
 		this.email = new SimpleStringProperty(email);
 		this.phone = new SimpleStringProperty(phone);
 		this.street = new SimpleStringProperty(street);
 		this.zip = new SimpleStringProperty(zip);
 		this.city = new SimpleStringProperty(city);
+	}
+	
+	public int getID(){
+		return super.getID();
 	}
 	
 	public String getLogo(){
