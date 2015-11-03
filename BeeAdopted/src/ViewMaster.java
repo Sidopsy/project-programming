@@ -93,10 +93,17 @@ public class ViewMaster extends Application{
 	 */
 	
 	private VBox header(){
+<<<<<<< HEAD
 		VBox head = new VBox();				// The Vbox to be returned.
 		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));	// Specifying header image.
 		ImageView header = new ImageView();	
 		header.setImage(image);				// Adding image to ImageView to be able to be viewed.
+=======
+		VBox head = new VBox();
+		Image image = new Image(getClass().getResourceAsStream("BeeAdopted.png"));
+		ImageView header = new ImageView();
+		header.setImage(image);
+>>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
 
 		// Buttons for navigation inside the header element.
 		Button backButton = new Button("Back");
@@ -231,6 +238,8 @@ public class ViewMaster extends Application{
 		cb1.setOnAction(e -> {
 			species = (String) cb1.getValue();
 			typeses = DatabaseCommunication.fetchAttribute("Ads", "Type", "Species", (String) cb1.getValue());
+			cb2.setItems(typeses);
+			cb2.setValue("Type");
 		});
 
 		cb2 = new ChoiceBox<>(typeses);
@@ -238,6 +247,8 @@ public class ViewMaster extends Application{
 		cb2.setOnAction(e -> {
 			type = (String) cb2.getValue();
 			ageses = DatabaseCommunication.fetchAttribute("Ads", "Age", "Type", (String) cb2.getValue());
+			cb3.setItems(ageses);
+			cb3.setValue("Age");
 		});
 
 		cb3 = new ChoiceBox<>(ageses);
@@ -245,6 +256,8 @@ public class ViewMaster extends Application{
 		cb3.setOnAction(e -> {
 			age = (String) cb3.getValue();
 			genderers = DatabaseCommunication.fetchAttribute("Ads", "Gender", "Age", (String) cb3.getValue());
+			cb4.setItems(genderers);
+			cb4.setValue("Gender");
 		});
 
 		cb4 = new ChoiceBox<>(genderers);
@@ -352,22 +365,22 @@ public class ViewMaster extends Application{
 	
 	public static void search(){
 		String searchStatement, s, t, a, g, d;
-		if(species != null){
+		if(species != null && species != "Species"){
 			s = " and Species == '" + species + "'";
 		} else {
 			s = "";
 		}
-		if(type != null){
+		if(type != null && type != "Type"){
 			t = "and Type == '" + type + "'";
 		} else {
 			t = "";
 		}
-		if(age != null){
+		if(age != null && age != "Age"){
 			a = " and Age == " + age;
 		} else {
 			a = "";
 		}
-		if(gender != null){
+		if(gender != null && gender != "Gender"){
 			g = " and Gender == '" + gender + "'";;
 		} else {
 			g = "";
