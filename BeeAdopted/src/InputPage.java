@@ -132,8 +132,8 @@ public class InputPage {
 		String insert = "INSERT INTO Ads (Name,Gender,Species,Type,Age,Description,AgencyID)";
 		String values = 
 				" VALUES ('" + tf.getText()  + "', '"+ cb2.getValue() + "', '" 
-				+ cb3.getValue() + "', '" + cb4.getValue() + "', "
-				+ cb5.getValue() + ", '" + ta.getText() + "', " + agencyID.get(0) + ");";
+				+ cb3.getValue() + "', '" + cb5.getValue() + "', "
+				+ age.getText() + ", '" + ta.getText() + "', " + agencyID.get(0) + ");";
 		
 		DatabaseCommunication.insertUpdateDelete(insert + values);
 		System.out.println(values);
