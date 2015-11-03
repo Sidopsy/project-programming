@@ -81,7 +81,7 @@ public class DatabaseCommunication {
 	 */
 	
 	public static ArrayList<Ad> fetchAd(String sqlStatement) {
-		ArrayList<Ad> result = new ArrayList<Ad>();
+		ArrayList<Ad> result = new ArrayList<>();
 		Connection c = null;
 		Statement stmt = null;
 	    
@@ -138,7 +138,7 @@ public class DatabaseCommunication {
 	 */
 	
 	public static ArrayList<Agency> fetchAgency(String sqlStatement) {
-		ArrayList<Agency> result = new ArrayList<Agency>();
+		ArrayList<Agency> result = new ArrayList<>();
 		Connection c = null;
 		Statement stmt = null;
 	    
@@ -161,10 +161,11 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
+	        	int id = rs.getInt("ID");
 	        	String name = rs.getString("Name");
 	        	String rating = rs.getString("AVG(Rating)");
 	        	String logo = rs.getString("Logo");
-	        	Agency agency = new Agency(name, rating, logo);
+	        	Agency agency = new Agency(id, name, rating, logo);
 	        	result.add(agency);
 	        }
 	        
@@ -189,7 +190,7 @@ public class DatabaseCommunication {
 	 */
 	
 	public static ArrayList<AgencyExtended> fetchAgencyExtended(String sqlStatement) {
-		ArrayList<AgencyExtended> result = new ArrayList<AgencyExtended>();
+		ArrayList<AgencyExtended> result = new ArrayList<>();
 		Connection c = null;
 		Statement stmt = null;
 	    
@@ -212,6 +213,7 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
+	        	int id = rs.getInt("ID");
 	        	String name = rs.getString("Name");
 	        	String logo = rs.getString("Logo");
 	        	String rating = rs.getString("AVG(Rating)");
@@ -220,7 +222,7 @@ public class DatabaseCommunication {
 	        	String street = rs.getString("Street");
 	        	String zip = rs.getString("Zip");
 	        	String city = rs.getString("City");
-	        	AgencyExtended agency = new AgencyExtended(name, logo, rating, email, phone, street, zip, city);
+	        	AgencyExtended agency = new AgencyExtended(id, name, logo, rating, email, phone, street, zip, city);
 	        	result.add(agency);
 	        }
 	        
@@ -245,7 +247,7 @@ public class DatabaseCommunication {
 	 */
 	
 	public static ArrayList<Rating> fetchRating(String sqlStatement) {
-		ArrayList<Rating> result = new ArrayList<Rating>();
+		ArrayList<Rating> result = new ArrayList<>();
 		Connection c = null;
 		Statement stmt = null;
 	    
@@ -381,7 +383,8 @@ public class DatabaseCommunication {
 	    }
 	}
 	
-	private static String sqlStatement(String sqlMethod, String dbTableName, String agency, String species, String type, String age, String gender, String description){
+	private static String sqlStatement(String sqlMethod, String dbTableName, String agency, String species, 
+									   String type, String age, String gender, String description){
 		String sqlStatement = "";
 		if(sqlMethod == null){
 			sqlStatement = "SELECT * FROM " + dbTableName + " WHERE ";
