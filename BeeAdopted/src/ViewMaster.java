@@ -37,6 +37,7 @@ public class ViewMaster extends Application{
 	private static Scene sc1, sc2, sc3, sc4;
 	private static BorderPane layout1, layout2, layout3, layout4;
 	private static ArrayList<Ad> theSearch;
+	private static Agency chosenAgency;
 
 	//Launch the application
 	public static void main(String[] args){
@@ -62,7 +63,7 @@ public class ViewMaster extends Application{
 
 		//Main view
 		layout3 = new BorderPane();
-		search();
+		search(0,null,null,null,null,null);
 		layout3.setTop(header());
 		layout3.setCenter(mainCenterView());
 		sc3 = new Scene(layout3,800,600);
@@ -82,13 +83,13 @@ public class ViewMaster extends Application{
 		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
 		ImageView header = new ImageView();
 		header.setImage(image);
-		
+
 		Button backButton = new Button("Back");
 		backButton.setOnAction(e -> goBack());
-		
+
 		Button startButton = new Button("Start");
 		startButton.setOnAction(e -> backToStart());
-		
+
 		HBox buttons = new HBox();
 		buttons.getChildren().addAll(backButton, startButton);
 
@@ -122,8 +123,6 @@ public class ViewMaster extends Application{
 		//TODO - save location and goto sc2
 		location.setOnAction(e ->  {
 			city = (String) location.getValue();
-			System.out.println(city);
-			//Start view - Agencies
 			layout2 = new BorderPane();
 			layout2.setTop(header());
 			layout2.setCenter(startAgencies());
@@ -163,6 +162,7 @@ public class ViewMaster extends Application{
 			TableRow<Agency> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
+					chosenAgency = row.getItem();
 					window.setScene(sc3);
 				}
 			});
@@ -207,8 +207,7 @@ public class ViewMaster extends Application{
 
 		btn1 = new Button("Search");
 		btn1.setOnAction(e -> {
-			//isSearch = true;
-			search();
+			search(chosenAgency.getID(), (String)cb1.getValue(), (String)cb2.getValue(), (String)cb3.getValue(), (String)cb4.getValue(), tf1.getText());
 			layout4 = new BorderPane();
 			layout4.setTop(header());
 			layout4.setCenter(mainCenterView());
@@ -258,7 +257,7 @@ public class ViewMaster extends Application{
 
 		table.setItems(adList);
 		table.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol);
-		
+
 		return table;
 	}
 
@@ -298,21 +297,45 @@ public class ViewMaster extends Application{
 	/**
 	 * Search the database for the chosen values
 	 */
-	public static void search(){
-		String startStatement;
-		String searchStatement;
-		//		if(theSearch == null){
-		//			theSearch = DatabaseCommunication.fetchAd(startStatement); 
-		//		} else {
-		if(tf1 == null){	
-			searchStatement = "SELECT * FROM Ads;";
+	public static void search(int agencyID, String species, String type, String age, String gender, String description){
+		String searchStatement, s, t, a, g, d;
+		if(species != null){
+			s = species;
 		} else {
-			searchStatement = "SELECT * FROM Ads WHERE "
-					+ "Species == '" + species + "' and "
-					+ "Type == '" + type + "' and "
-					+ "Age == " + age + " and " 
-					+ "Gender == '" + gender + "';";
+			s = "";
 		}
+		if(type != null){
+			t = type;
+		} else {
+			t = "";
+		}
+		if(age != null){
+			a = age;
+		} else {
+			a = "";
+		}
+		if(gender != null){
+			g = gender;
+		} else {
+			g = "";
+		}
+		if(description != null){
+			d = description;
+		} else {
+			d = "";
+		}
+		if((s + t + a + g + d) == ""){	
+			searchStatement = "SELECT * FROM Ads, Agencies WHERE Agencies.ID == " + agencyID + ";";
+		} else {
+			searchStatement = "SELECT * FROM Ads, Agencies WHERE "
+					+ "Agencies.ID == " + agencyID + " and "
+					+ "Species == '%" + s + "%' and "
+					+ "Type == '%" + t + "%' and "
+					+ "Age == '%" + a + "%' and " 
+					+ "Gender == '%" + g + "%' and "
+					+ "Description == '%" + d + "%';";
+		}
+
 		theSearch = DatabaseCommunication.fetchAd(searchStatement);
 		System.out.println(searchStatement);
 		System.out.println(theSearch.toString());
