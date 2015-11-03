@@ -10,10 +10,11 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Ad {
 	private final SimpleStringProperty picture, name, gender, species, type, description, startDate, endDate;
-	private final SimpleIntegerProperty age;
+	private final SimpleIntegerProperty id, age;
 
-	public Ad(String picture, String name, String gender, String species, String type, 
+	public Ad(int id, String picture, String name, String gender, String species, String type, 
 				int age, String description, String start, String end) {
+		this.id = new SimpleIntegerProperty(id);
 		this.picture = new SimpleStringProperty(picture);
 		this.name = new SimpleStringProperty(name);
 		this.gender = new SimpleStringProperty(gender);
@@ -23,6 +24,10 @@ public class Ad {
 		this.description = new SimpleStringProperty(description);
 		this.startDate = new SimpleStringProperty(start);
 		this.endDate = new SimpleStringProperty(end);
+	}
+	
+	public int getID(){
+		return id.get();
 	}
 	
 	public String getPicture(){

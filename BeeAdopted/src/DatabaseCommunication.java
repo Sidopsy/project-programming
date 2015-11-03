@@ -104,16 +104,17 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
-	           String picture = rs.getString("Picture");
-	           String name = rs.getString("Name");
-	           String gender = rs.getString("Gender");
-	           String species = rs.getString("Species");
-	           String type = rs.getString("Type");
-	           int age = rs.getInt("Age");
-	           String description = rs.getString("Description");
-	           String startDate = rs.getString("StartDate");
-	           String endDate = rs.getString("EndDate");
-	           Ad ad = new Ad(picture, name, gender, species, type, age, description, startDate, endDate);
+	        	int id = rs.getInt("ID");
+	        	String picture = rs.getString("Picture");
+	        	String name = rs.getString("Name");
+	        	String gender = rs.getString("Gender");
+	        	String species = rs.getString("Species");
+	        	String type = rs.getString("Type");
+	        	int age = rs.getInt("Age");
+	        	String description = rs.getString("Description");
+	        	String startDate = rs.getString("StartDate");
+	        	String endDate = rs.getString("EndDate");
+	           Ad ad = new Ad(id, picture, name, gender, species, type, age, description, startDate, endDate);
 	           result.add(ad);
 	        }
 	        
