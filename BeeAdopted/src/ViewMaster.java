@@ -28,133 +28,163 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+/**
+ * Class for starting the application.
+ * 
+ * TODO: List all methods.
+ * 
+ * @author ML
+ */
+
 public class ViewMaster extends Application{
 
-	private static ChoiceBox<Object> location, cb1,cb2,cb3,cb4;
-	private static String city, species, type, age, gender;
-	private static TextField tf1;
-	private static  Button btn1;
 	private static Stage window;
 	private static Scene sc1, sc2, sc3, sc4;
 	private static BorderPane layout1, layout2, layout3, layout4;
-	private static ArrayList<Ad> theSearch = null;
-	private static Agency chosenAgency = null;
-	private static String description;
-	private static boolean firstSearch;
 	private static TableView<Ad> table = new TableView<Ad>();
+	private static ArrayList<Ad> theSearch = null;
 	private static ObservableList<Object> specieses, typeses, ageses, genderers;
+	private static ChoiceBox<Object> location, cb1, cb2, cb3, cb4;
+	private static TextField tf1;
+	private static Agency chosenAgency = null;
+	private static Button btn1;
+	private static String city, species, type, age, gender, description;
+	private static boolean firstSearch;
 
-	//Launch the application
+	/**
+	 * The main method, only used to start the application with the launch command from javaFX.
+	 * 
+	 * @param args
+	 */
+	
 	public static void main(String[] args){
 		launch(args);
 	}    
 
 	/**
-	 * Start method that is launched 
-	 * with Application.launch(args) 
-	 * in main. Building the window.
+	 * Start method that is launched with Application.launch(args). This builds the main windows shown on launch which is
+	 * the prompt for a location. This view also contains a button for going to the input page, the code for this is in
+	 * startLocation().
+	 * 
 	 * @param primaryStage
 	 */
+	
 	public void start(Stage primaryStage){
+		VBox vbox = startLocation();		// Getting the locations to show in a dropdown menu.
+
 		window = primaryStage;
 		window.setTitle("Marketplace");	
 
-		//Start view - Location
-		layout1 = new BorderPane();
-		VBox vbox = startLocation();
-		layout1.setTop(header());
-		layout1.setCenter(vbox);
+		// Creating the window.
+		layout1 = new BorderPane();			// BorderPane layout is used.
+		layout1.setTop(header());			// Top element of the BorderPane is retrieved, which is the iAdopt image.
+		layout1.setCenter(vbox);			// Center element of BorderPane contains the dropdown vbox.
 		sc1 = new Scene(layout1,800,600);
-
+		
+		// Setting the currently open window to show the scene created above.
 		window.setScene(sc1);
 		window.show();
 	}
 
-
 	/**
-	 * The header complete with a 
-	 * image in the form of a VBox
-	 * @return head as a VBox
+	 * This method returs a header for use as a top element of a BorderPane. The header consists of the iAdopt image.
+	 * 
+	 * @return Vbox header image and navigation buttons
 	 */
+	
 	private VBox header(){
-		VBox head = new VBox();
-		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
-		ImageView header = new ImageView();
-		header.setImage(image);
+		VBox head = new VBox();				// The Vbox to be returned.
+		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));	// Specifying header image.
+		ImageView header = new ImageView();	
+		header.setImage(image);				// Adding image to ImageView to be able to be viewed.
 
+		// Buttons for navigation inside the header element.
 		Button backButton = new Button("Back");
-		backButton.setOnAction(e -> goBack());
-
 		Button startButton = new Button("Start");
+		backButton.setOnAction(e -> goBack());
 		startButton.setOnAction(e -> backToStart());
-
+		
+		// Adding the buttons to a Hbox to be displayed horizontally.
 		HBox buttons = new HBox();
 		buttons.getChildren().addAll(backButton, startButton);
 
+		// All items created are added to Vbox.
 		head.getChildren().addAll(buttons,header);
 
 		return head;
 	}
 
-
-
-
 	/**
-	 * A VBox element where a location 
-	 * can be choosed from a ChoiceBox 
-	 * item. The choosen value gets saved 
-	 * when pressed.
+	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
+	 * going to the input page.
 	 * 
-	 * Also holds an option to go to the 
-	 * input page.
-	 * 
-	 * @return vbox
+	 * @return Vbox location dropdown menu and input page button
 	 */
+	
 	private VBox startLocation(){
-		VBox vbox = new VBox();
+		VBox vbox = new VBox();							// The Vbox to be returned.
 		vbox.setPadding(new Insets(175));
 		vbox.setSpacing(40);
 
+		// This creates the dropdown menu and a label to specify what type of information the user should input.
 		Label label = new Label("Where are you?");
 		location = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Addresses", "City", null, null));
 		location.setValue(location.getItems().get(0));
+		
 		//TODO - save location and goto sc2
-		location.setOnAction(e ->  {
-			city = (String) location.getValue();
-			layout2 = new BorderPane();
-			layout2.setTop(header());
-			layout2.setCenter(startAgencies());
+		
+		// The dropdown has a guiding function that sends the user to a list of agencies in the specified location.
+		location.setOnAction(e -> {
+			city = (String) location.getValue();		// What location was input?
+			layout2 = new BorderPane();					// Preparing for a new scene.
+			layout2.setTop(header());					// Setting the header as before.
+			layout2.setCenter(startAgencies());			// Getting the center view for the next scene.
 			sc2 = new Scene(layout2,800,600);
 			window.setScene(sc2);
 		});
-
+		
+		// Input page button, guess what it does.
 		Button inputPage = new Button("Go to input page");
 		inputPage.setOnAction(e -> InputPage.display());
-
+		
+		// Vbox is created using the items above.
 		vbox.getChildren().addAll(label, location, inputPage);
+		
 		return vbox;
 	}
 
+	/**
+	 * This method retrieves agencies based on the global variable city that is altered through the method startLocation().
+	 * 
+	 * @return TableView<Agency> that shows agencies
+	 */
+	
 	//TODO - present agencies on location (see below)
 
-	private TableView<Agency> startAgencies() {
-		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Addresses.City == '" + city + "';";
-
+	private TableView<Agency> startAgencies(){
+		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM "
+								+ "Agencies,Addresses,Ratings WHERE "
+								+ "Agencies.ID = Addresses.AgencyID and "
+								+ "Agencies.ID = Ratings.AgencyID and "
+								+ "Addresses.City == '" + city + "';";
+		
+		// For viewing the agencies
 		TableView<Agency> agencyTable = new TableView<>();
-		ObservableList<Agency> agencyList = FXCollections.observableArrayList(DatabaseCommunication.fetchAgency(sqlStatement));
-
 		agencyTable.setEditable(true);
+		
 		TableColumn<Agency, String> logoCol = new TableColumn<>("Logo");
 		TableColumn<Agency, String> agencyCol = new TableColumn<>("Agency");
 		TableColumn<Agency, String> ratingCol = new TableColumn<>("Rating");
+		ObservableList<Agency> agencyList = FXCollections.observableArrayList
+											(DatabaseCommunication.fetchAgency(sqlStatement));
 
 		agencyCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("name"));
 		agencyCol.setMinWidth(300);
-		logoCol.setCellValueFactory(new PropertyValueFactory<Agency, String>("logo"));
+		logoCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("logo"));
 		logoCol.setMinWidth(250);
 		ratingCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("rating"));
 		ratingCol.setMinWidth(250);
-
+		
 		agencyTable.setRowFactory( tv -> {
 			TableRow<Agency> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
@@ -171,12 +201,13 @@ public class ViewMaster extends Application{
 			});
 			return row ;
 		});
-
+		
 		agencyTable.setItems(agencyList);
 		agencyTable.getColumns().addAll(logoCol, agencyCol, ratingCol);
-
+		
 		return agencyTable;
 	}
+
 
 	//TODO - Get ChoiceBox.setValue to work
 
@@ -184,12 +215,11 @@ public class ViewMaster extends Application{
 	 * Search filter module
 	 * @return hbox with filter
 	 */
+	
 	public HBox filter(){
 		HBox hbox = new HBox();
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
-
-		
 		
 		specieses = DatabaseCommunication.fetchAttribute("Ads", "Species", null, null);
 		typeses = DatabaseCommunication.fetchAttribute("Ads", "Type", null, null);
@@ -296,7 +326,7 @@ public class ViewMaster extends Application{
 	/**
 	 * Go to previous scene.
 	 */
-	private void goBack() {
+	private void goBack(){
 		if(window.getScene() == sc2){
 			window.setScene(sc1);
 		} else if (window.getScene() == sc3){
@@ -319,6 +349,7 @@ public class ViewMaster extends Application{
 	/**
 	 * Search the database for the chosen values
 	 */
+	
 	public static void search(){
 		String searchStatement, s, t, a, g, d;
 		if(species != null){
@@ -353,6 +384,5 @@ public class ViewMaster extends Application{
 		theSearch = DatabaseCommunication.fetchAd(searchStatement);
 		System.out.println(searchStatement);
 		System.out.println(theSearch.toString());
-		//		}
 	}
 }
