@@ -25,41 +25,41 @@ public class DatabaseCommunication {
 	public static void main(String args[]) {
 		
 		String sqlStatement = "SELECT * FROM Ads;";
-		
-		ArrayList<Ad> result1 = fetchAd(sqlStatement);
-		
-		for (Ad s : result1) {
-			System.out.println(s);
-		}
-		
-		sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Ratings WHERE "
-				+ "Agencies.ID = Ratings.AgencyID GROUP BY Agencies.ID;";		
-		ArrayList<Agency> result2 = fetchAgency(sqlStatement);
-	
-		// Prints all results from the fetch.		
-		for (Agency t : result2) {
-			System.out.println(t);
-		}
-
-		
-		sqlStatement = "SELECT Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE "
-				+ "Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID GROUP BY Name;";
-		ArrayList<AgencyExtended> result3 = fetchAgencyExtended(sqlStatement);
-		
-		// Prints all results from the fetch.
-		for (AgencyExtended u : result3) {
-			System.out.println(u);
-		}
-		
-		
-		sqlStatement = "SELECT Name,Rating,Comment FROM Ratings, Agencies WHERE Agencies.ID = Ratings.AgencyID;";
-				
-		ArrayList<Rating> result4 = fetchRating(sqlStatement);
-		
-		// well waddya know, it prints the results.
-		for (Rating v : result4) {
-			System.out.println(v);
-		}
+//		
+//		ArrayList<Ad> result1 = fetchAd(sqlStatement);
+//		
+//		for (Ad s : result1) {
+//			System.out.println(s);
+//		}
+//		
+//		sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Ratings WHERE "
+//				+ "Agencies.ID = Ratings.AgencyID GROUP BY Agencies.ID;";		
+//		ArrayList<Agency> result2 = fetchAgency(sqlStatement);
+//	
+//		// Prints all results from the fetch.		
+//		for (Agency t : result2) {
+//			System.out.println(t);
+//		}
+//
+//		
+//		sqlStatement = "SELECT Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE "
+//				+ "Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID GROUP BY Name;";
+//		ArrayList<AgencyExtended> result3 = fetchAgencyExtended(sqlStatement);
+//		
+//		// Prints all results from the fetch.
+//		for (AgencyExtended u : result3) {
+//			System.out.println(u);
+//		}
+//		
+//		
+//		sqlStatement = "SELECT Name,Rating,Comment FROM Ratings, Agencies WHERE Agencies.ID = Ratings.AgencyID;";
+//				
+//		ArrayList<Rating> result4 = fetchRating(sqlStatement);
+//		
+//		// well waddya know, it prints the results.
+//		for (Rating v : result4) {
+//			System.out.println(v);
+//		}
 		
 		/*
 		 * TODO, figure out how to get the insert to work without returning an error, it stops the program in its progress...
@@ -67,25 +67,10 @@ public class DatabaseCommunication {
 		 * 
 		 */
 		
-//		sqlStatement = "INSERT INTO Ads (AgencyID,Name,Gender,Species,Type,Age,Description) VALUES "
-//				+ "(6,'Lucifer','Male','Devil','Red',666,'Omg so evil');";
-//		
-//		insertUpdateDelete(sqlStatement);
-//		
-//		ArrayList<Ad> result5 = fetchAd(sqlStatement);
-//		
-//		for (Ad s : result5) {
-//			System.out.println(s);
-//		}
-//		
-//		sqlStatement = "DELETE FROM Ads WHERE Name = 'Lucifer';";
-//		
-//		ArrayList<Ad> result6 = fetchAd(sqlStatement);
-//		
-//		for (Ad t : result6) {
-//			System.out.println(t);
-//		}
+		sqlStatement = "INSERT INTO Ads (AgencyID,Name,Gender,Species,Type,Age,Description) VALUES "
+				+ "(6,'Lucifer','Male','Devil','Red',666,'Omg so evil');";
 		
+		insertUpdateDelete(sqlStatement);
 	}
 			
 	/**
@@ -340,7 +325,7 @@ public class DatabaseCommunication {
 	        	result.add(attribute);
 	        }
 	        
-	        // Closing result sets and statements.	        
+	        // Closing result sets and statements.
 			rs.close();
 			stmt.close();
 			c.close();
@@ -382,7 +367,7 @@ public class DatabaseCommunication {
 	        // Activate foreign key constraints before executing updates, deletions or inserts! VERY IMPORTANT!
 	        // Executing incoming query.	        
 	        stmt = c.createStatement();
-	        stmt.executeUpdate("PRAGMA foreign_keys = ON; " + sqlStatement);
+	        stmt.executeUpdate(sqlStatement); 
 	        
 	        // Closing result sets and statements.
 	        stmt.close();
