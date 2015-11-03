@@ -24,7 +24,7 @@ public class InputPage {
 	static Scene sc1, sc2;
 	static BorderPane layout1, layout2;
 	static ChoiceBox<Object> cb1, cb2, cb3, cb4, cb5;
-	static TextField tf;
+	static TextField tf, age;
 	static TextArea ta;
 	static Button btn;
 
@@ -74,9 +74,10 @@ public class InputPage {
 		tf.setMaxWidth(150);
 		input.add(tf,0,0);
 		
-		cb4 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Age"));
-		cb4.setValue(cb4.getItems().get(0));
-		input.add(cb4, 1, 0);
+		age = new TextField();
+		age.setPromptText("Name");
+		age.setMaxWidth(150);
+		input.add(age, 1, 0);
 		
 		ta = new TextArea();
 		ta.setPromptText("Description");
