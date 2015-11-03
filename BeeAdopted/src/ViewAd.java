@@ -18,8 +18,8 @@ public class ViewAd {
 	static Scene sc1, sc2;
 	static BorderPane layout1, layout2;
 	
-	public static void display(String title, int adID){
-		Ad ad = new Ad(title, title, title, title, title, adID, title, title, title);
+	public static void display(String title, Ad ad){
+		//Ad ad = new Ad(title, title, title, title, title, adID, title, title, title);
 		
 		
 		window = new Stage();

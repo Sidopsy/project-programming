@@ -395,4 +395,12 @@ public class DatabaseCommunication {
 	    	System.exit(0);
 	    }
 	}
+	
+	private static String sqlStatement(String sqlMethod, String dbTableName, String agency, String species, String type, String age, String gender, String description){
+		String sqlStatement = "";
+		if(sqlMethod == null){
+			sqlStatement = "SELECT * FROM " + dbTableName + " WHERE ";
+		}
+		return sqlStatement;
+	}
 }
