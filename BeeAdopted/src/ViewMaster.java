@@ -308,6 +308,12 @@ public class ViewMaster extends Application{
 		} else if (window.getScene() == sc3){
 			window.setScene(sc2);
 		} else if (window.getScene() == sc4){
+			firstSearch = true;
+			search();
+			layout3 = new BorderPane();
+			layout3.setTop(header());
+			layout3.setCenter(mainCenterView());
+			sc3 = new Scene(layout3,800,600);
 			window.setScene(sc3);
 		} else {
 			window.setScene(sc1);
