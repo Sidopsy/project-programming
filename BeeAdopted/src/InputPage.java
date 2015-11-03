@@ -88,17 +88,17 @@ public class InputPage {
 		
 		
 
-		cb1 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Agencies", "Name"));
+		cb1 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Agencies", "Name", null, null));
 		cb1.setValue(cb1.getItems().get(0));
 		input.add(cb1, 0, 2);
 		// cb1.setOnAction(e -> agency = (String) cb1.getValue());
 
-		cb2 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Species"));
+		cb2 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Species", null, null));
 		cb2.setValue(cb2.getItems().get(0));
 		input.add(cb2, 1, 2);
 		// cb2.setOnAction(e -> species = (String) cb2.getValue());
 
-		cb3 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Type"));
+		cb3 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Type", null, null));
 		cb3.setValue(cb3.getItems().get(0));
 		input.add(cb3, 0, 3);
 		// cb3.setOnAction(e -> type = (String) cb3.getValue());
@@ -106,7 +106,7 @@ public class InputPage {
 		
 		// cb4.setOnAction(e -> age = (String) cb4.getValue());
 
-		cb5 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Gender"));
+		cb5 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Gender", null, null));
 		cb5.setValue(cb5.getItems().get(0));
 		input.add(cb5, 1, 3);
 		// cb5.setOnAction(e -> gender = (String) cb5.getValue());

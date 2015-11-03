@@ -293,9 +293,14 @@ public class DatabaseCommunication {
 	 * @return ObservableList<Object>
 	 */
 	
-	public static ObservableList<Object> fetchAttribute(String table, String column) {
+	public static ObservableList<Object> fetchAttribute(String table, String column, String priorColumn, String priorValue) {
 		ObservableList<Object> result = FXCollections.observableArrayList(column, new Separator());
-		String sqlStatement = "SELECT Distinct " + column + " FROM " + table + " ORDER BY " + column + ";";
+		String sqlStatement;
+		if(priorColumn == null){
+			sqlStatement = "SELECT Distinct " + column + " FROM " + table + " ORDER BY " + column + ";";
+		} else {
+			sqlStatement = "SELECT Distinct " + column + " FROM " + table + " WHERE " + priorColumn + " == '" + priorValue + "' ORDER BY " + column + ";";
+		}
 		Connection c = null;
 		Statement stmt = null;
 	    

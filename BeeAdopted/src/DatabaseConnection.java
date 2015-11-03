@@ -16,7 +16,7 @@ public class DatabaseConnection {
 				FXCollections.observableArrayList(
 						string,
 						new Separator(),
-			        DatabaseCommunication.fetchAttribute(table, string));
+			        DatabaseCommunication.fetchAttribute(table, string, null, null));
 		return result;
 	}
 	

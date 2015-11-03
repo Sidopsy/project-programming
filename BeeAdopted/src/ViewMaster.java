@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -41,6 +42,7 @@ public class ViewMaster extends Application{
 	private static String description;
 	private static boolean firstSearch;
 	private static TableView<Ad> table = new TableView<Ad>();
+	private static ObservableList<Object> specieses, typeses, ageses, genderers;
 
 	//Launch the application
 	public static void main(String[] args){
@@ -114,7 +116,7 @@ public class ViewMaster extends Application{
 		vbox.setSpacing(40);
 
 		Label label = new Label("Where are you?");
-		location = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Addresses", "City"));
+		location = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Addresses", "City", null, null));
 		location.setValue(location.getItems().get(0));
 		//TODO - save location and goto sc2
 		location.setOnAction(e ->  {
@@ -187,19 +189,35 @@ public class ViewMaster extends Application{
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
 
-		cb1 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Species"));
+		
+		
+		specieses = DatabaseCommunication.fetchAttribute("Ads", "Species", null, null);
+		typeses = DatabaseCommunication.fetchAttribute("Ads", "Type", null, null);
+		ageses = DatabaseCommunication.fetchAttribute("Ads", "Age", null, null);
+		genderers = DatabaseCommunication.fetchAttribute("Ads", "Gender", null, null);
+		
+		cb1 = new ChoiceBox<>(specieses);
 		cb1.setValue(cb1.getItems().get(0));
-		cb1.setOnAction(e -> species = (String) cb1.getValue());
+		cb1.setOnAction(e -> {
+			species = (String) cb1.getValue();
+			typeses = DatabaseCommunication.fetchAttribute("Ads", "Type", "Species", (String) cb1.getValue());
+		});
 
-		cb2 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Type"));
+		cb2 = new ChoiceBox<>(typeses);
 		cb2.setValue(cb2.getItems().get(0));
-		cb2.setOnAction(e -> type = (String) cb2.getValue());
+		cb2.setOnAction(e -> {
+			type = (String) cb2.getValue();
+			ageses = DatabaseCommunication.fetchAttribute("Ads", "Age", "Type", (String) cb2.getValue());
+		});
 
-		cb3 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Age"));
+		cb3 = new ChoiceBox<>(ageses);
 		cb3.setValue(cb3.getItems().get(0));
-		cb3.setOnAction(e -> age = (String) cb3.getValue());
+		cb3.setOnAction(e -> {
+			age = (String) cb3.getValue();
+			genderers = DatabaseCommunication.fetchAttribute("Ads", "Gender", "Age", (String) cb3.getValue());
+		});
 
-		cb4 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Gender"));
+		cb4 = new ChoiceBox<>(genderers);
 		cb4.setValue(cb4.getItems().get(0));
 		cb4.setOnAction(e -> gender = (String) cb4.getValue());
 
