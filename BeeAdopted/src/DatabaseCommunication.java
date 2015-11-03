@@ -104,7 +104,7 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
-	        	int id = rs.getInt("ID");
+	        	int id = rs.getInt("Agencies.ID");
 	        	String picture = rs.getString("Picture");
 	        	String name = rs.getString("Name");
 	        	String gender = rs.getString("Gender");
@@ -114,8 +114,8 @@ public class DatabaseCommunication {
 	        	String description = rs.getString("Description");
 	        	String startDate = rs.getString("StartDate");
 	        	String endDate = rs.getString("EndDate");
-	           Ad ad = new Ad(id, picture, name, gender, species, type, age, description, startDate, endDate);
-	           result.add(ad);
+	        	Ad ad = new Ad(id, picture, name, gender, species, type, age, description, startDate, endDate);
+	        	result.add(ad);
 	        }
 	        
 	        // Closing result sets and statements.	        
@@ -162,7 +162,7 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
-	        	int id = rs.getInt("ID");
+	        	int id = rs.getInt("Agencies.ID");
 	        	String name = rs.getString("Name");
 	        	String rating = rs.getString("AVG(Rating)");
 	        	String logo = rs.getString("Logo");
@@ -214,7 +214,7 @@ public class DatabaseCommunication {
 
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
-	        	int id = rs.getInt("ID");
+	        	int id = rs.getInt("Agencies.ID");
 	        	String name = rs.getString("Name");
 	        	String logo = rs.getString("Logo");
 	        	String rating = rs.getString("AVG(Rating)");
