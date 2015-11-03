@@ -38,10 +38,6 @@ public class ViewMaster extends Application{
 	private static BorderPane layout1, layout2, layout3, layout4;
 	private static ArrayList<Ad> theSearch;
 
-//	static boolean isSearch = false;
-	
-
-
 	//Launch the application
 	public static void main(String[] args){
 		launch(args);
@@ -86,36 +82,23 @@ public class ViewMaster extends Application{
 		Image image = new Image(getClass().getResourceAsStream("iAdopt.png"));
 		ImageView header = new ImageView();
 		header.setImage(image);
+		
 		Button backButton = new Button("Back");
 		backButton.setOnAction(e -> goBack());
+		
+		Button startButton = new Button("Start");
+		startButton.setOnAction(e -> backToStart());
+		
+		HBox buttons = new HBox();
+		buttons.getChildren().addAll(backButton, startButton);
 
-
-		//		if(isOnView){
-		//			HBox filter = mainFilter();
-		//			head.getChildren().addAll(backButton, header, filter);			
-		//		} else {
-		head.getChildren().addAll(backButton,header);
-		//		}
+		head.getChildren().addAll(buttons,header);
 
 		return head;
 	}
 
 
-	/**
-	 * Go to previous scene.
-	 */
-	private void goBack() {
-		if(window.getScene() == sc2){
-			window.setScene(sc1);
-		} else if (window.getScene() == sc3){
-			window.setScene(sc2);
-		} else if (window.getScene() == sc4){
-			window.setScene(sc3);
-		} else {
-			window.setScene(sc1);
-		}
-	}
-	
+
 
 	/**
 	 * A VBox element where a location 
@@ -156,17 +139,14 @@ public class ViewMaster extends Application{
 	}
 
 	//TODO - present agencies on location (see below)
-	
-	private VBox startAgencies() {
-		VBox grid = new VBox();
-		String thisLocation = this.city;
-		String sqlStatement = "SELECT Name,Logo,AVG(Rating) FROM Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Addresses.City == '" + thisLocation + "';";
-		grid.setPadding(new Insets(10,10,10,10));
 
-		ObservableList<Agency> agencyList = FXCollections.observableArrayList(DatabaseCommunication.fetchAgency(sqlStatement));
-//		System.out.println(agencyList.toString());
-	
+	private TableView<Agency> startAgencies() {
+		String thisLocation = city;
+		String sqlStatement = "SELECT Name,Logo,AVG(Rating) FROM Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Addresses.City == '" + thisLocation + "';";
+
 		TableView<Agency> table = new TableView<>();
+		ObservableList<Agency> agencyList = FXCollections.observableArrayList(DatabaseCommunication.fetchAgency(sqlStatement));
+
 		table.setEditable(true);
 		TableColumn<Agency, String> logoCol = new TableColumn<>("Logo");
 		TableColumn<Agency, String> agencyCol = new TableColumn<>("Agency");
@@ -177,43 +157,28 @@ public class ViewMaster extends Application{
 		ratingCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("rating"));
 
 		table.setRowFactory( tv -> {
-		    TableRow<Agency> row = new TableRow<>();
-		    row.setOnMouseClicked(event -> {
-		        if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
-		            window.setScene(sc3);
-		        }
-		    });
-		    return row ;
+			TableRow<Agency> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
+					window.setScene(sc3);
+				}
+			});
+			return row ;
 		});
-		
 
 		table.setItems(agencyList);
 		table.getColumns().addAll(logoCol, agencyCol, ratingCol);
 
-
-		//A test Agency, here we will have a list of clickable agencies
-		Button testAgency = new Button("Agency in " + thisLocation);
-		testAgency.setOnAction(e -> {
-			search();
-			window.setScene(sc3);
-	});
-
-		//Return to start page
-		Button backToStart = new Button("Go back to the start page");
-		backToStart.setOnAction(e -> backToStart());
-
-		grid.getChildren().addAll(table, testAgency, backToStart);
-		//	String[] agencies = DatabaseConnection.getAgencies(thisLocation);
-		//TODO - present agencies on location
-		// ACTIVE OBJECT???
-
-		return grid;
-
+		return table;
 	}
 
 	//TODO - Get ChoiceBox.setValue to work
-	
-	public HBox mainFilter(){
+
+	/**
+	 * Search filter module
+	 * @return hbox with filter
+	 */
+	public HBox filter(){
 		HBox hbox = new HBox();
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
@@ -246,8 +211,8 @@ public class ViewMaster extends Application{
 			layout4.setCenter(mainCenterView());
 			sc4 = new Scene(layout4,800,600);
 			window.setScene(sc4);
-//			table.refresh();
-//			layout3.requestLayout();
+			//			table.refresh();
+			//			layout3.requestLayout();
 		});
 
 		hbox.getChildren().addAll(cb1,cb2,cb3,cb4,tf1,btn1);
@@ -255,84 +220,87 @@ public class ViewMaster extends Application{
 		return hbox;
 
 	}
-	
+
 
 	//TODO - present search results (see below)
-	public VBox mainResults(){
-		VBox grid = new VBox();
-		grid.setPadding(new Insets(10,10,10,10));
-
+	public TableView<Ad> searchResults(){
 		TableView<Ad> table = new TableView<Ad>();
 
-		
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
 		TableColumn<Ad, String> genderCol = new TableColumn<>("Gender");
 
-
-
 		ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
-		
+
 		pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
+		pictureCol.setMinWidth(190);
 		speciesCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("species"));
+		speciesCol.setMinWidth(190);
 		typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
+		typeCol.setMinWidth(190);
 		genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
-		
+		genderCol.setMinWidth(190);
+
 		table.setRowFactory( tv -> {
-		    TableRow<Ad> row = new TableRow<>();
-		    row.setOnMouseClicked(event -> {
-		        if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
-		            Ad ad = row.getItem();
-		        	ViewAd.display(ad.getName(), ad);;
-		        }
-		    });
-		    return row ;
+			TableRow<Ad> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
+					Ad ad = row.getItem();
+					ViewAd.display(ad.getName(), ad);;
+				}
+			});
+			return row ;
 		});
-		
+
 		table.setItems(adList);
-
-		
-
-
 		table.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol);
-
-		Button testAd = new Button("The test ad");
-	//	testAd.setOnAction(e -> ViewAd.display("Test ad", 1));
-
-		Button backToStart = new Button("Go back to the start page");
-		backToStart.setOnAction(e -> backToStart());
-
-
-		grid.getChildren().addAll(table, testAd, backToStart);
-
-		//TODO - present search results
-
-		return grid;
+		
+		return table;
 	}
 
 	public VBox mainCenterView(){
 		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(10));
+		vbox.setPadding(new Insets(0));
 		vbox.setSpacing(10);
 
-		vbox.getChildren().addAll(mainFilter(), mainResults());
+		vbox.getChildren().addAll(filter(), searchResults());
 
 		return vbox;
 	}
-	
+
+	/**
+	 * Go to previous scene.
+	 */
+	private void goBack() {
+		if(window.getScene() == sc2){
+			window.setScene(sc1);
+		} else if (window.getScene() == sc3){
+			window.setScene(sc2);
+		} else if (window.getScene() == sc4){
+			window.setScene(sc3);
+		} else {
+			window.setScene(sc1);
+		}
+	}
+
+	/**
+	 * Go to start view.
+	 */
 
 	public void backToStart(){
 		window.setScene(sc1);
 	}
 
-	//TODO - Query the database with global values from ChoiceBox and TextField
+	/**
+	 * Search the database for the chosen values
+	 */
 	public static void search(){
 		String startStatement;
 		String searchStatement;
-//		if(theSearch == null){
-//			theSearch = DatabaseCommunication.fetchAd(startStatement); 
-//		} else {
+		//		if(theSearch == null){
+		//			theSearch = DatabaseCommunication.fetchAd(startStatement); 
+		//		} else {
 		if(tf1 == null){	
 			searchStatement = "SELECT * FROM Ads;";
 		} else {
@@ -342,14 +310,9 @@ public class ViewMaster extends Application{
 					+ "Age == " + age + " and " 
 					+ "Gender == '" + gender + "';";
 		}
-			theSearch = DatabaseCommunication.fetchAd(searchStatement);
-			System.out.println(searchStatement);
-			System.out.println(theSearch.toString());
-//		}
-	}
-
-	public void handle(CellEditEvent<Ad, String> t) {
-		window.setScene(sc3);
-		
+		theSearch = DatabaseCommunication.fetchAd(searchStatement);
+		System.out.println(searchStatement);
+		System.out.println(theSearch.toString());
+		//		}
 	}
 }
