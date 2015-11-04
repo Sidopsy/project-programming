@@ -22,6 +22,8 @@ public class AgencyExtended extends Agency {
 		this.city = new SimpleStringProperty(city);
 	}
 	
+	// TODO get the super calls to work!
+	
 	public int getID(){
 		return super.getID();
 	}
