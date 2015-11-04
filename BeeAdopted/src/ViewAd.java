@@ -28,14 +28,7 @@ public class ViewAd {
 	
 	public static void display(String title, Ad ad){
 		window = new Stage();
-		
-		// This enables the iAdopt image to be shown.
-		StackPane head = new StackPane();
-		Image image = new Image("iAdopt.png");
-		ImageView header = new ImageView();
-		header.setImage(image);
-		head.getChildren().add(header);
-		
+				
 		// Sets Modality and window title.
 		window.initModality(Modality.APPLICATION_MODAL);	// Application modal makes sure that input to the app is only
 		window.setTitle(title);								// entered to the currently open window. This enum needs to be
@@ -44,22 +37,35 @@ public class ViewAd {
 		// This is the Ad view of this Stage.
 		layoutAd = new BorderPane();
 		GridPane viewAd = getAd(ad);						// Sends the input Ad into getAd() to be able to show it.
-		layoutAd.setTop(head);								// Show the iAdopt image.
+		layoutAd.setTop(header());								// Show the iAdopt image.
 		layoutAd.setCenter(viewAd);							// Center of the BorderPane will show the Ad.
-		scAd = new Scene(layoutAd,600,400);
+		scAd = new Scene(layoutAd,600,550);
 				
 		// This is the view of the Ad once adopt is pressed.
 		layoutAdopt = new BorderPane();
 		GridPane viewAdopt = adopted();
-		layoutAdopt.setTop(head);							// Show the iAdopt image.
+		layoutAdopt.setTop(header());							// Show the iAdopt image.
 		layoutAdopt.setCenter(viewAdopt);					// Center of the BorderPane will show the Adopted layout.
-		scAdopt = new Scene(layoutAdopt,600,400);
+		scAdopt = new Scene(layoutAdopt,600,550);
 		
 		// Ad scene will be shown first and the App awaits instructions.
 		window.setScene(scAd);
 		window.showAndWait();
 	}
 
+	/**
+	 * Place an image in a stackpane and returns the stackpane
+	 * @return head as stackpane
+	 */
+	private static StackPane header(){
+		StackPane head = new StackPane();
+		Image image = new Image("BeeAdoptedSmall.png");
+		ImageView header = new ImageView();
+		header.setImage(image);
+		head.getChildren().add(header);
+		return head;
+	}
+	
 	/**
 	 * This method returns a GridPane containing the information on a specific Ad that was clicked in a previous window.
 	 * A button for adopting said item will be available as well as a close button that will close the entire window.

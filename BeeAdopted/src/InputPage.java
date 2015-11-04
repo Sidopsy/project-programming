@@ -1,6 +1,7 @@
 
 import java.util.ArrayList;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -27,15 +28,11 @@ public class InputPage {
 	static TextField tf, age;
 	static TextArea ta;
 	static Button btn;
+	static ObservableList<Object> type, gender;
 
-	public static void display() {
+	public static void display(){
 		window = new Stage();
-		StackPane head = new StackPane();
-		Image image = new Image("iAdopt.png");
-		ImageView header = new ImageView();
-		header.setImage(image);
-		head.getChildren().add(header);
-
+		
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Input page");
 		window.setMinWidth(250);
@@ -43,19 +40,28 @@ public class InputPage {
 		// Inputs
 		layout1 = new BorderPane();
 		GridPane input = theInput();
-		layout1.setTop(head);
+		layout1.setTop(header());
 		layout1.setCenter(input);
-		sc1 = new Scene(layout1, 600, 400);
+		sc1 = new Scene(layout1, 600, 550);
 
 		// Adopt view
 		layout2 = new BorderPane();
 		GridPane acceptedInput = acceptedInput();
-		layout2.setTop(head);
+		layout2.setTop(header());
 		layout2.setCenter(acceptedInput);
-		sc2 = new Scene(layout2, 600, 400);
+		sc2 = new Scene(layout2, 600, 550);
 
 		window.setScene(sc1);
 		window.showAndWait();
+	}
+	
+	private static StackPane header(){
+		StackPane head = new StackPane();
+		Image image = new Image("BeeAdoptedSmall.png");
+		ImageView header = new ImageView();
+		header.setImage(image);
+		head.getChildren().add(header);
+		return head;
 	}
 
 	private static GridPane acceptedInput() {
@@ -67,7 +73,7 @@ public class InputPage {
 		GridPane input = new GridPane();
 		input.setHgap(40);
 		input.setVgap(20);
-		input.setPadding(new Insets(0, 10, 0, 10));
+		input.setPadding(new Insets(10, 10, 10, 10));
 		
 		tf = new TextField();
 		tf.setPromptText("Name");
@@ -75,7 +81,7 @@ public class InputPage {
 		input.add(tf,0,0);
 		
 		age = new TextField();
-		age.setPromptText("Name");
+		age.setPromptText("Age");
 		age.setMaxWidth(150);
 		input.add(age, 1, 0);
 		
@@ -83,11 +89,7 @@ public class InputPage {
 		ta.setPromptText("Description");
 		ta.setMaxWidth(150);
 		input.add(ta, 0, 1);
-		
-
-		
-		
-
+	
 		cb1 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Agencies", "Name", null, null));
 		cb1.setValue(cb1.getItems().get(0));
 		input.add(cb1, 0, 2);
@@ -95,21 +97,27 @@ public class InputPage {
 
 		cb2 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Species", null, null));
 		cb2.setValue(cb2.getItems().get(0));
+		cb2.setOnAction(e -> {
+			type = DatabaseCommunication.fetchAttribute("Ads", "Type", "Species", (String)cb2.getValue());
+			cb3.setItems(type);
+			cb3.setValue("Type");
+		});
 		input.add(cb2, 1, 2);
 		// cb2.setOnAction(e -> species = (String) cb2.getValue());
 
 		cb3 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Type", null, null));
 		cb3.setValue(cb3.getItems().get(0));
+		cb3.setOnAction(e -> {
+			gender = DatabaseCommunication.fetchAttribute("Ads", "Gender", "Type", (String)cb3.getValue());
+			cb5.setItems(gender);
+			cb5.setValue("Gender");
+		});
 		input.add(cb3, 0, 3);
-		// cb3.setOnAction(e -> type = (String) cb3.getValue());
-
 		
-		// cb4.setOnAction(e -> age = (String) cb4.getValue());
-
 		cb5 = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Ads", "Gender", null, null));
 		cb5.setValue(cb5.getItems().get(0));
 		input.add(cb5, 1, 3);
-		// cb5.setOnAction(e -> gender = (String) cb5.getValue());
+
 
 		Label uploadText = new Label("Upload picture");
 		input.add(uploadText, 0,4);
@@ -128,7 +136,9 @@ public class InputPage {
 	}
 
 	private static void inputValues() {
-		ArrayList<Agency> agencyID = DatabaseCommunication.fetchAgency("SELECT ID FROM Agencies WHERE Name == " + cb1.getValue() + ";");
+		
+		ArrayList<Agency> agencyID = DatabaseCommunication.fetchAgency("SELECT ID FROM Agencies WHERE Agencies.Name == '" + (String)cb1.getValue() + "';");
+		System.out.println(agencyID);
 		String insert = "INSERT INTO Ads (Name,Gender,Species,Type,Age,Description,AgencyID)";
 		String values = 
 				" VALUES ('" + tf.getText()  + "', '"+ cb2.getValue() + "', '" 

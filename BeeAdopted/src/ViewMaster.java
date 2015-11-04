@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -24,6 +25,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -92,25 +94,24 @@ public class ViewMaster extends Application{
 	 * @return Vbox header image and navigation buttons
 	 */
 	
-	private VBox header(){
+	private StackPane header(){
 
-		VBox head = new VBox();				// The Vbox to be returned.
-		Image image = new Image(getClass().getResourceAsStream("BeeAdopted.png"));	// Specifying header image.
+		StackPane head = new StackPane();				// The Vbox to be returned.
+		Image image = new Image(getClass().getResourceAsStream("BeeAdoptedLarge.png"));	// Specifying header image.
 		ImageView header = new ImageView();	
 		header.setImage(image);				// Adding image to ImageView to be able to be viewed.
+		header.setOnMouseClicked(e -> backToStart());
 
 		// Buttons for navigation inside the header element.
 		Button backButton = new Button("Back");
-		Button startButton = new Button("Start");
 		backButton.setOnAction(e -> goBack());
-		startButton.setOnAction(e -> backToStart());
 		
 		// Adding the buttons to a Hbox to be displayed horizontally.
-		HBox buttons = new HBox();
-		buttons.getChildren().addAll(backButton, startButton);
+		
 
 		// All items created are added to Vbox.
-		head.getChildren().addAll(buttons,header);
+		head.getChildren().addAll(header,backButton);
+		head.setAlignment(Pos.CENTER_LEFT);
 
 		return head;
 	}
