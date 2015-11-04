@@ -158,7 +158,7 @@ public class ViewAd {
 		grid.setPadding(new Insets(0,10,0,10));						// Setting the padding around the content.
 		
 		// Label containing information to the shown to the user when pressing Adopt.
-		Label label = new Label("CONGRATULATIONS MOTHERTRUCKER!");	// Friendly message shown when Adopt is pressed.
+		Label label = new Label("CONGRATULATIONS!");	// Friendly message shown when Adopt is pressed.
 		grid.add(label, 0, 0);
 		
 		// Same function as in other scene. Closes the window.
