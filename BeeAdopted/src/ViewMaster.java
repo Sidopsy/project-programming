@@ -72,17 +72,13 @@ public class ViewMaster extends Application{
 	 */
 	
 	public void start(Stage primaryStage){
-		
-		// Getting cities in which there are agencies to show in a choice box.
-		VBox firstPage = startLocation();
-
 		window = primaryStage;
 		window.setTitle("Marketplace");	
 
 		// Creating the window.
 		bpLayout1 = new BorderPane();			// BorderPane layout is used.
 		bpLayout1.setTop(header());			// Top element of the BorderPane is retrieved, which is the iAdopt image.
-		bpLayout1.setCenter(firstPage);			// Center element of BorderPane contains the dropdown vbox.
+		bpLayout1.setCenter(startLocation());			// Center element of BorderPane contains the dropdown vbox.
 		scene1 = new Scene(bpLayout1, 800, 600);
 		
 		// Setting the currently open window to show the scene created above.
@@ -132,7 +128,7 @@ public class ViewMaster extends Application{
 		// The Vbox to be returned.
 		VBox firstPage = new VBox();
 		
-		firstPage.setPadding(new Insets(175));
+		firstPage.setPadding(new Insets(0));
 		firstPage.setSpacing(40);
 
 		// Displayed above the choicebox for cities to let the user know what to do.
@@ -157,6 +153,7 @@ public class ViewMaster extends Application{
 		
 		// Vbox is created using the items above.
 		firstPage.getChildren().addAll(lblLocation, cbLocation, btnInput);
+		firstPage.setAlignment(Pos.CENTER);
 		
 		return firstPage;
 	}
@@ -245,28 +242,37 @@ public class ViewMaster extends Application{
 			type1 = DatabaseCommunication.fetchAttribute("Ads", "Type", "Species", (String) cbSpecies.getValue());
 			cbType.setItems(type1);
 			cbType.setValue("Type");
+			cbType.setDisable(false);
+			cbAge.setDisable(true);
+			cbGender.setDisable(true);
 		});
 
 		cbType = new ChoiceBox<>(type1);
 		cbType.setValue(cbType.getItems().get(0));
+		cbType.setDisable(true);
 		cbType.setOnAction(e -> {
 			type = (String) cbType.getValue();
 			age1 = DatabaseCommunication.fetchAttribute("Ads", "Age", "Type", (String) cbType.getValue());
 			cbAge.setItems(age1);
 			cbAge.setValue("Age");
+			cbAge.setDisable(false);
+			cbGender.setDisable(true);
 		});
 
 		cbAge = new ChoiceBox<>(age1);
 		cbAge.setValue(cbAge.getItems().get(0));
+		cbAge.setDisable(true);
 		cbAge.setOnAction(e -> {
 			age = (String) cbAge.getValue();
 			gender1 = DatabaseCommunication.fetchAttribute("Ads", "Gender", "Age", (String) cbAge.getValue());
 			cbGender.setItems(gender1);
 			cbGender.setValue("Gender");
+			cbGender.setDisable(false);
 		});
 
 		cbGender = new ChoiceBox<>(gender1);
 		cbGender.setValue(cbGender.getItems().get(0));
+		cbGender.setDisable(true);
 		cbGender.setOnAction(e -> gender = (String) cbGender.getValue());
 
 		tfDescription = new TextField();
