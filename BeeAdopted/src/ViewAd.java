@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -26,7 +27,7 @@ public class ViewAd {
 	static Scene scAd, scAdopt;
 	static BorderPane layoutAd, layoutAdopt;
 	
-	public static void display(String title, Ad ad){
+	public static void display(String title, Ad ad, Agency agency){
 		window = new Stage();
 				
 		// Sets Modality and window title.
@@ -36,9 +37,8 @@ public class ViewAd {
 		
 		// This is the Ad view of this Stage.
 		layoutAd = new BorderPane();
-		GridPane viewAd = getAd(ad);						// Sends the input Ad into getAd() to be able to show it.
 		layoutAd.setTop(header());								// Show the iAdopt image.
-		layoutAd.setCenter(viewAd);							// Center of the BorderPane will show the Ad.
+		layoutAd.setCenter(showAd(ad, agency));							// Center of the BorderPane will show the Ad.
 		scAd = new Scene(layoutAd,600,550);
 				
 		// This is the view of the Ad once adopt is pressed.
@@ -75,18 +75,25 @@ public class ViewAd {
 	 */
 	
 	private static GridPane getAd(Ad ad) {
-		
-		// Gridpane in which the Ad will be shown.
-		GridPane grid = new GridPane();
+		GridPane grid = new GridPane();							// Gridpane in which the Ad will be shown.
 		grid.setHgap(10);										// Horizontal gaps between columns.
 		grid.setVgap(10);										// Vertical gaps between columns.
-		grid.setPadding(new Insets(0,10,0,10));					// Setting the padding around the content.
+		grid.setPadding(new Insets(10,10,10,10));				// Setting the padding around the content.
 		
 		// Labels for displaying information about said Ad.
-		Label name = new Label();
-		grid.add(name,1,0);
-		Label species = new Label();
-		grid.add(species, 2, 0);
+		Label name = new Label("Name: " + ad.getName());
+		grid.add(name,0,0);
+		Label species = new Label("Species: " + ad.getSpecies());
+		grid.add(species,1,0);
+		Label type = new Label("Type: " + ad.getType());
+		grid.add(type,0,1);
+		Label gender = new Label("Gender: " + ad.getGender());
+		grid.add(gender,1,1);
+		Label age = new Label("Age: " + ad.getAge());
+		grid.add(age,0,2);
+		Label description = new Label("Description: /n" + ad.getDescription());
+		grid.add(description,1,2);
+		
 		
 		// Button for adopting the Ad, this sets the scene to Adopted.
 		Button adoptButton = new Button("Adopt");
@@ -95,10 +102,41 @@ public class ViewAd {
 																// Adopted scene specified above.
 		// Closes the window and takes you back to the Ad overview.
 		Button closeButton = new Button("Close the window");
-		grid.add(closeButton, 4, 4);
+		grid.add(closeButton, 0, 4);
 		closeButton.setOnAction(e -> window.close());			// Closes the window.
 		
 		return grid;
+	}
+	
+	private static VBox getAgency(Agency agency){
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(10));
+		vbox.setSpacing(10);
+		
+		String sqlStatement = "SELECT Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE "
+				+ "Agencies.ID == " + agency.getID() + ";";
+		AgencyExtended agencyExtended = DatabaseCommunication.fetchAgencyExtended(sqlStatement).get(0);
+		Label name = new Label("Name: " + agencyExtended.getName());
+		Label rating = new Label("Rating: " + agencyExtended.getRating());
+		Label email = new Label("Email: " + agencyExtended.getEmail());
+		Label phone = new Label("Phone: " + agencyExtended.getPhone());
+		Label street = new Label("Street: " + agencyExtended.getStreet());
+		Label zip = new Label("ZIP: " + agencyExtended.getZip());
+		Label city = new Label("City: " + agencyExtended.getCity());
+		
+		vbox.getChildren().addAll(name,rating,email,phone,street,zip,city);
+		
+		return vbox;
+	}
+	
+	private static HBox showAd(Ad ad, Agency agency){
+		HBox hbox = new HBox();
+		hbox.setPadding(new Insets(10));
+		hbox.setSpacing(10);
+		
+		hbox.getChildren().addAll(getAd(ad),getAgency(agency));
+		
+		return hbox;
 	}
 	
 	/**

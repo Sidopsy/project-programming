@@ -308,7 +308,7 @@ public class ViewMaster extends Application{
 				row.setOnMouseClicked(event -> {
 					if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
 						Ad ad = row.getItem();
-						ViewAd.display(ad.getName(), ad);;
+						ViewAd.display(ad.getName(), ad, chosenAgency);;
 					}
 				});
 				return row ;
