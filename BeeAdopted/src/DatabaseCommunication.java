@@ -23,16 +23,15 @@ public class DatabaseCommunication {
 	 */
 
 	public static void main(String args[]) {
-		
-		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM Agencies, Addresses, Ratings WHERE "
-				+ "Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and City = 'Götlaborg';";
-
-		ArrayList<Agency> result = fetchAgency(sqlStatement);
-		
-		for (Agency s : result) {
-			System.out.println(s); 
-		}
-		
+//		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM Agencies, Addresses, Ratings WHERE "
+//				+ "Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and City = 'Götlaborg';";
+//
+//		ArrayList<Agency> result = fetchAgency(sqlStatement);
+//		
+//		for (Agency s : result) {
+//			System.out.println(s); 
+//		}
+//		
 //		ArrayList<Ad> result1 = fetchAd(sqlStatement);
 //		
 //		for (Ad s : result1) {
@@ -94,8 +93,8 @@ public class DatabaseCommunication {
 	    	conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");	// Connecting to database!
 	    	conn.setAutoCommit(false);									// AutoCommit should never be used.	        
 
-	    	stmt = conn.createStatement();								// Executing incoming query.
-	    	ResultSet rs = stmt.executeQuery(sqlStatement);				// Adding results of the query to the ResultSet object.
+	    	stmt = conn.createStatement();								
+	    	ResultSet rs = stmt.executeQuery(sqlStatement);				// Executing incoming query.
 
 	        while (rs.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
 	        	int id = rs.getInt("ID");
@@ -134,46 +133,40 @@ public class DatabaseCommunication {
 	
 	public static ArrayList<Agency> fetchAgency(String sqlStatement) {
 		ArrayList<Agency> result = new ArrayList<>();
-		Connection c = null;
+		Connection conn = null;
 		Statement stmt = null;
 	    
+		System.out.println("Attempting to retrieve simple agencies...");
+		
 	    try {
-	    	// Loading the driver!
-	    	System.out.println("Loading JDBC driver...");
-	    	Class.forName("org.sqlite.JDBC");
-	    	System.out.println("Driver loaded successfully!");
+	    	Class.forName("org.sqlite.JDBC");	    					// Loading the driver!
 	    	
-	    	// Connecting to database!
-	    	System.out.println("Attempting to connect to database...");
-	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
-	    	c.setAutoCommit(false);
-	        System.out.println("Opened database successfully!");
-	        System.out.println();
-	        
-	        // Executing incoming query.	        
-	        stmt = c.createStatement();
-	        ResultSet rs = stmt.executeQuery(sqlStatement);
+	    	conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");	// Connecting to database!
+	    	conn.setAutoCommit(false);									// AutoCommit should never be used.	
 
-	        // This while-loop adds the results to the arrayList.	        
-	        while (rs.next()) {
+	        stmt = conn.createStatement();								
+	        ResultSet rs = stmt.executeQuery(sqlStatement);				// Executing incoming query.
+	        
+	        while (rs.next()) {											// This while-loop adds the results to the arrayList.
 	        	int id = rs.getInt("ID");
 	        	String name = rs.getString("Name");
 	        	String rating = rs.getString("AVG(Rating)");
 	        	String logo = rs.getString("Logo");
 	        	Agency agency = new Agency(id, name, rating, logo);
-	        	result.add(agency);
+	        	result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
 	        
-	        // Closing result sets and statements.	        
-			rs.close();
+			rs.close();				// It is good practice to always close all connections when the information has been retrieved.
 			stmt.close();
-			c.close();
-			
-			// Catching any and all exceptions, printing an error message.			
+			conn.close();
+		
 	    } catch (Exception e) { 
 	    	System.err.println(e.getClass().getName() + ": " + e.getMessage());
 	    	System.exit(0);
 	    }
+	    
+	    System.out.println("Retrieved simple agencies!");
+	    
 	    return result;
 	}
 	
@@ -186,28 +179,21 @@ public class DatabaseCommunication {
 	
 	public static ArrayList<AgencyExtended> fetchAgencyExtended(String sqlStatement) {
 		ArrayList<AgencyExtended> result = new ArrayList<>();
-		Connection c = null;
+		Connection conn = null;
 		Statement stmt = null;
 	    
+		System.out.println("Attempting to retrieve extended agencies...");
+		
 	    try {
-	    	// Loading the driver!
-	    	System.out.println("Loading JDBC driver...");
-	    	Class.forName("org.sqlite.JDBC");
-	    	System.out.println("Driver loaded successfully!");
+	    	Class.forName("org.sqlite.JDBC");	    					// Loading the driver!
 	    	
-	    	// Connecting to database!
-	    	System.out.println("Attempting to connect to database...");
-	    	c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
-	    	c.setAutoCommit(false);
-	        System.out.println("Opened database successfully!");
-	        System.out.println();
-	        
-	        // Executing incoming query.	        
-	        stmt = c.createStatement();
-	        ResultSet rs = stmt.executeQuery(sqlStatement);
-
-	        // This while-loop adds the results to the arrayList.	        
-	        while (rs.next()) {
+	    	conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");	// Connecting to database!
+	    	conn.setAutoCommit(false);									// AutoCommit should never be used.		        
+	    	
+	        stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(sqlStatement);				// Executing incoming query.
+       
+	        while (rs.next()) {											// This while-loop adds the results to the arrayList.
 	        	int id = rs.getInt("ID");
 	        	String logo = rs.getString("Logo");
 	        	String name = rs.getString("Name");
@@ -218,19 +204,20 @@ public class DatabaseCommunication {
 	        	String zip = rs.getString("Zip");
 	        	String city = rs.getString("City");
 	        	AgencyExtended agency = new AgencyExtended(id, logo, name, rating, email, phone, street, zip, city);
-	        	result.add(agency);
+	        	result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
-	        
-	        // Closing result sets and statements.	        
-			rs.close();
-			stmt.close();
-			c.close();
-			
-			// Catching any and all exceptions, printing an error message.
+	                
+			rs.close();				// It is good practice to always close all connections when the information has been retrieved.
+			stmt.close();		
+			conn.close();
+
 	    } catch (Exception e) { 
 	    	System.err.println(e.getClass().getName() + ": " + e.getMessage());
 	    	System.exit(0);
 	    }
+	    
+	    System.out.println("Retrieved extended agencies!");
+	    
 	    return result;
 	}
 	
