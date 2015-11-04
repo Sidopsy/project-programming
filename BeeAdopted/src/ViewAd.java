@@ -113,7 +113,7 @@ public class ViewAd {
 		vbox.setPadding(new Insets(10));
 		vbox.setSpacing(10);
 		
-		String sqlStatement = "SELECT Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE "
+		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE "
 				+ "Agencies.ID == " + agency.getID() + ";";
 		AgencyExtended agencyExtended = DatabaseCommunication.fetchAgencyExtended(sqlStatement).get(0);
 		Label name = new Label("Name: " + agencyExtended.getName());

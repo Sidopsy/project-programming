@@ -136,14 +136,14 @@ public class InputPage {
 	}
 
 	private static void inputValues() {
-		
-		ArrayList<Agency> agencyID = DatabaseCommunication.fetchAgency("SELECT ID FROM Agencies WHERE Agencies.Name == '" + (String)cb1.getValue() + "';");
+		System.out.println("BOB");
+		ArrayList<Agency> agencyID = DatabaseCommunication.fetchAgency("SELECT Agencies.ID,Name,AVG(Rating),Logo FROM Agencies,Ratings WHERE Agencies.ID = Ratings.AgencyID and Agencies.Name = '" + (String)cb1.getValue() + "';");
 		System.out.println(agencyID);
 		String insert = "INSERT INTO Ads (Name,Gender,Species,Type,Age,Description,AgencyID)";
 		String values = 
 				" VALUES ('" + tf.getText()  + "', '"+ cb2.getValue() + "', '" 
 				+ cb3.getValue() + "', '" + cb5.getValue() + "', "
-				+ age.getText() + ", '" + ta.getText() + "', " + agencyID.get(0) + ");";
+				+ age.getText() + ", '" + ta.getText() + "', " + agencyID.get(0).getID() + ");";
 		
 		DatabaseCommunication.insertUpdateDelete(insert + values);
 		System.out.println(values);
