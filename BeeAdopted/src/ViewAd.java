@@ -24,8 +24,8 @@ import javafx.stage.Stage;
 
 public class ViewAd {
 	static Stage window;
-	static Scene scAd, scAdopt;
-	static BorderPane layoutAd, layoutAdopt;
+	static Scene sceneAd, sceneAdopt;
+	static BorderPane bpLayoutAd, bpLayoutAdopt;
 	
 	public static void display(String title, Ad ad, Agency agency){
 		window = new Stage();
@@ -36,34 +36,61 @@ public class ViewAd {
 		window.setMinWidth(250);							// set before anything is shown in this stage.
 		
 		// This is the Ad view of this Stage.
-		layoutAd = new BorderPane();
-		layoutAd.setTop(header());								// Show the iAdopt image.
-		layoutAd.setCenter(showAd(ad, agency));							// Center of the BorderPane will show the Ad.
-		scAd = new Scene(layoutAd,600,550);
+		bpLayoutAd = new BorderPane();
+		bpLayoutAd.setTop(header());						// Show the iAdopt image.
+		bpLayoutAd.setCenter(showAd(ad, agency));			// Center of the BorderPane will show the Ad.
+		sceneAd = new Scene(bpLayoutAd,600,550);
 				
 		// This is the view of the Ad once adopt is pressed.
-		layoutAdopt = new BorderPane();
+		bpLayoutAdopt = new BorderPane();
 		GridPane viewAdopt = adopted();
-		layoutAdopt.setTop(header());							// Show the iAdopt image.
-		layoutAdopt.setCenter(viewAdopt);					// Center of the BorderPane will show the Adopted layout.
-		scAdopt = new Scene(layoutAdopt,600,550);
+		bpLayoutAdopt.setTop(header());						// Show the iAdopt image.
+		bpLayoutAdopt.setCenter(viewAdopt);					// Center of the BorderPane will show the Adopted layout.
+		sceneAdopt = new Scene(bpLayoutAdopt,600,550);
 		
 		// Ad scene will be shown first and the App awaits instructions.
-		window.setScene(scAd);
+		window.setScene(sceneAd);
 		window.showAndWait();
 	}
 
 	/**
-	 * Place an image in a stackpane and returns the stackpane
-	 * @return head as stackpane
+	 * Places an image in a stackpane and returns the stackpane once called.
+	 * 
+	 * @return header as stackpane
 	 */
+	
 	private static StackPane header(){
+		
+		// StackPane to be returned.
 		StackPane head = new StackPane();
+		
+		// Adding the image to the StackPane.
 		Image image = new Image("BeeAdoptedSmall.png");
 		ImageView header = new ImageView();
 		header.setImage(image);
 		head.getChildren().add(header);
+		
 		return head;
+	}
+	
+	/**
+	 * This method returns a Hbox with Ad and Agency information about the currently viewed Ad. 
+	 * 
+	 * @param Ad, Agency
+	 * @return Hbox containing Ad and Agency information
+	 */
+	
+	private static HBox showAd(Ad ad, Agency agency){
+		
+		// Creating the Hbox to be returned.
+		HBox hbox = new HBox();
+		hbox.setPadding(new Insets(10));
+		hbox.setSpacing(10);
+		
+		// Calling additional methods to retrieve the information.
+		hbox.getChildren().addAll(getAd(ad),getAgency(agency));
+		
+		return hbox;
 	}
 	
 	/**
@@ -75,6 +102,8 @@ public class ViewAd {
 	 */
 	
 	private static GridPane getAd(Ad ad) {
+		
+		// GridPane to be returned.
 		GridPane grid = new GridPane();							// Gridpane in which the Ad will be shown.
 		grid.setHgap(10);										// Horizontal gaps between columns.
 		grid.setVgap(10);										// Vertical gaps between columns.
@@ -82,40 +111,68 @@ public class ViewAd {
 		
 		// Labels for displaying information about said Ad.
 		Label name = new Label("Name: " + ad.getName());
-		grid.add(name,0,0);
 		Label species = new Label("Species: " + ad.getSpecies());
-		grid.add(species,1,0);
 		Label type = new Label("Type: " + ad.getType());
-		grid.add(type,0,1);
 		Label gender = new Label("Gender: " + ad.getGender());
-		grid.add(gender,1,1);
 		Label age = new Label("Age: " + ad.getAge());
-		grid.add(age,0,2);
 		Label description = new Label("Description: /n" + ad.getDescription());
+
+		// Adding said labels to the GridPane so that they are displayed in a particular order.
+		grid.add(name,0,0);
+		grid.add(species,1,0);
+		grid.add(type,0,1);
+		grid.add(gender,1,1);
+		grid.add(age,0,2);
 		grid.add(description,1,2);
 		
-		
-		// Button for adopting the Ad, this sets the scene to Adopted.
+		// Buttons for adopting or closing the ad.
 		Button adoptButton = new Button("Adopt");
-		grid.add(adoptButton, 0,3);
-		adoptButton.setOnAction(e -> window.setScene(scAdopt));	// If button Adopt is pressed it takes the user to the
-																// Adopted scene specified above.
-		// Closes the window and takes you back to the Ad overview.
 		Button closeButton = new Button("Close the window");
+
+		// Adding said buttons to the GridPane.
+		grid.add(adoptButton, 0,3);
 		grid.add(closeButton, 0, 4);
-		closeButton.setOnAction(e -> window.close());			// Closes the window.
+		
+		// Associating actions with the buttons.
+		adoptButton.setOnAction(e -> window.setScene(sceneAdopt));
+		closeButton.setOnAction(e -> window.close());
 		
 		return grid;
 	}
 	
+	/**
+	 * This method returns a Vbox containing information about the Agency that has the currently viewed Ad. 
+	 * 
+	 * @param agency
+	 * @return Vbox with agency information
+	 */
+	
 	private static VBox getAgency(Agency agency){
+		
+		// The Vbox to be returned.
 		VBox vbox = new VBox();
+		
 		vbox.setPadding(new Insets(10));
 		vbox.setSpacing(10);
 		
-		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE "
-				+ "Agencies.ID = " + agency.getID() + ";";
+		/*
+		 *  Notice that we need the complete information about an extended agency since the call to the DB expects all columns, even though we don't use all the 
+		 *	information.
+		 */
+		
+		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM "
+								+ "Agencies, Ratings, Addresses WHERE "
+								+ "Agencies.ID = Ratings.AgencyID and "
+								+ "Agencies.ID = Addresses.AgencyID and "
+								+ "Agencies.ID == " + agency.getID() + ";";
+		
+		// Saving all information about the Agency in extended format.
 		AgencyExtended agencyExtended = DatabaseCommunication.fetchAgencyExtended(sqlStatement).get(0);
+		
+		System.out.println("Shits not working");
+		System.out.println(agencyExtended);
+		
+		// Transfering the Agency information into labels.
 		Label name = new Label("Name: " + agencyExtended.getName());
 		Label rating = new Label("Rating: " + agencyExtended.getRating());
 		Label email = new Label("Email: " + agencyExtended.getEmail());
@@ -124,19 +181,10 @@ public class ViewAd {
 		Label zip = new Label("ZIP: " + agencyExtended.getZip());
 		Label city = new Label("City: " + agencyExtended.getCity());
 		
-		vbox.getChildren().addAll(name,rating,email,phone,street,zip,city);
+		// Adding all Agency information to the Vbox.
+		vbox.getChildren().addAll(name, rating, email, phone, street, zip, city);
 		
 		return vbox;
-	}
-	
-	private static HBox showAd(Ad ad, Agency agency){
-		HBox hbox = new HBox();
-		hbox.setPadding(new Insets(10));
-		hbox.setSpacing(10);
-		
-		hbox.getChildren().addAll(getAd(ad),getAgency(agency));
-		
-		return hbox;
 	}
 	
 	/**
@@ -155,7 +203,7 @@ public class ViewAd {
 		grid.setPadding(new Insets(0,10,0,10));						// Setting the padding around the content.
 		
 		// Label containing information to the shown to the user when pressing Adopt.
-		Label label = new Label("CONGRATULATIONS MOTHERTRUCKER!");	// Friendly message shown when Adopt is pressed.
+		Label label = new Label("CONGRATULATIONS!");				// Friendly message shown when Adopt is pressed.
 		grid.add(label, 0, 0);
 		
 		// Same function as in other scene. Closes the window.

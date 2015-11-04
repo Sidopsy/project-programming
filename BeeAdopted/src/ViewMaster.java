@@ -41,15 +41,15 @@ import javafx.stage.Stage;
 public class ViewMaster extends Application{
 
 	private static Stage window;
-	private static Scene sc1, sc2, sc3, sc4;
-	private static BorderPane layout1, layout2, layout3, layout4;
-	private static TableView<Ad> table = new TableView<Ad>();
+	private static Scene scene1, scene2, scene3, scene4;
+	private static BorderPane bpLayout1, bpLayout2, bpLayout3, bpLayout4;
+	private static TableView<Ad> tvAd = new TableView<Ad>();
 	private static ArrayList<Ad> theSearch = null;
-	private static ObservableList<Object> specieses, typeses, ageses, genderers;
-	private static ChoiceBox<Object> location, cb1, cb2, cb3, cb4;
-	private static TextField tf1;
+	private static ObservableList<Object> species1, type1, age1, gender1;
+	private static ChoiceBox<Object> cbLocation, cbSpecies, cbType, cbAge, cbGender;
+	private static TextField tfDescription;
 	private static Agency chosenAgency = null;
-	private static Button btn1;
+	private static Button btnSearch;
 	private static String city, species, type, age, gender, description;
 	private static boolean firstSearch;
 
@@ -72,19 +72,21 @@ public class ViewMaster extends Application{
 	 */
 	
 	public void start(Stage primaryStage){
-		VBox vbox = startLocation();		// Getting the locations to show in a dropdown menu.
+		
+		// Getting cities in which there are agencies to show in a choice box.
+		VBox firstPage = startLocation();
 
 		window = primaryStage;
 		window.setTitle("Marketplace");	
 
 		// Creating the window.
-		layout1 = new BorderPane();			// BorderPane layout is used.
-		layout1.setTop(header());			// Top element of the BorderPane is retrieved, which is the iAdopt image.
-		layout1.setCenter(vbox);			// Center element of BorderPane contains the dropdown vbox.
-		sc1 = new Scene(layout1,800,600);
+		bpLayout1 = new BorderPane();			// BorderPane layout is used.
+		bpLayout1.setTop(header());			// Top element of the BorderPane is retrieved, which is the iAdopt image.
+		bpLayout1.setCenter(firstPage);			// Center element of BorderPane contains the dropdown vbox.
+		scene1 = new Scene(bpLayout1, 800, 600);
 		
 		// Setting the currently open window to show the scene created above.
-		window.setScene(sc1);
+		window.setScene(scene1);
 		window.show();
 	}
 
@@ -96,24 +98,26 @@ public class ViewMaster extends Application{
 	
 	private StackPane header(){
 
-		StackPane head = new StackPane();				// The Vbox to be returned.
-		Image image = new Image(getClass().getResourceAsStream("BeeAdoptedLarge.png"));	// Specifying header image.
-		ImageView header = new ImageView();	
-		header.setImage(image);				// Adding image to ImageView to be able to be viewed.
-		header.setOnMouseClicked(e -> backToStart());
+		// The StackPane to be returned and used as a header.
+		StackPane header = new StackPane();
+		
+		// Specifying an image and adding it to the ImageView that is later to be added to the StackPane.
+		Image img = new Image(getClass().getResourceAsStream("BeeAdoptedLarge.png"));
+		ImageView headerImg = new ImageView();	
 
-		// Buttons for navigation inside the header element.
-		Button backButton = new Button("Back");
-		backButton.setOnAction(e -> goBack());
+		headerImg.setImage(img);								// Adding the image to ImageView so that it can be added to the StackPane.
+		headerImg.setOnMouseClicked(e -> backToStart());		// Click function to take the user back to the start page is also inserted into the header.
+
+		// Button for going back one step in the application.
+		Button btnBack = new Button("Back");
 		
-		// Adding the buttons to a Hbox to be displayed horizontally.
-		
+		btnBack.setOnAction(e -> goBack());
 
 		// All items created are added to Vbox.
-		head.getChildren().addAll(header,backButton);
-		head.setAlignment(Pos.CENTER_LEFT);
+		header.getChildren().addAll(headerImg, btnBack);
+		header.setAlignment(Pos.CENTER_LEFT);					// Alignment of the items to the center left so that the back button is in an obvious place.
 
-		return head;
+		return header;
 	}
 
 	/**
@@ -124,35 +128,37 @@ public class ViewMaster extends Application{
 	 */
 	
 	private VBox startLocation(){
-		VBox vbox = new VBox();							// The Vbox to be returned.
-		vbox.setPadding(new Insets(175));
-		vbox.setSpacing(40);
+		
+		// The Vbox to be returned.
+		VBox firstPage = new VBox();
+		
+		firstPage.setPadding(new Insets(175));
+		firstPage.setSpacing(40);
 
-		// This creates the dropdown menu and a label to specify what type of information the user should input.
-		Label label = new Label("Where are you?");
-		location = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Addresses", "City", null, null));
-		location.setValue(location.getItems().get(0));
+		// Displayed above the choicebox for cities to let the user know what to do.
+		Label lblLocation = new Label("Where are you?");
+
+		// This inputs information into the choicebox, namely the cities in which there are agencies.
+		cbLocation = new ChoiceBox<>(DatabaseCommunication.fetchAttribute("Addresses", "City", null, null));
+		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
 		
-		//TODO - save location and goto sc2
-		
-		// The dropdown has a guiding function that sends the user to a list of agencies in the specified location.
-		location.setOnAction(e -> {
-			city = (String) location.getValue();		// What location was input?
-			layout2 = new BorderPane();					// Preparing for a new scene.
-			layout2.setTop(header());					// Setting the header as before.
-			layout2.setCenter(startAgencies());			// Getting the center view for the next scene.
-			sc2 = new Scene(layout2,800,600);
-			window.setScene(sc2);
+		cbLocation.setOnAction(e -> {
+			city = (String) cbLocation.getValue();		// What location was input?
+			bpLayout2 = new BorderPane();					// Preparing for a new scene.
+			bpLayout2.setTop(header());					// Setting the header as before.
+			bpLayout2.setCenter(startAgencies());			// Getting the center view for the next scene which now will show a list of agencies in the input location.
+			scene2 = new Scene(bpLayout2, 800, 600);
+			window.setScene(scene2);
 		});
 		
-		// Input page button, guess what it does.
-		Button inputPage = new Button("Go to input page");
-		inputPage.setOnAction(e -> InputPage.display());
+		// Input page button to guide the user to the input section of the application.
+		Button btnInput = new Button("Go to input page");
+		btnInput.setOnAction(e -> InputPage.display());
 		
 		// Vbox is created using the items above.
-		vbox.getChildren().addAll(label, location, inputPage);
+		firstPage.getChildren().addAll(lblLocation, cbLocation, btnInput);
 		
-		return vbox;
+		return firstPage;
 	}
 
 	/**
@@ -160,62 +166,66 @@ public class ViewMaster extends Application{
 	 * 
 	 * @return TableView<Agency> that shows agencies
 	 */
-	
-	//TODO - present agencies on location (see below)
 
 	private TableView<Agency> startAgencies(){
+		
+		// For viewing the agencies in table form.
+		TableView<Agency> tableAgency = new TableView<>();
+
+		tableAgency.setEditable(true);												// Needed to be able to alter the table.
+		tableAgency.setRowFactory(tv -> {											// Adding actions to each of the tables rows.
+			TableRow<Agency> rowAgency = new TableRow<>();							
+			
+			rowAgency.setOnMouseClicked(event -> {									// The tables rows respond to mouse clicks.
+				if ( (event.getClickCount() == 1) && (!rowAgency.isEmpty()) ) {
+					chosenAgency = rowAgency.getItem();								// Reading what agency was chosen.
+					System.out.println("Agency number " + chosenAgency.getID() + "was chosen.");
+					firstSearch = true;												
+					search();
+					bpLayout3 = new BorderPane();
+					bpLayout3.setTop(header());
+					bpLayout3.setCenter(mainCenterView());
+					scene3 = new Scene(bpLayout3, 800, 600);
+					window.setScene(scene3);
+				}
+			});
+			return rowAgency;
+		});
+
+		// Nearly static sqlStatement for retrieving info on all agencies in the selected city. City is the only thing that changes from time to time.
 		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM "
 								+ "Agencies,Addresses,Ratings WHERE "
 								+ "Agencies.ID = Addresses.AgencyID and "
 								+ "Agencies.ID = Ratings.AgencyID and "
 								+ "Addresses.City == '" + city + "';";
 		
-		// For viewing the agencies
-		TableView<Agency> agencyTable = new TableView<>();
-		agencyTable.setEditable(true);
+		// Columns to be shown in the TableView.
+		TableColumn<Agency, String> colLogo = new TableColumn<>("Logo");
+		TableColumn<Agency, String> colName = new TableColumn<>("Agency");
+		TableColumn<Agency, String> colRating = new TableColumn<>("Rating");
+
+		colLogo.setCellValueFactory(new PropertyValueFactory<Agency, String>("logo"));
+		colLogo.setMinWidth(250);
+		colName.setCellValueFactory(new PropertyValueFactory<Agency, String>("name"));
+		colName.setMinWidth(300);
+		colRating.setCellValueFactory(new PropertyValueFactory<Agency, String>("rating"));
+		colRating.setMinWidth(250);
 		
-		TableColumn<Agency, String> logoCol = new TableColumn<>("Logo");
-		TableColumn<Agency, String> agencyCol = new TableColumn<>("Agency");
-		TableColumn<Agency, String> ratingCol = new TableColumn<>("Rating");
-		ObservableList<Agency> agencyList = FXCollections.observableArrayList
+		// Retrieving all agencies from the database.
+		ObservableList<Agency> listAgency = FXCollections.observableArrayList
 											(DatabaseCommunication.fetchAgency(sqlStatement));
 
-		agencyCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("name"));
-		agencyCol.setMinWidth(300);
-		logoCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("logo"));
-		logoCol.setMinWidth(250);
-		ratingCol.setCellValueFactory(new PropertyValueFactory<Agency,String>("rating"));
-		ratingCol.setMinWidth(250);
+		// Setting the table to display the ObservableList and use the columns created above.
+		tableAgency.setItems(listAgency);
+		tableAgency.getColumns().addAll(colLogo, colName, colRating);
 		
-		agencyTable.setRowFactory( tv -> {
-			TableRow<Agency> row = new TableRow<>();
-			row.setOnMouseClicked(event -> {
-				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
-					chosenAgency = row.getItem();
-					firstSearch = true;
-					search();
-					layout3 = new BorderPane();
-					layout3.setTop(header());
-					layout3.setCenter(mainCenterView());
-					sc3 = new Scene(layout3,800,600);
-					window.setScene(sc3);
-				}
-			});
-			return row ;
-		});
-		
-		agencyTable.setItems(agencyList);
-		agencyTable.getColumns().addAll(logoCol, agencyCol, ratingCol);
-		
-		return agencyTable;
+		return tableAgency;
 	}
-
-
-	//TODO - Get ChoiceBox.setValue to work
-
+	
 	/**
-	 * Search filter module
-	 * @return hbox with filter
+	 * This method contains filter options for searches. 
+	 * 
+	 * @return Hbox displaying filers
 	 */
 	
 	public HBox filter(){
@@ -223,102 +233,162 @@ public class ViewMaster extends Application{
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
 		
-		specieses = DatabaseCommunication.fetchAttribute("Ads", "Species", null, null);
-		typeses = DatabaseCommunication.fetchAttribute("Ads", "Type", null, null);
-		ageses = DatabaseCommunication.fetchAttribute("Ads", "Age", null, null);
-		genderers = DatabaseCommunication.fetchAttribute("Ads", "Gender", null, null);
+		species1 = DatabaseCommunication.fetchAttribute("Ads", "Species", null, null);
+		type1 = DatabaseCommunication.fetchAttribute("Ads", "Type", null, null);
+		age1 = DatabaseCommunication.fetchAttribute("Ads", "Age", null, null);
+		gender1 = DatabaseCommunication.fetchAttribute("Ads", "Gender", null, null);
 		
-		cb1 = new ChoiceBox<>(specieses);
-		cb1.setValue(cb1.getItems().get(0));
-		cb1.setOnAction(e -> {
-			species = (String) cb1.getValue();
-			typeses = DatabaseCommunication.fetchAttribute("Ads", "Type", "Species", (String) cb1.getValue());
-			cb2.setItems(typeses);
-			cb2.setValue("Type");
+		cbSpecies = new ChoiceBox<>(species1);
+		cbSpecies.setValue(cbSpecies.getItems().get(0));
+		cbSpecies.setOnAction(e -> {
+			species = (String) cbSpecies.getValue();
+			type1 = DatabaseCommunication.fetchAttribute("Ads", "Type", "Species", (String) cbSpecies.getValue());
+			cbType.setItems(type1);
+			cbType.setValue("Type");
 		});
 
-		cb2 = new ChoiceBox<>(typeses);
-		cb2.setValue(cb2.getItems().get(0));
-		cb2.setOnAction(e -> {
-			type = (String) cb2.getValue();
-			ageses = DatabaseCommunication.fetchAttribute("Ads", "Age", "Type", (String) cb2.getValue());
-			cb3.setItems(ageses);
-			cb3.setValue("Age");
+		cbType = new ChoiceBox<>(type1);
+		cbType.setValue(cbType.getItems().get(0));
+		cbType.setOnAction(e -> {
+			type = (String) cbType.getValue();
+			age1 = DatabaseCommunication.fetchAttribute("Ads", "Age", "Type", (String) cbType.getValue());
+			cbAge.setItems(age1);
+			cbAge.setValue("Age");
 		});
 
-		cb3 = new ChoiceBox<>(ageses);
-		cb3.setValue(cb3.getItems().get(0));
-		cb3.setOnAction(e -> {
-			age = (String) cb3.getValue();
-			genderers = DatabaseCommunication.fetchAttribute("Ads", "Gender", "Age", (String) cb3.getValue());
-			cb4.setItems(genderers);
-			cb4.setValue("Gender");
+		cbAge = new ChoiceBox<>(age1);
+		cbAge.setValue(cbAge.getItems().get(0));
+		cbAge.setOnAction(e -> {
+			age = (String) cbAge.getValue();
+			gender1 = DatabaseCommunication.fetchAttribute("Ads", "Gender", "Age", (String) cbAge.getValue());
+			cbGender.setItems(gender1);
+			cbGender.setValue("Gender");
 		});
 
-		cb4 = new ChoiceBox<>(genderers);
-		cb4.setValue(cb4.getItems().get(0));
-		cb4.setOnAction(e -> gender = (String) cb4.getValue());
+		cbGender = new ChoiceBox<>(gender1);
+		cbGender.setValue(cbGender.getItems().get(0));
+		cbGender.setOnAction(e -> gender = (String) cbGender.getValue());
 
-		tf1 = new TextField();
-		tf1.setPromptText("Description");
+		tfDescription = new TextField();
+		tfDescription.setPromptText("Description");
 
-		btn1 = new Button("Search");
-		btn1.setOnAction(e -> {
+		btnSearch = new Button("Search");
+		btnSearch.setOnAction(e -> {
 			search();
-			layout4 = new BorderPane();
-			layout4.setTop(header());
-			layout4.setCenter(mainCenterView());
-			table.refresh();
-			sc4 = new Scene(layout4,800,600);
-			window.setScene(sc4);
-			//			table.refresh();
-			//			layout3.requestLayout();
+			bpLayout4 = new BorderPane();
+			bpLayout4.setTop(header());
+			bpLayout4.setCenter(mainCenterView());
+			tvAd.refresh();
+			scene4 = new Scene(bpLayout4,800,600);
+			window.setScene(scene4);
 		});
 
-		hbox.getChildren().addAll(cb1,cb2,cb3,cb4,tf1,btn1);
+		hbox.getChildren().addAll(cbSpecies,cbType,cbAge,cbGender,tfDescription,btnSearch);
 
 		return hbox;
-
 	}
-
-
-	//TODO - present search results (see below)
-	public TableView<Ad> searchResults(){
+	
+	/**
+	 * This method has two functions. When you select an agency in scene 2 this method gets all ads for that specific agency. After this, you can specify conditions
+	 * for which ads you want to view.
+	 */
+	
+	public static void search(){
 		
+		// Search string to be sent to DB along with small parts of the statement.
+		String searchStatement, searchSpecies, searchType, searchAge, searchGender;
+		
+		// Null values are ignored as well as if the user left the cbs in their original posistions.
+		if (species != null && species != "Species"){
+			searchSpecies = " and Species == '" + species + "'";
+		} else {
+			searchSpecies = "";
+		}
+		
+		if (type != null && type != "Type"){
+			searchType = "and Type == '" + type + "'";
+		} else {
+			searchType = "";
+		}
+		
+		if (age != null && age != "Age"){
+			searchAge = " and Age == " + age;
+		} else {
+			searchAge = "";
+		}
+		
+		if (gender != null && gender != "Gender"){
+			searchGender = " and Gender == '" + gender + "'";;
+		} else {
+			searchGender = "";
+		}
+		
+		if (firstSearch == true){	
+			searchStatement = "SELECT * FROM "
+								+ "Ads, Agencies WHERE "
+								+ "Agencies.ID = Ads.AgencyID and "
+								+ "Agencies.ID == " + chosenAgency.getID() + ";";
+			firstSearch = false;
+		} else {
+			searchStatement = "SELECT * FROM "
+								+ "Ads, Agencies WHERE "
+								+ "Agencies.ID = Ads.AgencyID and "
+								+ "Agencies.ID == " + chosenAgency.getID() + 
+								searchSpecies + 
+								searchType + 
+								searchAge + 
+								searchGender + ";";
+			
+		}
+		
+		theSearch = DatabaseCommunication.fetchAd(searchStatement);
+		System.out.println(searchStatement);
+		System.out.println(theSearch.toString());
+	}
+	
+	/**
+	 * This method 
+	 * 
+	 * @return TableView<Ad>
+	 */
+	
+	public TableView<Ad> searchResults(){
 
+		// Columns to be added to the TableView.
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
 		TableColumn<Ad, String> genderCol = new TableColumn<>("Gender");
+		
 		pictureCol.setMinWidth(190);
 		speciesCol.setMinWidth(190);
 		typeCol.setMinWidth(190);
 		genderCol.setMinWidth(190);
 		
-	//	if(theSearch != null){
-			ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
+		ObservableList<Ad> adList = FXCollections.observableArrayList(theSearch);
 
-			pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
-			speciesCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("species"));
-			typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
-			genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
+		pictureCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("picture"));
+		speciesCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("species"));
+		typeCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("type"));
+		genderCol.setCellValueFactory(new PropertyValueFactory<Ad,String>("gender"));
 
-			table.setRowFactory( tv -> {
-				TableRow<Ad> row = new TableRow<>();
-				row.setOnMouseClicked(event -> {
-					if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
-						Ad ad = row.getItem();
-						ViewAd.display(ad.getName(), ad, chosenAgency);;
-					}
-				});
-				return row ;
+		tvAd.setRowFactory( tv -> {
+			TableRow<Ad> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
+		
+				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
+					Ad ad = row.getItem();
+					ViewAd.display(ad.getName(), ad, chosenAgency);;
+				}
 			});
+			return row ;
+		});
 
-			table.setItems(adList);
-	//	}
-		table.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol);
+		tvAd.setItems(adList);
+			
+		tvAd.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol);
 
-		return table;
+		return tvAd;
 	}
 
 	public VBox mainCenterView(){
@@ -335,20 +405,20 @@ public class ViewMaster extends Application{
 	 * Go to previous scene.
 	 */
 	private void goBack(){
-		if(window.getScene() == sc2){
-			window.setScene(sc1);
-		} else if (window.getScene() == sc3){
-			window.setScene(sc2);
-		} else if (window.getScene() == sc4){
+		if(window.getScene() == scene2){
+			window.setScene(scene1);
+		} else if (window.getScene() == scene3){
+			window.setScene(scene2);
+		} else if (window.getScene() == scene4){
 			firstSearch = true;
 			search();
-			layout3 = new BorderPane();
-			layout3.setTop(header());
-			layout3.setCenter(mainCenterView());
-			sc3 = new Scene(layout3,800,600);
-			window.setScene(sc3);
+			bpLayout3 = new BorderPane();
+			bpLayout3.setTop(header());
+			bpLayout3.setCenter(mainCenterView());
+			scene3 = new Scene(bpLayout3,800,600);
+			window.setScene(scene3);
 		} else {
-			window.setScene(sc1);
+			window.setScene(scene1);
 		}
 	}
 
@@ -357,46 +427,6 @@ public class ViewMaster extends Application{
 	 */
 
 	public void backToStart(){
-		window.setScene(sc1);
-	}
-
-	/**
-	 * Search the database for the chosen values
-	 */
-	
-	public static void search(){
-		String searchStatement, s, t, a, g, d;
-		if(species != null && species != "Species"){
-			s = " and Species == '" + species + "'";
-		} else {
-			s = "";
-		}
-		if(type != null && type != "Type"){
-			t = "and Type == '" + type + "'";
-		} else {
-			t = "";
-		}
-		if(age != null && age != "Age"){
-			a = " and Age == " + age;
-		} else {
-			a = "";
-		}
-		if(gender != null && gender != "Gender"){
-			g = " and Gender == '" + gender + "'";;
-		} else {
-			g = "";
-		}
-		if(firstSearch == true){	
-			searchStatement = "SELECT * FROM Ads, Agencies WHERE Agencies.ID == " + chosenAgency.getID() +";";
-			firstSearch = false;
-		} else {
-			searchStatement = "SELECT * FROM Ads, Agencies WHERE "
-					+ "Agencies.ID == " + chosenAgency.getID() + s + t + a + g + ";";
-
-		}
-
-		theSearch = DatabaseCommunication.fetchAd(searchStatement);
-		System.out.println(searchStatement);
-		System.out.println(theSearch.toString());
+		window.setScene(scene1);
 	}
 }

@@ -1,3 +1,4 @@
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -36,6 +37,6 @@ public class Agency {
 	}
 	
 	public String toString() {
-		return logo + " " + name + " " + rating;
+		return id + " " + logo + " " + name + " " + rating;
 	}
 }

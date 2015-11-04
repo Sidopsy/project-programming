@@ -1,3 +1,4 @@
+
 import javafx.beans.property.SimpleStringProperty;
 
 /**
@@ -21,6 +22,8 @@ public class AgencyExtended extends Agency {
 		this.zip = new SimpleStringProperty(zip);
 		this.city = new SimpleStringProperty(city);
 	}
+	
+	// TODO get the super calls to work!
 	
 	public int getID(){
 		return super.getID();
