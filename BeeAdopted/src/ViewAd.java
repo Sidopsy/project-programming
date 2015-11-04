@@ -108,6 +108,9 @@ public class ViewAd {
 		grid.setHgap(10);										// Horizontal gaps between columns.
 		grid.setVgap(10);										// Vertical gaps between columns.
 		grid.setPadding(new Insets(10,10,10,10));				// Setting the padding around the content.
+		grid.setStyle("-fx-border-style: solid;"
+                + "-fx-border-width: 1;"
+                + "-fx-border-color: black");
 		
 		// Labels for displaying information about said Ad.
 		Label name = new Label("Name: " + ad.getName());
@@ -115,7 +118,7 @@ public class ViewAd {
 		Label type = new Label("Type: " + ad.getType());
 		Label gender = new Label("Gender: " + ad.getGender());
 		Label age = new Label("Age: " + ad.getAge());
-		Label description = new Label("Description: /n" + ad.getDescription());
+		Label description = new Label("Description: " + ad.getDescription());
 
 		// Adding said labels to the GridPane so that they are displayed in a particular order.
 		grid.add(name,0,0);
@@ -137,6 +140,8 @@ public class ViewAd {
 		adoptButton.setOnAction(e -> window.setScene(sceneAdopt));
 		closeButton.setOnAction(e -> window.close());
 		
+		
+		
 		return grid;
 	}
 	
@@ -154,6 +159,9 @@ public class ViewAd {
 		
 		vbox.setPadding(new Insets(10));
 		vbox.setSpacing(10);
+		vbox.setStyle("-fx-border-style: solid;"
+                + "-fx-border-width: 1;"
+                + "-fx-border-color: black");
 		
 		/*
 		 *  Notice that we need the complete information about an extended agency since the call to the DB expects all columns, even though we don't use all the 
