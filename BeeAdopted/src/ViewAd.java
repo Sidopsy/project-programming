@@ -151,8 +151,14 @@ public class ViewAd {
 		
 		// The Vbox to be returned.
 		VBox vbox = new VBox();
+		
 		vbox.setPadding(new Insets(10));
 		vbox.setSpacing(10);
+		
+		/*
+		 *  Notice that we need the complete information about an extended agency since the call to the DB expects all columns, even though we don't use all the 
+		 *	information.
+		 */
 		
 		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM "
 								+ "Agencies, Ratings, Addresses WHERE "
@@ -173,7 +179,7 @@ public class ViewAd {
 		Label city = new Label("City: " + agencyExtended.getCity());
 		
 		// Adding all Agency information to the Vbox.
-		vbox.getChildren().addAll(name,rating,email,phone,street,zip,city);
+		vbox.getChildren().addAll(name, rating, email, phone, street, zip, city);
 		
 		return vbox;
 	}
