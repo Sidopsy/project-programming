@@ -209,15 +209,15 @@ public class DatabaseCommunication {
 	        // This while-loop adds the results to the arrayList.	        
 	        while (rs.next()) {
 	        	int id = rs.getInt("ID");
-	        	String name = rs.getString("Name");
 	        	String logo = rs.getString("Logo");
+	        	String name = rs.getString("Name");
 	        	String rating = rs.getString("AVG(Rating)");
 	        	String email = rs.getString("Email");
 	        	String phone = rs.getString("Phone");
 	        	String street = rs.getString("Street");
 	        	String zip = rs.getString("Zip");
 	        	String city = rs.getString("City");
-	        	AgencyExtended agency = new AgencyExtended(id, name, logo, rating, email, phone, street, zip, city);
+	        	AgencyExtended agency = new AgencyExtended(id, logo, name, rating, email, phone, street, zip, city);
 	        	result.add(agency);
 	        }
 	        

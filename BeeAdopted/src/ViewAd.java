@@ -24,8 +24,8 @@ import javafx.stage.Stage;
 
 public class ViewAd {
 	static Stage window;
-	static Scene scAd, scAdopt;
-	static BorderPane layoutAd, layoutAdopt;
+	static Scene sceneAd, sceneAdopt;
+	static BorderPane bpLayoutAd, bpLayoutAdopt;
 	
 	public static void display(String title, Ad ad, Agency agency){
 		window = new Stage();
@@ -36,20 +36,20 @@ public class ViewAd {
 		window.setMinWidth(250);							// set before anything is shown in this stage.
 		
 		// This is the Ad view of this Stage.
-		layoutAd = new BorderPane();
-		layoutAd.setTop(header());							// Show the iAdopt image.
-		layoutAd.setCenter(showAd(ad, agency));				// Center of the BorderPane will show the Ad.
-		scAd = new Scene(layoutAd,600,550);
+		bpLayoutAd = new BorderPane();
+		bpLayoutAd.setTop(header());						// Show the iAdopt image.
+		bpLayoutAd.setCenter(showAd(ad, agency));			// Center of the BorderPane will show the Ad.
+		sceneAd = new Scene(bpLayoutAd,600,550);
 				
 		// This is the view of the Ad once adopt is pressed.
-		layoutAdopt = new BorderPane();
+		bpLayoutAdopt = new BorderPane();
 		GridPane viewAdopt = adopted();
-		layoutAdopt.setTop(header());						// Show the iAdopt image.
-		layoutAdopt.setCenter(viewAdopt);					// Center of the BorderPane will show the Adopted layout.
-		scAdopt = new Scene(layoutAdopt,600,550);
+		bpLayoutAdopt.setTop(header());						// Show the iAdopt image.
+		bpLayoutAdopt.setCenter(viewAdopt);					// Center of the BorderPane will show the Adopted layout.
+		sceneAdopt = new Scene(bpLayoutAdopt,600,550);
 		
 		// Ad scene will be shown first and the App awaits instructions.
-		window.setScene(scAd);
+		window.setScene(sceneAd);
 		window.showAndWait();
 	}
 
@@ -134,7 +134,7 @@ public class ViewAd {
 		grid.add(closeButton, 0, 4);
 		
 		// Associating actions with the buttons.
-		adoptButton.setOnAction(e -> window.setScene(scAdopt));
+		adoptButton.setOnAction(e -> window.setScene(sceneAdopt));
 		closeButton.setOnAction(e -> window.close());
 		
 		return grid;
@@ -168,6 +168,9 @@ public class ViewAd {
 		
 		// Saving all information about the Agency in extended format.
 		AgencyExtended agencyExtended = DatabaseCommunication.fetchAgencyExtended(sqlStatement).get(0);
+		
+		System.out.println("Shits not working");
+		System.out.println(agencyExtended);
 		
 		// Transfering the Agency information into labels.
 		Label name = new Label("Name: " + agencyExtended.getName());
