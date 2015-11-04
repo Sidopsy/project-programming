@@ -36,6 +36,6 @@ public class Agency {
 	}
 	
 	public String toString() {
-		return logo + " " + name + " " + rating;
+		return id + " " + logo + " " + name + " " + rating;
 	}
 }
