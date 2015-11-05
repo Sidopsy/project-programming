@@ -152,7 +152,7 @@ public class DatabaseCommunication {
 	        	String name = rs.getString("Name");
 	        	String rating = rs.getString("AVG(Rating)");
 	        	String logo = rs.getString("Logo");
-	        	Agency agency = new Agency(id, name, rating, logo);
+	        	Agency agency = new Agency(id, logo, name, rating);
 	        	result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
 	        

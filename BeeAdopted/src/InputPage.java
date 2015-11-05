@@ -123,6 +123,7 @@ public class InputPage {
 		input.add(uploadText, 0,4);
 		
 		Button bowse = new Button("Browse");
+		bowse.setDisable(true);
 		input.add(bowse, 1, 4);
 
 		
@@ -139,7 +140,7 @@ public class InputPage {
 		System.out.println("BOB");
 		ArrayList<Agency> agencyID = DatabaseCommunication.fetchAgency("SELECT Agencies.ID,Name,AVG(Rating),Logo FROM Agencies,Ratings WHERE Agencies.ID = Ratings.AgencyID and Agencies.Name = '" + (String)cb1.getValue() + "';");
 		System.out.println(agencyID);
-		String insert = "INSERT INTO Ads (Name,Gender,Species,Type,Age,Description,AgencyID)";
+		String insert = "INSERT INTO Ads (Name,Species,Type,Gender,Age,Description,AgencyID)";
 		String values = 
 				" VALUES ('" + tf.getText()  + "', '"+ cb2.getValue() + "', '" 
 				+ cb3.getValue() + "', '" + cb5.getValue() + "', "

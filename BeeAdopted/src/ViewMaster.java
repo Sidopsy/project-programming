@@ -245,6 +245,7 @@ public class ViewMaster extends Application{
 			cbType.setDisable(false);
 			cbAge.setDisable(true);
 			cbGender.setDisable(true);
+			tfDescription.setDisable(false);
 		});
 
 		cbType = new ChoiceBox<>(type1);
@@ -277,6 +278,7 @@ public class ViewMaster extends Application{
 
 		tfDescription = new TextField();
 		tfDescription.setPromptText("Description");
+		tfDescription.setDisable(true);
 
 		btnSearch = new Button("Search");
 		btnSearch.setOnAction(e -> {
