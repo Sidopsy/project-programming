@@ -140,9 +140,9 @@ public class ViewMaster extends Application{
 		
 		cbLocation.setOnAction(e -> {
 			city = (String) cbLocation.getValue();		// What location was input?
-			bpLayout2 = new BorderPane();					// Preparing for a new scene.
+			bpLayout2 = new BorderPane();				// Preparing for a new scene.
 			bpLayout2.setTop(header());					// Setting the header as before.
-			bpLayout2.setCenter(startAgencies());			// Getting the center view for the next scene which now will show a list of agencies in the input location.
+			bpLayout2.setCenter(startAgencies());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
 			scene2 = new Scene(bpLayout2, 800, 600);
 			window.setScene(scene2);
 		});
