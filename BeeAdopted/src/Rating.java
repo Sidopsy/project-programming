@@ -8,16 +8,16 @@ import javafx.beans.property.SimpleStringProperty;
  */
 
 public class Rating {
-	private final SimpleStringProperty name, rating, comment;
+	private final SimpleStringProperty agency, rating, comment;
 	
 	public Rating(String name, String rating, String comment) {
-		this.name = new SimpleStringProperty(name);
+		this.agency = new SimpleStringProperty(name);
 		this.rating = new SimpleStringProperty(rating);
 		this.comment = new SimpleStringProperty(comment);
 	}
 	
 	public String getName(){
-		return name.get();
+		return agency.get();
 	}
 	
 	public String getRating(){
@@ -29,6 +29,6 @@ public class Rating {
 	}
 		
 	public String toString() {
-		return name + " " + rating + " " + comment;
+		return agency + " " + rating + " " + comment;
 	}
 }

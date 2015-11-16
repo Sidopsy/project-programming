@@ -175,7 +175,7 @@ public class ViewAd {
 								+ "Agencies.ID == " + agency.getID() + ";";
 		
 		// Saving all information about the Agency in extended format.
-		AgencyExtended agencyExtended = DatabaseCommunication.fetchAgencyExtended(sqlStatement).get(0);
+		AgencyExt agencyExtended = DatabaseCommunication.fetchAgencyExt(sqlStatement).get(0);
 		
 		System.out.println("Shits not working");
 		System.out.println(agencyExtended);

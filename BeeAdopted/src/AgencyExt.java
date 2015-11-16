@@ -10,11 +10,11 @@ import javafx.beans.property.SimpleStringProperty;
  * @since 10-26-15
  */
 
-public class AgencyExtended extends Agency {
+public class AgencyExt extends Agency {
 	private final SimpleStringProperty email, phone, street, zip, city;
 	
-	public AgencyExtended(int id, String logo, String name, String rating, String email, 
-							String phone, String street, String zip, String city) {
+	public AgencyExt(String id, String logo, String name, String rating, String email, 
+						  String phone, String street, String zip, String city) {
 		super(id, logo, name, rating);
 		this.email = new SimpleStringProperty(email);
 		this.phone = new SimpleStringProperty(phone);
@@ -23,41 +23,39 @@ public class AgencyExtended extends Agency {
 		this.city = new SimpleStringProperty(city);
 	}
 	
-	// TODO get the super calls to work!
-	
-	public int getID(){
+	public String getID() {
 		return super.getID();
 	}
 	
-	public String getLogo(){
+	public String getLogo() {
 		return super.getLogo();
 	}
 	
-	public String getName(){
+	public String getName() {
 		return super.getName();
 	}
 	
-	public String getRating(){
+	public String getRating() {
 		return super.getRating();
 	}
 	
-	public String getEmail(){
+	public String getEmail() {
 		return email.get();
 	}
 	
-	public String getPhone(){
+	public String getPhone() {
 		return phone.get();
 	}
 	
-	public String getStreet(){
+	public String getStreet() {
 		return street.get();
 	}
 	
-	public String getZip(){
+	public String getZip() {
 		return zip.get();
 	}
 	
-	public String getCity(){
+	public String getCity() {
 		return city.get();
 	}
 			

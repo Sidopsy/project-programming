@@ -10,60 +10,59 @@ import javafx.beans.property.SimpleStringProperty;
  */
 
 public class Ad {
-	private final SimpleStringProperty picture, name, gender, species, type, description, startDate, endDate;
-	private final SimpleIntegerProperty id, age;
+	private final SimpleStringProperty agency, picture, name, gender, species, type, age, description, startDate, endDate;
 
-	public Ad(int id, String picture, String name, String gender, String species, String type, 
-				int age, String description, String start, String end) {
-		this.id = new SimpleIntegerProperty(id);
+	public Ad(String agency, String picture, String name, String gender, String species, String type, 
+			  String age, String description, String start, String end) {
+		this.agency = new SimpleStringProperty(agency);
 		this.picture = new SimpleStringProperty(picture);
 		this.name = new SimpleStringProperty(name);
 		this.gender = new SimpleStringProperty(gender);
 		this.species = new SimpleStringProperty(species);
 		this.type = new SimpleStringProperty(type);
-		this.age = new SimpleIntegerProperty(age);
+		this.age = new SimpleStringProperty(age);
 		this.description = new SimpleStringProperty(description);
 		this.startDate = new SimpleStringProperty(start);
 		this.endDate = new SimpleStringProperty(end);
 	}
 	
-	public int getID(){
-		return id.get();
+	public String getAgency() {
+		return agency.get();
 	}
 	
-	public String getPicture(){
+	public String getPicture() {
 		return picture.get();
 	}
 	
-	public String getName(){
+	public String getName() {
 		return name.get();
 	}
 	
-	public String getGender(){
+	public String getGender() {
 		return gender.get();
 	}
 	
-	public String getSpecies(){
+	public String getSpecies() {
 		return species.get();
 	}
 	
-	public String getType(){
+	public String getType() {
 		return type.get();
 	}
 	
-	public int getAge(){
+	public String getAge() {
 		return age.get();
 	}
 	
-	public String getDescription(){
+	public String getDescription() {
 		return description.get();
 	}
 	
-	public String getStartDate(){
+	public String getStartDate() {
 		return startDate.get();
 	}
 	
-	public String getEndDate(){
+	public String getEndDate() {
 		return endDate.get();
 	}
 	
