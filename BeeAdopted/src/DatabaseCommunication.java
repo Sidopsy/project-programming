@@ -16,62 +16,6 @@ import javafx.scene.control.Separator;
  */
 
 public class DatabaseCommunication {
-	
-	/*
-	 * Just a few test queries for the DB to get you aquainted with how the different methods work. There is no example
-	 * for inserting yet! For good reason... Don't flood the DB with crap pls.
-	 */
-
-	public static void main(String args[]) {
-//		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM Agencies, Addresses, Ratings WHERE "
-//				+ "Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and City = 'Götlaborg';";
-//
-//		ArrayList<Agency> result = fetchAgency(sqlStatement);
-//		
-//		for (Agency s : result) {
-//			System.out.println(s); 
-//		}
-//		
-//		ArrayList<Ad> result1 = fetchAd(sqlStatement);
-//		
-//		for (Ad s : result1) {
-//			System.out.println(s);
-//		}
-//		
-//		sqlStatement = "SELECT Name, Logo, AVG(Rating) FROM Agencies, Ratings WHERE "
-//				+ "Agencies.ID = Ratings.AgencyID GROUP BY Agencies.ID;";		
-//		ArrayList<Agency> result2 = fetchAgency(sqlStatement);
-//	
-//		// Prints all results from the fetch.		
-//		for (Agency t : result2) {
-//			System.out.println(t);
-//		}
-//
-//		
-//		sqlStatement = "SELECT Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM Agencies, Ratings, Addresses WHERE "
-//				+ "Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID GROUP BY Name;";
-//		ArrayList<AgencyExtended> result3 = fetchAgencyExtended(sqlStatement);
-//		
-//		// Prints all results from the fetch.
-//		for (AgencyExtended u : result3) {
-//			System.out.println(u);
-//		}
-//		
-//		
-//		sqlStatement = "SELECT Name,Rating,Comment FROM Ratings, Agencies WHERE Agencies.ID = Ratings.AgencyID;";
-//				
-//		ArrayList<Rating> result4 = fetchRating(sqlStatement);
-//		
-//		// well waddya know, it prints the results.
-//		for (Rating v : result4) {
-//			System.out.println(v);
-//		}
-//		
-//		sqlStatement = "INSERT INTO Ads (AgencyID,Name,Gender,Species,Type,Age,Description) VALUES "
-//				+ "(6,'Lucifer','Male','Devil','Red',666,'Omg so evil');";
-//		
-//		insertUpdateDelete(sqlStatement);
-	}
 			
 	/**
 	 * Method for fetching appropriate information about ads for displaying in the application.
@@ -97,17 +41,17 @@ public class DatabaseCommunication {
 	    	ResultSet rs = stmt.executeQuery(sqlStatement);				// Executing incoming query.
 
 	        while (rs.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
-	        	int id = rs.getInt("ID");
+	        	String agency = rs.getString("AgencyID");
 	        	String picture = rs.getString("Picture");
 	        	String name = rs.getString("Name");
 	        	String gender = rs.getString("Gender");
 	        	String species = rs.getString("Species");
 	        	String type = rs.getString("Type");
-	        	int age = rs.getInt("Age");
+	        	String age = rs.getString("Age");
 	        	String description = rs.getString("Description");
 	        	String startDate = rs.getString("StartDate");
 	        	String endDate = rs.getString("EndDate");
-	        	Ad ad = new Ad(id, picture, name, gender, species, type, age, description, startDate, endDate);
+	        	Ad ad = new Ad(agency, picture, name, gender, species, type, age, description, startDate, endDate);
 	        	result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
 	        rs.close();			// It is good practice to always close all connections when the information has been retrieved.
@@ -148,7 +92,7 @@ public class DatabaseCommunication {
 	        ResultSet rs = stmt.executeQuery(sqlStatement);				// Executing incoming query.
 	        
 	        while (rs.next()) {											// This while-loop adds the results to the arrayList.
-	        	int id = rs.getInt("ID");
+	        	String id = rs.getString("ID");
 	        	String name = rs.getString("Name");
 	        	String rating = rs.getString("AVG(Rating)");
 	        	String logo = rs.getString("Logo");
@@ -177,8 +121,8 @@ public class DatabaseCommunication {
 	 * @return ArrayLisy<AgencyExtended>
 	 */
 	
-	public static ArrayList<AgencyExtended> fetchAgencyExtended(String sqlStatement) {
-		ArrayList<AgencyExtended> result = new ArrayList<>();
+	public static ArrayList<AgencyExt> fetchAgencyExt(String sqlStatement) {
+		ArrayList<AgencyExt> result = new ArrayList<>();
 		Connection conn = null;
 		Statement stmt = null;
 	    
@@ -194,7 +138,7 @@ public class DatabaseCommunication {
 	        ResultSet rs = stmt.executeQuery(sqlStatement);				// Executing incoming query.
        
 	        while (rs.next()) {											// This while-loop adds the results to the arrayList.
-	        	int id = rs.getInt("ID");
+	        	String id = rs.getString("ID");
 	        	String logo = rs.getString("Logo");
 	        	String name = rs.getString("Name");
 	        	String rating = rs.getString("AVG(Rating)");
@@ -203,7 +147,7 @@ public class DatabaseCommunication {
 	        	String street = rs.getString("Street");
 	        	String zip = rs.getString("Zip");
 	        	String city = rs.getString("City");
-	        	AgencyExtended agency = new AgencyExtended(id, logo, name, rating, email, phone, street, zip, city);
+	        	AgencyExt agency = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
 	        	result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
 	                

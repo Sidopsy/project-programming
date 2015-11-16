@@ -45,12 +45,12 @@ public class ViewMaster extends Application{
 	private static BorderPane bpLayout1, bpLayout2, bpLayout3, bpLayout4;
 	private static TableView<Ad> tvAd = new TableView<Ad>();
 	private static ArrayList<Ad> theSearch = null;
-	private static ObservableList<Object> species1, type1, age1, gender1;
 	private static ChoiceBox<Object> cbLocation, cbSpecies, cbType, cbAge, cbGender;
 	private static TextField tfDescription;
 	private static Agency chosenAgency = null;
 	private static Button btnSearch;
 	private static String city, species, type, age, gender, description;
+	private static ObservableList<Object> obsListSpecies, obsListType, obsListAge, obsListGender;
 	private static boolean firstSearch;
 
 	/**
@@ -230,17 +230,17 @@ public class ViewMaster extends Application{
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
 		
-		species1 = DatabaseCommunication.fetchAttribute("Ads", "Species", null, null);
-		type1 = DatabaseCommunication.fetchAttribute("Ads", "Type", null, null);
-		age1 = DatabaseCommunication.fetchAttribute("Ads", "Age", null, null);
-		gender1 = DatabaseCommunication.fetchAttribute("Ads", "Gender", null, null);
+		obsListSpecies = DatabaseCommunication.fetchAttribute("Ads", "Species", null, null);
+		obsListType = DatabaseCommunication.fetchAttribute("Ads", "Type", null, null);
+		obsListAge = DatabaseCommunication.fetchAttribute("Ads", "Age", null, null);
+		obsListGender = DatabaseCommunication.fetchAttribute("Ads", "Gender", null, null);
 		
-		cbSpecies = new ChoiceBox<>(species1);
+		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
 		cbSpecies.setOnAction(e -> {
 			species = (String) cbSpecies.getValue();
-			type1 = DatabaseCommunication.fetchAttribute("Ads", "Type", "Species", (String) cbSpecies.getValue());
-			cbType.setItems(type1);
+			obsListType = DatabaseCommunication.fetchAttribute("Ads", "Type", "Species", (String) cbSpecies.getValue());
+			cbType.setItems(obsListType);
 			cbType.setValue("Type");
 			cbType.setDisable(false);
 			cbAge.setDisable(true);
@@ -248,30 +248,30 @@ public class ViewMaster extends Application{
 			tfDescription.setDisable(false);
 		});
 
-		cbType = new ChoiceBox<>(type1);
+		cbType = new ChoiceBox<>(obsListType);
 		cbType.setValue(cbType.getItems().get(0));
 		cbType.setDisable(true);
 		cbType.setOnAction(e -> {
 			type = (String) cbType.getValue();
-			age1 = DatabaseCommunication.fetchAttribute("Ads", "Age", "Type", (String) cbType.getValue());
-			cbAge.setItems(age1);
+			obsListAge = DatabaseCommunication.fetchAttribute("Ads", "Age", "Type", (String) cbType.getValue());
+			cbAge.setItems(obsListAge);
 			cbAge.setValue("Age");
 			cbAge.setDisable(false);
 			cbGender.setDisable(true);
 		});
 
-		cbAge = new ChoiceBox<>(age1);
+		cbAge = new ChoiceBox<>(obsListAge);
 		cbAge.setValue(cbAge.getItems().get(0));
 		cbAge.setDisable(true);
 		cbAge.setOnAction(e -> {
 			age = (String) cbAge.getValue();
-			gender1 = DatabaseCommunication.fetchAttribute("Ads", "Gender", "Age", (String) cbAge.getValue());
-			cbGender.setItems(gender1);
+			obsListGender = DatabaseCommunication.fetchAttribute("Ads", "Gender", "Age", (String) cbAge.getValue());
+			cbGender.setItems(obsListGender);
 			cbGender.setValue("Gender");
 			cbGender.setDisable(false);
 		});
 
-		cbGender = new ChoiceBox<>(gender1);
+		cbGender = new ChoiceBox<>(obsListGender);
 		cbGender.setValue(cbGender.getItems().get(0));
 		cbGender.setDisable(true);
 		cbGender.setOnAction(e -> gender = (String) cbGender.getValue());

@@ -10,33 +10,32 @@ import javafx.beans.property.SimpleStringProperty;
  */
 
 public class Agency {
-	private final SimpleStringProperty logo, name, rating;
-	private final SimpleIntegerProperty id;
+	private final SimpleStringProperty id, logo, name, rating;
 	
-	public Agency(int id, String logo, String name, String rating) {
-		this.id = new SimpleIntegerProperty(id);
+	public Agency(String id, String logo, String name, String rating) {
+		this.id = new SimpleStringProperty(id);
 		this.logo = new SimpleStringProperty(logo);
 		this.name = new SimpleStringProperty(name);
 		this.rating = new SimpleStringProperty(rating);
 	}
-
-	public int getID(){
+	
+	public String getID() {
 		return id.get();
 	}
 	
-	public String getLogo(){
+	public String getLogo() {
 		return logo.get();
 	}
 	
-	public String getName(){
+	public String getName() {
 		return name.get();
 	}
 		
-	public String getRating(){
+	public String getRating() {
 		return rating.get();
 	}
 	
 	public String toString() {
-		return id + " " + logo + " " + name + " " + rating;
+		return logo + " " + name + " " + rating;
 	}
 }
