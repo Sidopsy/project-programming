@@ -27,7 +27,7 @@ public class ViewAd {
 	static Scene sceneAd, sceneAdopt;
 	static BorderPane bpLayoutAd, bpLayoutAdopt;
 	
-	public static void display(String title, Ad ad, Agency agency){
+	public static void display(String title, Ad ad){
 		window = new Stage();
 				
 		// Sets Modality and window title.
@@ -38,7 +38,7 @@ public class ViewAd {
 		// This is the Ad view of this Stage.
 		bpLayoutAd = new BorderPane();
 		bpLayoutAd.setTop(header());						// Show the iAdopt image.
-		bpLayoutAd.setCenter(showAd(ad, agency));			// Center of the BorderPane will show the Ad.
+		bpLayoutAd.setCenter(showAd(ad, ad.getAgencyID()));			// Center of the BorderPane will show the Ad.
 		sceneAd = new Scene(bpLayoutAd,600,550);
 				
 		// This is the view of the Ad once adopt is pressed.
@@ -80,7 +80,7 @@ public class ViewAd {
 	 * @return Hbox containing Ad and Agency information
 	 */
 	
-	private static HBox showAd(Ad ad, Agency agency){
+	private static HBox showAd(Ad ad, int agencyID){
 		
 		// Creating the Hbox to be returned.
 		HBox hbox = new HBox();
@@ -88,7 +88,7 @@ public class ViewAd {
 		hbox.setSpacing(10);
 		
 		// Calling additional methods to retrieve the information.
-		hbox.getChildren().addAll(getAd(ad),getAgency(agency));
+		hbox.getChildren().addAll(getAd(ad),getAgency(agencyID));
 		
 		return hbox;
 	}
@@ -152,7 +152,7 @@ public class ViewAd {
 	 * @return Vbox with agency information
 	 */
 	
-	private static VBox getAgency(Agency agency){
+	private static VBox getAgency(int agencyID){
 		
 		// The Vbox to be returned.
 		VBox vbox = new VBox();
@@ -172,7 +172,7 @@ public class ViewAd {
 								+ "Agencies, Ratings, Addresses WHERE "
 								+ "Agencies.ID = Ratings.AgencyID and "
 								+ "Agencies.ID = Addresses.AgencyID and "
-								+ "Agencies.ID == " + agency.getID() + ";";
+								+ "Agencies.ID == " + agencyID + ";";
 		
 		// Saving all information about the Agency in extended format.
 		AgencyExt agencyExtended = DatabaseCommunication.fetchAgencyExt(sqlStatement).get(0);

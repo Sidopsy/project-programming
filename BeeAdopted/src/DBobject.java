@@ -30,7 +30,7 @@ public class DBobject {
 
 	public DBobject() {
 		this.dbType = "jdbc:sqlite:";
-		this.dbName = "BeeHive2";
+		this.dbName = "BeeHive";
 		this.dbDriver = "org.sqlite.JDBC";
 		
 		System.out.println(">> Loading driver");

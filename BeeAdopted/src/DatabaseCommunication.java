@@ -51,7 +51,7 @@ public class DatabaseCommunication {
 	        	String description = rs.getString("Description");
 	        	String startDate = rs.getString("StartDate");
 	        	String endDate = rs.getString("EndDate");
-	        	Ad ad = new Ad(agency, picture, name, gender, species, type, age, description, startDate, endDate);
+	        	Ad ad = new Ad(0, agency, picture, name, gender, species, 0, type, age, description, 0, startDate, endDate);
 	        	result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
 	        rs.close();			// It is good practice to always close all connections when the information has been retrieved.
