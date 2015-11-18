@@ -38,61 +38,61 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class DBtests {
+public class DBtests extends Application {
 	public static Stage window;
 	public static Scene one;
 	public static BorderPane layout1;
 	public static ChoiceBox<Object> cb1;
 	
-	public static void main(String[] args) throws SQLException {
-		DBobject db = new DBobject();
-		String sql = "SELECT * FROM Ads;";
-		ArrayList<ArrayList<String>> results;
+	public static void main(String[] args) {
+		launch(args);
+//		DBobject db = new DBobject();
+//		String sql = "SELECT * FROM Ads;";
+//		ArrayList<ArrayList<String>> results;
+//		
+//		// Testing out foreign key constraints through inserts and deletions:
+//		sql = "DELETE FROM Agencies WHERE ID = 6;";
+//
+//		db.executeUpdate(sql);
 		
-		// Testing out foreign key constraints through inserts and deletions:
-		sql = "DELETE FROM Agencies WHERE ID = 6;";
-
-		db.executeUpdate(sql);
-		
-	
+	}
 		
 		
 		
 		// Tried making an ObservableList with a specific query, works! Remember to add "extends Application" in the class declaration if you wanna test.
-//		public void start(Stage primaryStage) throws SQLException {
-//		
-//			window = primaryStage;
-//			window.setTitle("Marketplace");	
-//
-//			// Creating the window.
-//			insert();
-//			layout1 = new BorderPane();					// BorderPane layout is used.
-//			layout1.setCenter(cb1);						// Top element of the BorderPane is retrieved, which is the iAdopt image.
-//			one = new Scene(layout1, 800, 600);	
-//			
-//			// Setting the currently open window to show the scene created above.
-//			window.setScene(one);
-//			window.show();
-//			
-//		}
+		public void start(Stage primaryStage) throws SQLException {
+		
+			window = primaryStage;
+			window.setTitle("Marketplace");	
+
+			// Creating the window.
+			insert();
+			layout1 = new BorderPane();					// BorderPane layout is used.
+			layout1.setCenter(cb1);						// Top element of the BorderPane is retrieved, which is the iAdopt image.
+			one = new Scene(layout1, 800, 600);	
+			
+			// Setting the currently open window to show the scene created above.
+			window.setScene(one);
+			window.show();
+		}
 		
 		
 		// Tested making an observableList with a specific query, works!
-//		public void insert() throws SQLException {
-//			
-//			String sql = "SELECT Age FROM Ads ORDER BY Age;";		
-//			DBobject db = new DBobject();
-//			
-//			db.resultSet = db.executeQuery(sql);
-//			
-//			ArrayList<ArrayList<String>> result = DBobject.fetchResult(db.resultSet);
-//			
-//			for (int i = 0; i < result.size(); i++) {
-//				System.out.println(result.get(i));
-//			}
-//			
-//			cb1 = new ChoiceBox<>(DBobject.createObservableList(result));
-//		}
+		public void insert() throws SQLException {
+			
+			String sql = "SELECT Name, Age FROM Ads;";		
+			DBobject db = new DBobject();
+			
+			db.resultSet = db.executeQuery(sql);
+			
+			ArrayList<ArrayList<String>> result = DBobject.fetchResult(db.resultSet);
+			
+			for (int i = 0; i < result.size(); i++) {
+				System.out.println(result.get(i));
+			}
+			
+			cb1 = new ChoiceBox<>(DBobject.createObservableList(result));
+		}
 		
 		
 		// Trying out the metaDataHandler
@@ -146,4 +146,3 @@ public class DBtests {
 //		db.foreignKeysOn();
 //		db.closeConnection();
 	}
-}

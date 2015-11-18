@@ -284,9 +284,11 @@ public class DBobject {
 	public static ObservableList<Object> createObservableList(ArrayList<ArrayList<String>> input) {
 		ObservableList<Object> resultList = FXCollections.observableArrayList(new Separator());
 		
-		for (int index = 0; input.size() > index; index++) {
-			ArrayList<String> fetch = input.get(index);
-			resultList.add(fetch.get(0));
+		for (int i = 0; input.size() > i; i++) {
+			ArrayList<String> fetch = input.get(i);
+			for (int j = 0; fetch.size() > j; j++) {
+				resultList.add(fetch.get(j));
+			}
 		}
 		return resultList;
 	}
