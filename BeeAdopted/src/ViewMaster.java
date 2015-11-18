@@ -109,7 +109,7 @@ public class ViewMaster extends Application {
 		headerImg.setOnMouseClicked(e -> backToStart());		// Click function to take the user back to the start page is also inserted into the header.
 
 		// Button for going back one step in the application.
-		Button btnBack = new Button("Back");
+		btnBack = new Button("Back");
 		btnBack.setOnAction(e -> goBack());
 		btnBack.setVisible(false);
 
@@ -148,15 +148,18 @@ public class ViewMaster extends Application {
 		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
 		
 		cbLocation.setOnAction(e -> {
+			if(!cbLocation.getValue().equals("Table")){
 			city = (String) cbLocation.getValue();		// What location was input?
 			firstSearch = true;												
 			search();
+			System.out.println("Bobo");
 			bpLayout2 = new BorderPane();				// Preparing for a new scene.
 			bpLayout2.setTop(header());					// Setting the header as before.
-			btnBack.setVisible(true);
 			bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
+			btnBack.setVisible(true);
 			scene2 = new Scene(bpLayout2, 800, 600);
 			window.setScene(scene2);
+			}
 		});
 		
 		// Input page button to guide the user to the input section of the application.
@@ -405,6 +408,7 @@ public class ViewMaster extends Application {
 	 */
 	
 	public TableView<Object> searchResults(){
+		tvAd = new TableView<Object>();
 
 		// Columns to be added to the TableView.
 		TableColumn<Object, String> pictureCol = new TableColumn<>("Picture");
@@ -444,7 +448,7 @@ public class ViewMaster extends Application {
 
 		tvAd.setItems(adList);
 			
-		tvAd.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol);
+		tvAd.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol, agencyCol, ratingCol);
 
 		return tvAd;
 	}
