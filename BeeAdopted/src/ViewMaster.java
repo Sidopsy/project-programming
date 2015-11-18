@@ -76,10 +76,10 @@ public class ViewMaster extends Application{
 		window.setTitle("Marketplace");	
 
 		// Creating the window.
-		bpLayout1 = new BorderPane();			// BorderPane layout is used.
-		bpLayout1.setTop(header());			// Top element of the BorderPane is retrieved, which is the iAdopt image.
-		bpLayout1.setCenter(startLocation());			// Center element of BorderPane contains the dropdown vbox.
-		scene1 = new Scene(bpLayout1, 800, 600);
+		bpLayout1 = new BorderPane();				// BorderPane layout is used.
+		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
+		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
+		scene1 = new Scene(bpLayout1, 800, 600);	
 		
 		// Setting the currently open window to show the scene created above.
 		window.setScene(scene1);

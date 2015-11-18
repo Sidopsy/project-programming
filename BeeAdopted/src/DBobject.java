@@ -17,23 +17,21 @@ import javafx.scene.control.Separator;
  */
 
 public class DBobject {
-	public Connection connect = null;
+	private Connection connect = null;
 	public PreparedStatement stmt = null;
 	public ResultSet resultSet = null;
-	public final String dbType;
-	public final String dbName;
-	public final String dbDriver;
-	public final int dbTimeOut;
+	private final String dbType;
+	private final String dbName;
+	private final String dbDriver;
 
-	/*
+	/**
 	 * Just an empty constructor call to load the driver and start connecting to the database.
 	 */
 
 	public DBobject() {
 		this.dbType = "jdbc:sqlite:";
-		this.dbName = "BeeHive";
+		this.dbName = "BeeHive2";
 		this.dbDriver = "org.sqlite.JDBC";
-		this.dbTimeOut = 30;
 		
 		System.out.println(">> Loading driver");
 		try {
@@ -81,7 +79,8 @@ public class DBobject {
 		while (resultSet.next()) {
 			foreignKeyStatus = resultSet.getInt("foreign_keys");
 		}
-
+		resultSet.close();
+		
 		return foreignKeyStatus == 1;
 	}
 	
@@ -90,11 +89,11 @@ public class DBobject {
 	 * 
 	 * @throws SQLException
 	 */
-
+	
 	public ResultSet executeQuery(String query) throws SQLException {
 		System.out.println(">> Executing query");
 		stmt = connect.prepareStatement(query);
-		ResultSet resultSet = stmt.executeQuery();
+		resultSet = stmt.executeQuery();
 		
 		connect.commit();
 		
@@ -102,29 +101,59 @@ public class DBobject {
 	}
 
 	/**
+	 * Execute single updates to the database, use batch if more than one insert, delect or update is to be carried out at one
+	 * time.
+	 * 
+	 * @param String update
+	 * @throws SQLException
+	 */
+	
+	public void executeUpdate(String update) throws SQLException {
+		System.out.println(">> Executing update");
+		stmt = connect.prepareStatement(update);
+		stmt.executeUpdate();
+		
+		connect.commit();
+	}
+	
+	/**
 	 * Adds update to batch to be executed at a later point.
+	 * 
+	 * NOT IN WORKING CONDITION!
 	 * 
 	 * @throws SQLException
 	 */
 	
-	public void addBatch(String update) throws SQLException {
+	public void addBatch(String update) {
 		System.out.println(">> Adding update to batch");
-		stmt = connect.prepareStatement(update);
+		try {
+			stmt = connect.prepareStatement(update);
+			stmt.addBatch();
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
 		
-		stmt.addBatch();
 	}
 	
 	/**
 	 * Executes updates to the database that are batched into the prepared statement.
+	 * 
+	 * NOT IN WORKING CONDITION!
 	 * 
 	 * @throws Exception
 	 */
 
 	public void executeBatch() throws SQLException {
 		System.out.println(">> Executing batch update(s)");
-		stmt.executeBatch();
+		try {
+			stmt.executeBatch();
+			stmt.clearBatch();
 		
-		connect.commit();
+			connect.commit();
+		
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
 	}
 
 	/**
@@ -145,6 +174,14 @@ public class DBobject {
 	 */
 
 	public void closeConnection() throws SQLException {
+		System.out.println(">> Closing ResultSet");
+		if (resultSet != null) {
+			resultSet.close();
+		}
+		else {
+			System.out.println(">> Nothing in ResultSet, cannot close");
+		}
+		
 		System.out.println(">> Closing statement");
 		if (stmt != null) {
 			stmt.close();
@@ -169,16 +206,11 @@ public class DBobject {
 	 * @return Integer representing number of ResultSet columns
 	 */
 	
-	public int getColumnCount(ResultSet input) {
+	public static int getColumnCount(ResultSet input) throws SQLException {
 	    int iOutput = 0;
-	   
-	    try {
-	    	ResultSetMetaData rsMetaData = input.getMetaData();
-	    	iOutput = rsMetaData.getColumnCount();
-	    } catch (Exception e) {
-	    	System.out.println(e);
-	    	return -1;
-	    }
+	   	ResultSetMetaData rsMetaData = input.getMetaData();
+	   	iOutput = rsMetaData.getColumnCount();
+	   	
 	    return iOutput;
 	}
 	
@@ -189,20 +221,15 @@ public class DBobject {
 	 * @return String[] with all column names
 	 */
 
-	public static String[] metaDataNames(ResultSet input) {
-		String exceptionArray[] = null;									// Every possible outcome needs to return an array, this is for if there is a problem.
+	public static String[] metaDataNames(ResultSet input) throws SQLException {
+		ResultSetMetaData rsMeta = input.getMetaData();				// Getting all metaData from ResultSet.
+		String nameArray[] = new String[getColumnCount(input)];		// Counting columns to determine size of the array, starts at 1 so no need for -1.
 		
-		try {
-			ResultSetMetaData rsMeta = input.getMetaData();				// Getting all metaData from ResultSet.
-			String nameArray[] = new String[rsMeta.getColumnCount()];	// Counting columns to determine size of the array, starts at 1 so no need for -1.
-			for (int i = 1; i <= nameArray.length; i++) {				
-				nameArray[i - 1] = rsMeta.getColumnName(i);				// ResultSet metaData starts at 1 when counting columns, if 7 columns are present it is then not
-			}															// counted for 0 to 6 but 1 to 7.
-			return nameArray;
-		} catch (Exception e) {
-			System.out.println(e);
-			return exceptionArray;
-		}
+		for (int i = 1; i <= nameArray.length; i++) {				
+			nameArray[i - 1] = rsMeta.getColumnName(i);				// ResultSet metaData starts at 1 when counting columns, if 7 columns are present it is then not
+		}															// counted for 0 to 6 but 1 to 7.
+
+		return nameArray;
 	}
 
 	/**
@@ -212,209 +239,55 @@ public class DBobject {
 	 * @return String[] with all column types
 	 */
 	
-	public static String[] metaDataTypes(ResultSet input) {
-		String exceptionArray[] = null;
+	public static String[] metaDataTypes(ResultSet input) throws SQLException {
+		ResultSetMetaData rsMeta = input.getMetaData();
+		String typeArray[] = new String[getColumnCount(input)];
 		
-		try {
-			ResultSetMetaData rsMeta = input.getMetaData();
-			String typeArray[] = new String[rsMeta.getColumnCount()];
-			for (int i = 1; i <= typeArray.length; i++) {
-				typeArray[i - 1] = rsMeta.getColumnTypeName(i);
-			}
-			return typeArray;
-		} catch (Exception e) {
-			System.out.println(e);
-			return exceptionArray;
+		for (int i = 1; i <= typeArray.length; i++) {
+			typeArray[i - 1] = rsMeta.getColumnTypeName(i);
 		}
+		
+		return typeArray;
 	}
 
 	/**
-	 * Takes in unput a ResultSet and outputs information in the form of an ArrayList.
+	 * Takes in input a ResultSet and outputs information in the form of an ArrayList of ArrayLists.
 	 * 
 	 * @param ResultSet
-	 * @return ArrayList<ShownObject>
+	 * @return ArrayList<ArrayList<String>>
 	 * @throws SQLException
 	 */
 	
-	public static ArrayList<ShownObject> createAddress(ResultSet input) throws SQLException {
-		ArrayList<ShownObject> resultList = new ArrayList<ShownObject>();
-
+	public static ArrayList<ArrayList<String>> fetchResult(ResultSet input) throws SQLException {
+		ArrayList<ArrayList<String>> resultList = new ArrayList<ArrayList<String>>();
+		int columnCount = getColumnCount(input);
+		
 		while (input.next()) {
-			String street = input.getString("Street");
-			String zip = input.getString("ZIP");
-			String city = input.getString("City");
-			ShownObject address = new ShownObject(street, zip, city);
-			resultList.add(address);
-		}
-
-		return resultList;
-	}
-	
-	/**
-	 * Takes in unput a ResultSet and outputs information in the form of an ArrayList.
-	 * 
-	 * @param ResultSet
-	 * @return ArrayList<ShownObject>
-	 * @throws SQLException
-	 */
-
-	public static ArrayList<ShownObject> createRating(ResultSet input) throws SQLException {
-		ArrayList<ShownObject> resultList = new ArrayList<ShownObject>();
-
-		while (input.next()) {
-			String name = input.getString("Name");
-			String stars = input.getString("Rating");
-			String comment = input.getString("Comment");
-			ShownObject rating = new ShownObject(name, stars, comment);
-			resultList.add(rating);
-		}
-
-		return resultList;
-	}
-
-	/**
-	 * Takes in unput a ResultSet and outputs information in the form of an ArrayList.
-	 * 
-	 * @param ResultSet
-	 * @return ArrayList<ShownObject>
-	 * @throws SQLException
-	 */
-	
-	public static ArrayList<ShownObject> createAgency(ResultSet input) throws SQLException {
-		ArrayList<ShownObject> resultList = new ArrayList<ShownObject>();
-
-		while (input.next()) { // This while-loop adds the results to the
-								// arrayList.
-			String name = input.getString("Name");
-			String rating = input.getString("AVG(Rating)");
-			String logo = input.getString("Logo");
-			ShownObject agency = new ShownObject(logo, name, rating);
-			resultList.add(agency); // Each iteration of the loop an object is added
-								// to the ArrayList.
-		}
-
-		return resultList;
-	}
-
-	/**
-	 * Takes in unput a ResultSet and outputs information in the form of an ArrayList.
-	 * 
-	 * @param ResultSet
-	 * @return ArrayList<ShownObject>
-	 * @throws SQLException
-	 */
-	
-	public static ArrayList<ShownObject> createAgencyExt(ResultSet input) throws SQLException {
-		ArrayList<ShownObject> resultList = new ArrayList<ShownObject>();
-
-		while (input.next()) { 	// This while-loop adds the results to the
-								// arrayList.
-			String logo = input.getString("Logo");
-			String name = input.getString("Name");
-			String rating = input.getString("AVG(Rating)");
-			String email = input.getString("Email");
-			String phone = input.getString("Phone");
-			String street = input.getString("Street");
-			String zip = input.getString("Zip");
-			String city = input.getString("City");
-			ShownObject agency = new ShownObject(logo, name, rating, email, phone, street, zip, city);
-			resultList.add(agency); // Each iteration of the loop an object is added
-								// to the ArrayList.
-		}
-
-		return resultList;
-	}
-	
-	/**
-	 * Takes in unput a ResultSet and outputs information in the form of an ArrayList.
-	 * 
-	 * @param ResultSet
-	 * @return ArrayList<ShownObject>
-	 * @throws SQLException
-	 */
-
-	public static ArrayList<ShownObject> createAd(ResultSet input) throws SQLException {
-		ArrayList<ShownObject> resultList = new ArrayList<ShownObject>();
-
-		while (input.next()) { 	// This while-loop adds the results to the
-								// arrayList. All column names must be matched.
-			String picture = input.getString("Picture");
-			String name = input.getString("Name");
-			String gender = input.getString("Gender");
-			String species = input.getString("Species");
-			String type = input.getString("Type");
-			String age = input.getString("Age");
-			String description = input.getString("Description");
-			String startDate = input.getString("StartDate");
-			String endDate = input.getString("EndDate");
-			ShownObject ad = new ShownObject(picture, name, gender, species, type, age, description, startDate, endDate);
-			resultList.add(ad); // Each iteration of the loop an object is added to
-								// the ArrayList.
-		}
-
-		return resultList;
-	}
-
-	/**
-	 * Method for returning specific attributes, for example for displaying all
-	 * available species in the application. Also used for displaying all cities
-	 * that we have agencies at.
-	 * 
-	 * @param table,
-	 *            attribute
-	 * @return ObservableList<Object>
-	 */
-
-	public static ObservableList<Object> fetchAttribute(String table, String column, 
-														String priorColumn, String priorValue) {
-		
-		ObservableList<Object> resultList = FXCollections.observableArrayList(column, new Separator());
-		String sqlStatement;
-		
-		if (priorColumn == null) {
-			sqlStatement = "SELECT Distinct " + column + " FROM " + table + " ORDER BY " + column + ";";
-		} 
-		else {
-			sqlStatement = "SELECT Distinct " + column + " FROM " + table + " WHERE " + priorColumn + 
-						   " == '" + priorValue + "' ORDER BY " + column + ";";
-		}
-		
-		Connection c = null;
-		Statement stmt = null;
-
-		try {
-			// Loading the driver!
-			System.out.println("Loading JDBC driver...");
-			Class.forName("org.sqlite.JDBC");
-			System.out.println("Driver loaded successfully!");
-
-			// Connecting to database!
-			System.out.println("Attempting to connect to database...");
-			c = DriverManager.getConnection("jdbc:sqlite:BeeHive");
-			c.setAutoCommit(false);
-			System.out.println("Opened database successfully!");
-			System.out.println();
-
-			// Executing incoming query.
-			stmt = c.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlStatement);
-
-			// This while-loop adds the results to the arrayList.
-			while (rs.next()) {
-				String attribute = rs.getString(column);
-				resultList.add(attribute);
+			ArrayList<String> result = new ArrayList<String>();
+			for (int index = 1; index <= columnCount; index++) {
+				result.add(input.getString(index));
 			}
-
-			// Closing result sets and statements.
-			rs.close();
-			stmt.close();
-			c.close();
-
-			// Catching any and all exceptions, printing an error message.
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			resultList.add(result);
 		}
+
+		return resultList;
+	}
+	
+	/**
+	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 2D array-
+	 * list from a query.
+	 * 
+	 * @param ArrayList<ArrayList<String>>
+	 * @returns ObservableList<Object>
+	 */
+	
+	public static ObservableList<Object> createObservableList(ArrayList<ArrayList<String>> input) {
+		ObservableList<Object> resultList = FXCollections.observableArrayList(new Separator());
 		
+		for (int index = 0; input.size() > index; index++) {
+			ArrayList<String> fetch = input.get(index);
+			resultList.add(fetch.get(0));
+		}
 		return resultList;
 	}
 }
