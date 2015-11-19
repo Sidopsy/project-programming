@@ -1,5 +1,6 @@
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -56,6 +57,7 @@ public class ViewMaster extends Application {
 	private static boolean firstScene = true;
 	private static DBobject database = new DBobject();
 	private static String sqlStatement;
+	private static LocalDate today = LocalDate.now();
 
 	/**
 	 * The main method, only used to start the application with the launch command from javaFX.
@@ -376,7 +378,7 @@ public class ViewMaster extends Application {
 		}
 		
 		if (firstSearch == true){	
-			searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' ORDER BY Ads.ID;";
+			searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate > " + today + " ORDER BY Ads.ID;";
 			firstSearch = false;
 		} else {
 			searchStatement = "SELECT * FROM "
