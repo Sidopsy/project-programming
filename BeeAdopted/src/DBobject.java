@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.sqlite.SQLiteConfig;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Separator;
@@ -223,7 +224,7 @@ public class DBobject {
 
 	public static String[] metaDataNames(ResultSet input) throws SQLException {
 		ResultSetMetaData rsMeta = input.getMetaData();				// Getting all metaData from ResultSet.
-		String nameArray[] = new String[getColumnCount(input)];		// Counting columns to determine size of the array, starts at 1 so no need for -1.
+		String[] nameArray = new String[getColumnCount(input)];		// Counting columns to determine size of the array, starts at 1 so no need for -1.
 		
 		for (int i = 1; i <= nameArray.length; i++) {				
 			nameArray[i - 1] = rsMeta.getColumnName(i);				// ResultSet metaData starts at 1 when counting columns, if 7 columns are present it is then not
@@ -241,7 +242,7 @@ public class DBobject {
 	
 	public static String[] metaDataTypes(ResultSet input) throws SQLException {
 		ResultSetMetaData rsMeta = input.getMetaData();
-		String typeArray[] = new String[getColumnCount(input)];
+		String[] typeArray = new String[getColumnCount(input)];
 		
 		for (int i = 1; i <= typeArray.length; i++) {
 			typeArray[i - 1] = rsMeta.getColumnTypeName(i);
@@ -259,11 +260,11 @@ public class DBobject {
 	 */
 	
 	public static ArrayList<ArrayList<String>> fetchResult(ResultSet input) throws SQLException {
-		ArrayList<ArrayList<String>> resultList = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
 		int columnCount = getColumnCount(input);
 		
 		while (input.next()) {
-			ArrayList<String> result = new ArrayList<String>();
+			ArrayList<String> result = new ArrayList<>();
 			for (int index = 1; index <= columnCount; index++) {
 				result.add(input.getString(index));
 			}
@@ -271,6 +272,32 @@ public class DBobject {
 		}
 
 		return resultList;
+	}
+	
+	public static ArrayList<Ad> fetchAd(ResultSet input) throws SQLException {
+		ArrayList<Ad> result = new ArrayList<>();
+	
+	        while (input.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
+	        	int id = input.getInt("Id");
+	        	String picture = input.getString("Picture");
+	        	String name = input.getString("Name");
+	        	String gender = input.getString("Gender");
+	        	String species = input.getString("Species");
+	        	String type = input.getString("Type");
+	        	int age = input.getInt("Age");
+	        	String description = input.getString("Description");
+	        	String startDate = input.getString("StartDate");
+	        	String endDate = input.getString("EndDate");
+	        	int agencyId = input.getInt("AgencyID");
+	        	String agencyName = input.getString("Agency");
+	        	String rating = input.getString("Rating");
+	        	
+	        	Ad ad = new Ad(id,picture,name,gender,species,type,age,description,startDate,endDate,agencyId,agencyName,rating);
+	        	result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
+	        }
+	        
+	  
+	    return result;
 	}
 	
 	/**
@@ -281,8 +308,8 @@ public class DBobject {
 	 * @returns ObservableList<Object>
 	 */
 	
-	public static ObservableList<Object> createObservableList(ArrayList<ArrayList<String>> input) {
-		ObservableList<Object> resultList = FXCollections.observableArrayList("Table", new Separator());
+	public static ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
+		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator());
 		
 		for (int i = 0; input.size() > i; i++) {
 			ArrayList<String> fetch = input.get(i);
@@ -292,4 +319,10 @@ public class DBobject {
 		}
 		return resultList;
 	}
+
+	public ObservableList<Ad> createObservableList(ArrayList<Ad> input) {
+		// TODO Auto-generated method stub
+		return FXCollections.observableArrayList(input);
+	}
+
 }

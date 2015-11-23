@@ -45,8 +45,8 @@ public class ViewMaster extends Application {
 	private static Stage window;
 	private static Scene scene1, scene2, scene3;
 	private static BorderPane bpLayout1, bpLayout2, bpLayout3;
-	private static TableView<Object> tvAd;
-	private static ArrayList<ArrayList<String>> theSearch = null;
+	private static TableView<Ad> tvAd;
+	private static ArrayList<Ad> theSearch = null;
 	private static ObservableList<Object> obsListSpecies, obsListType, obsListAge, obsListGender, obsListAgencies;
 	private static ChoiceBox<Object> cbLocation, cbSpecies, cbType, cbAge, cbGender, cbAgencies;
 	private static TextField tfDescription;
@@ -142,7 +142,7 @@ public class ViewMaster extends Application {
 
 		// This inputs information into the choicebox, namely the cities in which there are agencies.
 		try {
-			cbLocation = new ChoiceBox<>(database.createObservableList(database.fetchResult(database.executeQuery("SELECT Distinct City FROM  Addresses ORDER BY City;"))));
+			cbLocation = new ChoiceBox<>(database.createObservableList("City",database.fetchResult(database.executeQuery("SELECT Distinct City FROM  Addresses ORDER BY City;"))));
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -248,11 +248,11 @@ public class ViewMaster extends Application {
 		hbox.setSpacing(10);
 		
 		try {
-			obsListSpecies = database.createObservableList(database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads ORDER BY Species;")));
-			obsListType = database.createObservableList(database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads ORDER BY Type;")));
-			obsListAge = database.createObservableList(database.fetchResult(database.executeQuery("SELECT Distinct Age FROM Ads ORDER BY Age;")));
-			obsListGender = database.createObservableList(database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads ORDER BY Gender;")));
-			obsListAgencies = database.createObservableList(database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies ORDER BY Name;")));
+			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads ORDER BY Species;")));
+			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads ORDER BY Type;")));
+			obsListAge = database.createObservableList("Age",database.fetchResult(database.executeQuery("SELECT Distinct Age FROM Ads ORDER BY Age;")));
+			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads ORDER BY Gender;")));
+			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies ORDER BY Name;")));
 			
 		} catch (SQLException e2) {
 			// TODO Auto-generated catch block
@@ -264,7 +264,7 @@ public class ViewMaster extends Application {
 			species = (String) cbSpecies.getValue();
 			sqlStatement = "SELECT Distinct Type FROM Ads WHERE Species == '" + species + "' ORDER BY Type;";
 			try {
-				obsListType = database.createObservableList(database.fetchResult(database.executeQuery(sqlStatement)));
+				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery(sqlStatement)));
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -284,7 +284,7 @@ public class ViewMaster extends Application {
 			type = (String) cbType.getValue();
 			sqlStatement = "SELECT Distinct Age FROM Ads WHERE Type == '" + type + "' ORDER BY Age;";
 			try {
-				obsListAge = database.createObservableList(database.fetchResult(database.executeQuery(sqlStatement)));
+				obsListAge = database.createObservableList("Age",database.fetchResult(database.executeQuery(sqlStatement)));
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -300,9 +300,9 @@ public class ViewMaster extends Application {
 		cbAge.setDisable(true);
 		cbAge.setOnAction(e -> {
 			age = (String) cbAge.getValue();
-			sqlStatement = "SELECT Distinct Gener FROM Ads WHERE Age == '" + age + "' ORDER BY Gender;";
+			sqlStatement = "SELECT Distinct Gender FROM Ads WHERE Age == '" + age + "' ORDER BY Gender;";
 			try {
-				obsListGender = database.createObservableList(database.fetchResult(database.executeQuery(sqlStatement)));
+				obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery(sqlStatement)));
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -350,7 +350,7 @@ public class ViewMaster extends Application {
 	public static void search(){
 		
 		// Search string to be sent to DB along with small parts of the statement.
-		String searchStatement, searchSpecies, searchType, searchAge, searchGender;
+		String searchStatement, searchSpecies, searchType, searchAge, searchGender, searchAgency;
 		
 		// Null values are ignored as well as if the user left the cbs in their original posistions.
 		if (species != null && species != "Species"){
@@ -377,15 +377,23 @@ public class ViewMaster extends Application {
 			searchGender = "";
 		}
 		
+		if (agency != null && agency != "Agency"){
+			searchAgency = " and Agencies.Name as Agency == '" + agency + "'";
+		} else {
+			searchAgency = "";
+		}
+		
 		if (firstSearch == true){	
-			searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate > " + today + " ORDER BY Ads.ID;";
+			searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate > " + today + " ORDER BY Ads.ID;";
 			firstSearch = false;
 		} else {
-			searchStatement = "SELECT * FROM "
-					+ "Ads, Agencies, Ratings WHERE "
-					+ "Agencies.ID = Ads.AgencyID and "
+			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating)"
+					+ "Ads,Agencies,Ratings,Addresses WHERE "
+					+ "Agencies.ID == Addresses.AgencyID and "
+					+ "Agencies.ID == Ads.AgencyID and "
 					+ "Agencies.ID == Ratings.AgencyID and "
-					+ "Agencies.ID == " + chosenAgency.getID() +
+					+ "City = '" + city + "' and "
+					+ "EndDate > " + today +
 					searchSpecies + 
 					searchType + 
 					searchAge + 
@@ -394,7 +402,7 @@ public class ViewMaster extends Application {
 		}
 		
 		try {
-			theSearch = database.fetchResult(database.executeQuery(searchStatement));
+			theSearch = database.fetchAd(database.executeQuery(searchStatement));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -409,16 +417,16 @@ public class ViewMaster extends Application {
 	 * @return TableView<Ad>
 	 */
 	
-	public TableView<Object> searchResults(){
-		tvAd = new TableView<Object>();
+	public TableView<Ad> searchResults(){
+		tvAd = new TableView<Ad>();
 
 		// Columns to be added to the TableView.
-		TableColumn<Object, String> pictureCol = new TableColumn<>("Picture");
-		TableColumn<Object, String> speciesCol = new TableColumn<>("Species");
-		TableColumn<Object, String> typeCol = new TableColumn<>("Type");
-		TableColumn<Object, String> genderCol = new TableColumn<>("Gender");
-		TableColumn<Object, String> agencyCol = new TableColumn<>("Agency");
-		TableColumn<Object, String> ratingCol = new TableColumn<>("Rating");
+		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
+		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
+		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
+		TableColumn<Ad, String> genderCol = new TableColumn<>("Gender");
+		TableColumn<Ad, String> agencyCol = new TableColumn<>("Agency");
+		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
 
 		pictureCol.setMinWidth(110);
 		speciesCol.setMinWidth(110);
@@ -427,7 +435,7 @@ public class ViewMaster extends Application {
 		agencyCol.setMinWidth(110);
 		ratingCol.setMinWidth(110);
 		
-		ObservableList<Object> adList = database.createObservableList(theSearch);
+		ObservableList<Ad> adList = database.createObservableList(theSearch);
 
 		pictureCol.setCellValueFactory(new PropertyValueFactory<>("picture"));
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
@@ -437,7 +445,7 @@ public class ViewMaster extends Application {
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
 
 		tvAd.setRowFactory( tv -> {
-			TableRow<Object> row = new TableRow<>();
+			TableRow<Ad> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 
 				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
