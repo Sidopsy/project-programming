@@ -149,6 +149,7 @@ public class InputPage {
 			cbSpecies.setValue(cbSpecies.getItems().get(0));
 			cbSpecies.setOnAction(e -> {
 				try {
+					species = (String)cbSpecies.getValue();
 					obsListType = db.createObservableList("Type",db.fetchResult(db.executeQuery("SELECT Distinct Type FROM Ads WHERE Species == '" + species + "' ORDER BY Type;")));
 					cbType.setItems(obsListType);
 					cbType.setValue("Type");
