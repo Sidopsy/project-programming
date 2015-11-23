@@ -207,7 +207,7 @@ public class DBobject {
 	 * @return Integer representing number of ResultSet columns
 	 */
 	
-	public static int getColumnCount(ResultSet input) throws SQLException {
+	public int getColumnCount(ResultSet input) throws SQLException {
 	    int iOutput = 0;
 	   	ResultSetMetaData rsMetaData = input.getMetaData();
 	   	iOutput = rsMetaData.getColumnCount();
@@ -222,7 +222,7 @@ public class DBobject {
 	 * @return String[] with all column names
 	 */
 
-	public static String[] metaDataNames(ResultSet input) throws SQLException {
+	public String[] metaDataNames(ResultSet input) throws SQLException {
 		ResultSetMetaData rsMeta = input.getMetaData();				// Getting all metaData from ResultSet.
 		String[] nameArray = new String[getColumnCount(input)];		// Counting columns to determine size of the array, starts at 1 so no need for -1.
 		
@@ -240,7 +240,7 @@ public class DBobject {
 	 * @return String[] with all column types
 	 */
 	
-	public static String[] metaDataTypes(ResultSet input) throws SQLException {
+	public String[] metaDataTypes(ResultSet input) throws SQLException {
 		ResultSetMetaData rsMeta = input.getMetaData();
 		String[] typeArray = new String[getColumnCount(input)];
 		
@@ -259,7 +259,7 @@ public class DBobject {
 	 * @throws SQLException
 	 */
 	
-	public static ArrayList<ArrayList<String>> fetchResult(ResultSet input) throws SQLException {
+	public ArrayList<ArrayList<String>> fetchResult(ResultSet input) throws SQLException {
 		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
 		int columnCount = getColumnCount(input);
 		
@@ -274,7 +274,7 @@ public class DBobject {
 		return resultList;
 	}
 	
-	public static ArrayList<Ad> fetchAd(ResultSet input) throws SQLException {
+	public ArrayList<Ad> fetchAd(ResultSet input) throws SQLException {
 		ArrayList<Ad> result = new ArrayList<>();
 	
 	        while (input.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
@@ -300,6 +300,19 @@ public class DBobject {
 	    return result;
 	}
 	
+	public ArrayList<Agency> fetchAgency(ResultSet input) throws SQLException {
+		ArrayList<Agency> result = new ArrayList<>();
+	        while (input.next()) {											// This while-loop adds the results to the arrayList.
+	        	String id = input.getString("ID");
+	        	String name = input.getString("Name");
+	        	String rating = input.getString("AVG(Rating)");
+	        	String logo = input.getString("Logo");
+	        	Agency agency = new Agency(id, logo, name, rating);
+	        	result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
+	        }
+	    return result;
+	}
+	
 	/**
 	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 2D array-
 	 * list from a query.
@@ -308,7 +321,7 @@ public class DBobject {
 	 * @returns ObservableList<Object>
 	 */
 	
-	public static ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
+	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
 		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator());
 		
 		for (int i = 0; input.size() > i; i++) {

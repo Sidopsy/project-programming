@@ -175,66 +175,8 @@ public class ViewMaster extends Application {
 		return firstPage;
 	}
 
-	/**
-	 * This method retrieves agencies based on the global variable city that is altered through the method startLocation().
-	 * 
-	 * @return TableView<Agency> that shows agencies
-	 */
-
-//	private TableView<Agency> startAgencies(){
-//		
-//		// For viewing the agencies in table form.
-//		TableView<Agency> tableAgency = new TableView<>();
-//
-//		tableAgency.setEditable(true);												// Needed to be able to alter the table.
-//		tableAgency.setRowFactory(tv -> {											// Adding actions to each of the tables rows.
-//			TableRow<Agency> rowAgency = new TableRow<>();							
-//			
-//			rowAgency.setOnMouseClicked(event -> {									// The tables rows respond to mouse clicks.
-//				if ( (event.getClickCount() == 1) && (!rowAgency.isEmpty()) ) {
-//					chosenAgency = rowAgency.getItem();								// Reading what agency was chosen.
-//					System.out.println("Agency number " + chosenAgency.getID() + "was chosen.");
-//					firstSearch = true;												
-//					search();
-//					bpLayout3 = new BorderPane();
-//					bpLayout3.setTop(header());
-//					bpLayout3.setCenter(mainCenterView());
-//					scene3 = new Scene(bpLayout3, 800, 600);
-//					window.setScene(scene3);
-//				}
-//			});
-//			return rowAgency;
-//		});
-//
-//		// Nearly static sqlStatement for retrieving info on all agencies in the selected city. City is the only thing that changes from time to time.
-//		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating) FROM "
-//								+ "Agencies,Addresses,Ratings WHERE "
-//								+ "Agencies.ID = Addresses.AgencyID and "
-//								+ "Agencies.ID = Ratings.AgencyID and "
-//								+ "Addresses.City == '" + city + "';";
-//		
-//		// Columns to be shown in the TableView.
-//		TableColumn<Agency, String> colLogo = new TableColumn<>("Logo");
-//		TableColumn<Agency, String> colName = new TableColumn<>("Agency");
-//		TableColumn<Agency, String> colRating = new TableColumn<>("Rating");
-//
-//		colLogo.setCellValueFactory(new PropertyValueFactory<Agency, String>("logo"));
-//		colLogo.setMinWidth(250);
-//		colName.setCellValueFactory(new PropertyValueFactory<Agency, String>("name"));
-//		colName.setMinWidth(300);
-//		colRating.setCellValueFactory(new PropertyValueFactory<Agency, String>("rating"));
-//		colRating.setMinWidth(250);
-//		
-//		// Retrieving all agencies from the database.
-//		ObservableList<Agency> listAgency = FXCollections.observableArrayList
-//											(DatabaseCommunication.fetchAgency(sqlStatement));
-//
-//		// Setting the table to display the ObservableList and use the columns created above.
-//		tableAgency.setItems(listAgency);
-//		tableAgency.getColumns().addAll(colLogo, colName, colRating);
-//		
-//		return tableAgency;
-//	}
+	
+//	
 	
 	/**
 	 * This method contains filter options for searches. 
