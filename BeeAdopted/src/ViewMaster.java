@@ -300,7 +300,7 @@ public class ViewMaster extends Application {
 		cbAge.setDisable(true);
 		cbAge.setOnAction(e -> {
 			age = (String) cbAge.getValue();
-			sqlStatement = "SELECT Distinct Gener FROM Ads WHERE Age == '" + age + "' ORDER BY Gender;";
+			sqlStatement = "SELECT Distinct Gender FROM Ads WHERE Age == '" + age + "' ORDER BY Gender;";
 			try {
 				obsListGender = database.createObservableList(database.fetchResult(database.executeQuery(sqlStatement)));
 			} catch (Exception e1) {

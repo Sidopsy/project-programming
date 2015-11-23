@@ -80,7 +80,7 @@ public class DBtests extends Application {
 		// Tested making an observableList with a specific query, works!
 		public void insert() throws SQLException {
 			
-			String sql = "SELECT Name, Age FROM Ads;";		
+			String sql = "SELECT Name FROM Ads ORDER BY Name;";		
 			DBobject db = new DBobject();
 			
 			db.resultSet = db.executeQuery(sql);
