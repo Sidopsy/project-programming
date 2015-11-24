@@ -314,6 +314,32 @@ public class DBobject {
 	}
 	
 	/**
+	 * Method for fetching extended information about agencies for displaying in the application.
+	 * 
+	 * @param input
+	 * @return ArrayLisy<AgencyExtended>
+	 * @throws SQLException 
+	 */
+	
+	protected ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) throws SQLException {
+		ArrayList<AgencyExt> result = new ArrayList<>();
+	        while (input.next()) {											// This while-loop adds the results to the arrayList.
+	        	String id = input.getString("ID");
+	        	String logo = input.getString("Logo");
+	        	String name = input.getString("Name");
+	        	String rating = input.getString("AVG(Rating)");
+	        	String email = input.getString("Email");
+	        	String phone = input.getString("Phone");
+	        	String street = input.getString("Street");
+	        	String zip = input.getString("Zip");
+	        	String city = input.getString("City");
+	        	AgencyExt agency = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
+	        	result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
+	        }
+	    return result;
+	}
+	
+	/**
 	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 2D array-
 	 * list from a query.
 	 * 

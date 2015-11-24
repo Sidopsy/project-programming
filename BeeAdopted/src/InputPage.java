@@ -313,33 +313,33 @@ public class InputPage {
 		ArrayList<Agency> agencyID;
 		try {
 			agencyID = db.fetchAgency(db.executeQuery(sqlStatement));
-		System.out.println(agencyID);
-		name = tfName.getText();
-		if(newSpecies == null){
-			species = (String)cbSpecies.getValue();
-		} else {
-			species = newSpecies;
-		}
-		if(newType == null){
-			type = (String)cbType.getValue();
-		} else {
-			type = newType;
-		}
-		gender = (String)cbGender.getValue();
-		age = tfAge.getText();
-		description = taDescription.getText();
+			System.out.println(agencyID);
+			name = tfName.getText();
+			if(newSpecies == null){
+				species = (String)cbSpecies.getValue();
+			} else {
+				species = newSpecies;
+			}
+			if(newType == null){
+				type = (String)cbType.getValue();
+			} else {
+				type = newType;
+			}
+			gender = (String)cbGender.getValue();
+			age = tfAge.getText();
+			description = taDescription.getText();
 
 
-		String insert = "INSERT INTO Ads (Name,Species,Type,Gender,Age,Description,AgencyID)";
-		String values = 
-				" VALUES ('" + name  + "', '"+ species + "', '" 
-						+ type + "', '" + gender + "', "
-						+ age + ", '" + description + "', " + agencyID.get(0).getID() + ");";
+			String insert = "INSERT INTO Ads (Name,Species,Type,Gender,Age,Description,AgencyID)";
+			String values = 
+					" VALUES ('" + name  + "', '"+ species + "', '" 
+							+ type + "', '" + gender + "', "
+							+ age + ", '" + description + "', " + agencyID.get(0).getID() + ");";
 
 			db.executeUpdate(insert + values);
-		
 
-		System.out.println(values);
+
+			System.out.println(values);
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

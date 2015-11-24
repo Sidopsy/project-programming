@@ -1,4 +1,5 @@
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -57,7 +58,8 @@ public class ViewMaster extends Application {
 	private static boolean firstScene = true;
 	private static DBobject database = new DBobject();
 	private static String sqlStatement;
-	private static LocalDate today = LocalDate.now();
+	private static LocalDate todayDate = LocalDate.now();
+	private static Date today = Date.valueOf(todayDate);
 
 	/**
 	 * The main method, only used to start the application with the launch command from javaFX.
@@ -194,7 +196,7 @@ public class ViewMaster extends Application {
 			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads ORDER BY Type;")));
 			obsListAge = database.createObservableList("Age",database.fetchResult(database.executeQuery("SELECT Distinct Age FROM Ads ORDER BY Age;")));
 			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads ORDER BY Gender;")));
-			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies ORDER BY Name;")));
+			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID and City == '" + city + "' ORDER BY Name;")));
 			
 		} catch (SQLException e2) {
 			// TODO Auto-generated catch block
@@ -207,56 +209,59 @@ public class ViewMaster extends Application {
 			sqlStatement = "SELECT Distinct Type FROM Ads WHERE Species == '" + species + "' ORDER BY Type;";
 			try {
 				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery(sqlStatement)));
+				cbType.setItems(obsListType);
+				cbType.setValue("Type");
+//				cbType.setDisable(false);
+//				cbAge.setDisable(true);
+//				cbGender.setDisable(true);
+//				tfDescription.setDisable(false);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			cbType.setItems(obsListType);
-			cbType.setValue("Type");
-			cbType.setDisable(false);
-			cbAge.setDisable(true);
-			cbGender.setDisable(true);
-			tfDescription.setDisable(false);
 		});
 
 		cbType = new ChoiceBox<>(obsListType);
 		cbType.setValue(cbType.getItems().get(0));
-		cbType.setDisable(true);
+//		cbType.setDisable(true);
 		cbType.setOnAction(e -> {
 			type = (String) cbType.getValue();
 			sqlStatement = "SELECT Distinct Age FROM Ads WHERE Type == '" + type + "' ORDER BY Age;";
 			try {
+				obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads WHERE Type == '" + type + "' ORDER BY Species;")));
 				obsListAge = database.createObservableList("Age",database.fetchResult(database.executeQuery(sqlStatement)));
+				cbSpecies.setItems(obsListSpecies);
+				cbSpecies.setValue("Species");
+				cbAge.setItems(obsListAge);
+				cbAge.setValue("Age");
+//				cbAge.setDisable(false);
+//				cbGender.setDisable(true);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			cbAge.setItems(obsListAge);
-			cbAge.setValue("Age");
-			cbAge.setDisable(false);
-			cbGender.setDisable(true);
 		});
 
 		cbAge = new ChoiceBox<>(obsListAge);
 		cbAge.setValue(cbAge.getItems().get(0));
-		cbAge.setDisable(true);
+//		cbAge.setDisable(true);
 		cbAge.setOnAction(e -> {
 			age = (String) cbAge.getValue();
 			sqlStatement = "SELECT Distinct Gender FROM Ads WHERE Age == '" + age + "' ORDER BY Gender;";
 			try {
 				obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery(sqlStatement)));
+				cbGender.setItems(obsListGender);
+				cbGender.setValue("Gender");
+//				cbGender.setDisable(false);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			cbGender.setItems(obsListGender);
-			cbGender.setValue("Gender");
-			cbGender.setDisable(false);
 		});
 
 		cbGender = new ChoiceBox<>(obsListGender);
 		cbGender.setValue(cbGender.getItems().get(0));
-		cbGender.setDisable(true);
+//		cbGender.setDisable(true);
 		cbGender.setOnAction(e -> gender = (String) cbGender.getValue());
 		
 		cbAgencies = new ChoiceBox<>(obsListAgencies);
@@ -265,7 +270,7 @@ public class ViewMaster extends Application {
 
 		tfDescription = new TextField();
 		tfDescription.setPromptText("Description");
-		tfDescription.setDisable(true);
+//		tfDescription.setDisable(true);
 
 		btnSearch = new Button("Search");
 		btnSearch.setOnAction(e -> {
@@ -326,7 +331,7 @@ public class ViewMaster extends Application {
 		}
 		
 		if (firstSearch == true){	
-			searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate > " + today + " ORDER BY Ads.ID;";
+			searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate >= '" + today + "' ORDER BY Ads.ID;";
 			firstSearch = false;
 		} else {
 			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating)"
@@ -335,7 +340,7 @@ public class ViewMaster extends Application {
 					+ "Agencies.ID == Ads.AgencyID and "
 					+ "Agencies.ID == Ratings.AgencyID and "
 					+ "City = '" + city + "' and "
-					+ "EndDate > " + today +
+					+ "EndDate >= " + today +
 					searchSpecies + 
 					searchType + 
 					searchAge + 
@@ -367,6 +372,7 @@ public class ViewMaster extends Application {
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
 		TableColumn<Ad, String> genderCol = new TableColumn<>("Gender");
+		TableColumn<Ad, String> endCol = new TableColumn<>("End date");
 		TableColumn<Ad, String> agencyCol = new TableColumn<>("Agency");
 		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
 
@@ -374,6 +380,7 @@ public class ViewMaster extends Application {
 		speciesCol.setMinWidth(110);
 		typeCol.setMinWidth(110);
 		genderCol.setMinWidth(110);
+		endCol.setMinWidth(110);
 		agencyCol.setMinWidth(110);
 		ratingCol.setMinWidth(110);
 		
@@ -383,6 +390,7 @@ public class ViewMaster extends Application {
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 		genderCol.setCellValueFactory(new PropertyValueFactory<>("gender"));
+		endCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
 		agencyCol.setCellValueFactory(new PropertyValueFactory<>("agencyName"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
 
@@ -400,7 +408,7 @@ public class ViewMaster extends Application {
 
 		tvAd.setItems(adList);
 			
-		tvAd.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol, agencyCol, ratingCol);
+		tvAd.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol,endCol, agencyCol, ratingCol);
 
 		return tvAd;
 	}
