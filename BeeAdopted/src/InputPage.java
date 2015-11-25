@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -158,24 +159,38 @@ public class InputPage {
 					e1.printStackTrace();
 				}
 			});
+			
+			TextField tfSpecies = new TextField();
 			// cb2.setOnAction(e -> species = (String) cb2.getValue());
-
-			btnMoreSpecies = new Button("+");
-			btnMoreSpecies.setOnAction(e -> {
-				TextInputDialog dialog = new TextInputDialog("");
-				dialog.setTitle("New species");
-				dialog.setHeaderText("Custom species");
-				dialog.setContentText("Please enter the name of the species:");
-
-				Optional<String> result = dialog.showAndWait();
-
-				if (result.isPresent()) {
-					newSpecies = result.get();
+			CheckBox test = new CheckBox("New");
+			test.setOnAction(e -> {
+				if(test.isSelected()){
+					speciesHBox.getChildren().removeAll(cbSpecies, test);
+					speciesHBox.getChildren().addAll(tfSpecies, test);
+				} else {
+					speciesHBox.getChildren().removeAll(tfSpecies, test);
+					speciesHBox.getChildren().addAll(cbSpecies, test);					
 				}
-
 			});
-			speciesHBox.getChildren().addAll(cbSpecies, btnMoreSpecies);
+
+//			btnMoreSpecies = new Button("+");
+//			btnMoreSpecies.setOnAction(e -> {
+//				TextInputDialog dialog = new TextInputDialog("");
+//				dialog.setTitle("New species");
+//				dialog.setHeaderText("Custom species");
+//				dialog.setContentText("Please enter the name of the species:");
+//
+//				Optional<String> result = dialog.showAndWait();
+//
+//				if (result.isPresent()) {
+//					newSpecies = result.get();
+//				}
+//
+//			});
+			speciesHBox.getChildren().addAll(cbSpecies, test);
 			input.add(speciesHBox, 1, 2);
+			
+			
 
 
 			HBox typeHBox = new HBox();

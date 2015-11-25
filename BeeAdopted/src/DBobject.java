@@ -340,6 +340,26 @@ public class DBobject {
 	}
 	
 	/**
+	 * Method for fetching appropriate information about ratings for displaying in the application.
+	 * 
+	 * @param sqlStatement
+	 * @return ArrayList<Rating>
+	 * @throws SQLException 
+	 */
+	
+	public static ArrayList<Rating> fetchRating(ResultSet input) throws SQLException {
+		ArrayList<Rating> result = new ArrayList<>();
+	        while (input.next()) {
+	        	String name = input.getString("Name");
+	        	String rating = input.getString("Rating");
+	        	String comment = input.getString("Comment");
+	        	Rating grade = new Rating(name, rating, comment);
+	        	result.add(grade);
+	        }
+	    return result;
+	}
+	
+	/**
 	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 2D array-
 	 * list from a query.
 	 * 
