@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.sqlite.SQLiteConfig;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Separator;
@@ -18,7 +17,7 @@ import javafx.scene.control.Separator;
  */
 
 public class DBobject {
-	private Connection connect = null;
+	private static Connection connect = null;
 	public PreparedStatement stmt = null;
 	public ResultSet resultSet = null;
 	private final String dbType;
@@ -26,7 +25,7 @@ public class DBobject {
 	private final String dbDriver;
 
 	/**
-	 * Just an empty constructor call to load the driver and start connecting to the database.
+	 * Just an empty constructor call to load the driver.
 	 */
 
 	public DBobject() {
@@ -69,19 +68,30 @@ public class DBobject {
 	 * @throws SQLException
 	 */
 	
-	public boolean foreignKeysOn() throws SQLException {
+	public boolean foreignKeysOn() {
 		setConnection();
+		System.out.println(">> Checking foreign keys...");
 		int foreignKeyStatus = 2;
 		
-		stmt = connect.prepareStatement("PRAGMA foreign_keys;");
-		resultSet = stmt.executeQuery();
+		try {
+			stmt = connect.prepareStatement("PRAGMA foreign_keys;");
+			resultSet = stmt.executeQuery();
 		
-		while (resultSet.next()) {
-			foreignKeyStatus = resultSet.getInt("foreign_keys");
+			while (resultSet.next()) {
+				foreignKeyStatus = resultSet.getInt("foreign_keys");
+			}
+			resultSet.close();
+		} catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-		resultSet.close();
 		
-		return foreignKeyStatus == 1;
+		if (foreignKeyStatus == 1) {
+			System.out.println(">> Foreign keys activated!");
+			return true;
+		} else {
+			System.out.println(">> Foreign keys not active.");
+			return false;
+		}
 	}
 	
 	/**
@@ -90,11 +100,18 @@ public class DBobject {
 	 * @throws SQLException
 	 */
 	
-	public ResultSet executeQuery(String query) throws SQLException {
+	public ResultSet executeQuery(String query) {
 		setConnection();
 		System.out.println(">> Executing query");
-		stmt = connect.prepareStatement(query);
-		resultSet = stmt.executeQuery();
+		
+		try {
+			stmt = connect.prepareStatement(query);
+			resultSet = stmt.executeQuery();
+		
+			connect.commit();
+		} catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
 		
 		return resultSet;
 	}
@@ -107,12 +124,19 @@ public class DBobject {
 	 * @throws SQLException
 	 */
 	
-	public void executeUpdate(String update) throws SQLException {
+	public void executeUpdate(String update) {
 		setConnection();
 		System.out.println(">> Executing update");
-		stmt = connect.prepareStatement(update);
-		stmt.executeUpdate();
 		
+		try {
+			stmt = connect.prepareStatement(update);
+			stmt.executeUpdate();
+		
+			connect.commit();
+			closeConnection();
+		} catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
 	}
 	
 	/**
@@ -150,7 +174,7 @@ public class DBobject {
 			stmt.clearBatch();
 		
 			connect.commit();
-		
+			closeConnection();
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
@@ -173,27 +197,31 @@ public class DBobject {
 	 * @throws SQLException
 	 */
 
-	public void closeConnection() throws SQLException {
+	public void closeConnection() {
 		System.out.println(">> Closing...");
-		if (resultSet != null) {
-			resultSet.close();
-		}
-		else {
-			System.out.println(">> Nothing in ResultSet, cannot close");
-		}
+		try {
+			if (resultSet != null) {
+				resultSet.close();
+			}
+			else {
+				System.out.println(">> Nothing in ResultSet, cannot close");
+			}
 		
-		if (stmt != null) {
-			stmt.close();
-		} 
-		else {
-			System.out.println(">> No statement established, cannot close");
-		}
+			if (stmt != null) {
+				stmt.close();
+			} 
+			else {
+				System.out.println(">> No statement established, cannot close");
+			}
 
-		if (connect != null) {
-			connect.close();
-		} 
-		else {
-			System.out.println(">> No database connected, cannot close");
+			if (connect != null) {
+				connect.close();
+			} 
+			else {
+				System.out.println(">> No database connected, cannot close");
+			}
+		} catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
 		System.out.println(">> Closed!");
 	}
@@ -257,24 +285,29 @@ public class DBobject {
 	 * @throws SQLException
 	 */
 	
-	public ArrayList<ArrayList<String>> fetchResult(ResultSet input) throws SQLException {
+	public ArrayList<ArrayList<String>> fetchResult(ResultSet input) {
 		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
-		int columnCount = getColumnCount(input);
+		try {	
+			int columnCount = getColumnCount(input);
 		
-		while (input.next()) {
-			ArrayList<String> result = new ArrayList<>();
-			for (int index = 1; index <= columnCount; index++) {
-				result.add(input.getString(index));
+			while (input.next()) {
+				ArrayList<String> result = new ArrayList<>();
+				for (int index = 1; index <= columnCount; index++) {
+					result.add(input.getString(index));
+				}
+				resultList.add(result);
 			}
-			resultList.add(result);
+		} catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-
+			
 		return resultList;
 	}
 	
-	public ArrayList<Ad> fetchAd(ResultSet input) throws SQLException {
+	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
-	
+		
+		try {
 	        while (input.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
 	        	int id = input.getInt("Id");
 	        	String picture = input.getString("Picture");
@@ -293,21 +326,28 @@ public class DBobject {
 	        	Ad ad = new Ad(id,picture,name,gender,species,type,age,description,startDate,endDate,agencyId,agencyName,rating);
 	        	result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
-	        
-	  
+		} catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
+	    
 	    return result;
 	}
 	
-	public ArrayList<Agency> fetchAgency(ResultSet input) throws SQLException {
+	public ArrayList<Agency> fetchAgency(ResultSet input) {
 		ArrayList<Agency> result = new ArrayList<>();
-	        while (input.next()) {											// This while-loop adds the results to the arrayList.
-	        	String id = input.getString("ID");
-	        	String name = input.getString("Name");
-	        	String rating = input.getString("AVG(Rating)");
-	        	String logo = input.getString("Logo");
-	        	Agency agency = new Agency(id, logo, name, rating);
-	        	result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
-	        }
+	    try {    	
+			while (input.next()) {											// This while-loop adds the results to the arrayList.
+	        		int id = input.getInt("ID");
+	        		String name = input.getString("Name");
+	        		String rating = input.getString("AVG(Rating)");
+	        		String logo = input.getString("Logo");
+	        		Agency agency = new Agency(id, logo, name, rating);
+	        		result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
+	        	}
+	    } catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
+	    
 	    return result;
 	}
 	
@@ -316,24 +356,27 @@ public class DBobject {
 	 * 
 	 * @param input
 	 * @return ArrayLisy<AgencyExtended>
-	 * @throws SQLException 
 	 */
 	
-	protected ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) throws SQLException {
+	protected ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
 		ArrayList<AgencyExt> result = new ArrayList<>();
-	        while (input.next()) {											// This while-loop adds the results to the arrayList.
-	        	String id = input.getString("ID");
-	        	String logo = input.getString("Logo");
-	        	String name = input.getString("Name");
-	        	String rating = input.getString("AVG(Rating)");
-	        	String email = input.getString("Email");
-	        	String phone = input.getString("Phone");
-	        	String street = input.getString("Street");
-	        	String zip = input.getString("Zip");
-	        	String city = input.getString("City");
-	        	AgencyExt agency = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
-	        	result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
+		try {	
+			while (input.next()) {											// This while-loop adds the results to the arrayList.
+	        		int id = input.getInt("ID");
+	        		String logo = input.getString("Logo");
+	        		String name = input.getString("Name");
+	        		String rating = input.getString("AVG(Rating)");
+	        		String email = input.getString("Email");
+	        		String phone = input.getString("Phone");
+	        		String street = input.getString("Street");
+	        		String zip = input.getString("Zip");
+	        		String city = input.getString("City");
+	        		AgencyExt agency = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
+	        		result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
+		} catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
 	    return result;
 	}
 	

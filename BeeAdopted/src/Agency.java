@@ -10,16 +10,17 @@ import javafx.beans.property.SimpleStringProperty;
  */
 
 public class Agency {
-	private final SimpleStringProperty id, logo, name, rating;
+	private final SimpleStringProperty logo, name, rating;
+	private final SimpleIntegerProperty id;
 	
-	public Agency(String id, String logo, String name, String rating) {
-		this.id = new SimpleStringProperty(id);
+	public Agency(int id, String logo, String name, String rating) {
+		this.id = new SimpleIntegerProperty(id);
 		this.logo = new SimpleStringProperty(logo);
 		this.name = new SimpleStringProperty(name);
 		this.rating = new SimpleStringProperty(rating);
 	}
 	
-	public String getID() {
+	public int getID() {
 		return id.get();
 	}
 	

@@ -1,24 +1,17 @@
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Observable;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -26,11 +19,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -85,7 +76,7 @@ public class ViewMaster extends Application {
 
 		// Creating the window.
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
-		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
+		bpLayout1.setTop(Header.largeHeader());		// Top element of the BorderPane is retrieved, which is the iAdopt image.
 		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
 		scene1 = new Scene(bpLayout1, 800, 600);	
 		
@@ -143,12 +134,12 @@ public class ViewMaster extends Application {
 		Label lblLocation = new Label("Where are you?");
 
 		// This inputs information into the choicebox, namely the cities in which there are agencies.
-		try {
-			cbLocation = new ChoiceBox<>(database.createObservableList("City",database.fetchResult(database.executeQuery("SELECT Distinct City FROM  Addresses ORDER BY City;"))));
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		cbLocation = new ChoiceBox<>(database.createObservableList("City",database.fetchResult(
+									 database.executeQuery("SELECT Distinct City FROM "
+									 					 + "Addresses ORDER BY "
+									 					 + "City;"))));
+		database.closeConnection();
+		
 		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
 		
 		cbLocation.setOnAction(e -> {
@@ -191,34 +182,25 @@ public class ViewMaster extends Application {
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
 		
-		try {
-			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads ORDER BY Species;")));
-			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads ORDER BY Type;")));
-			obsListAge = database.createObservableList("Age",database.fetchResult(database.executeQuery("SELECT Distinct Age FROM Ads ORDER BY Age;")));
-			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads ORDER BY Gender;")));
-			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID and City == '" + city + "' ORDER BY Name;")));
-			
-		} catch (SQLException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads ORDER BY Species;")));
+		obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads ORDER BY Type;")));
+		obsListAge = database.createObservableList("Age",database.fetchResult(database.executeQuery("SELECT Distinct Age FROM Ads ORDER BY Age;")));
+		obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads ORDER BY Gender;")));
+		obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID and City == '" + city + "' ORDER BY Name;")));
+		
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
 		cbSpecies.setOnAction(e -> {
 			species = (String) cbSpecies.getValue();
 			sqlStatement = "SELECT Distinct Type FROM Ads WHERE Species == '" + species + "' ORDER BY Type;";
-			try {
-				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery(sqlStatement)));
-				cbType.setItems(obsListType);
-				cbType.setValue("Type");
+
+			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery(sqlStatement)));
+			cbType.setItems(obsListType);
+			cbType.setValue("Type");
 //				cbType.setDisable(false);
 //				cbAge.setDisable(true);
 //				cbGender.setDisable(true);
 //				tfDescription.setDisable(false);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 		});
 
 		cbType = new ChoiceBox<>(obsListType);
@@ -237,7 +219,6 @@ public class ViewMaster extends Application {
 //				cbAge.setDisable(false);
 //				cbGender.setDisable(true);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
@@ -254,7 +235,6 @@ public class ViewMaster extends Application {
 				cbGender.setValue("Gender");
 //				cbGender.setDisable(false);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
@@ -348,12 +328,7 @@ public class ViewMaster extends Application {
 			
 		}
 		
-		try {
-			theSearch = database.fetchAd(database.executeQuery(searchStatement));
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		theSearch = database.fetchAd(database.executeQuery(searchStatement)); 
 	//	System.out.println(searchStatement);
 	//	System.out.println(theSearch.toString());
 	}
