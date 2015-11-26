@@ -40,8 +40,6 @@ public class DBobject {
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-
-		setConnection();
 	}
 
 	/**
@@ -49,7 +47,7 @@ public class DBobject {
 	 * 
 	 */
 	
-	public void setConnection() {
+	private void setConnection() {
 		System.out.println(">> Connecting to database");
 		try {
 			SQLiteConfig dbProperties = new SQLiteConfig();
@@ -72,6 +70,7 @@ public class DBobject {
 	 */
 	
 	public boolean foreignKeysOn() throws SQLException {
+		setConnection();
 		int foreignKeyStatus = 2;
 		
 		stmt = connect.prepareStatement("PRAGMA foreign_keys;");
@@ -92,11 +91,10 @@ public class DBobject {
 	 */
 	
 	public ResultSet executeQuery(String query) throws SQLException {
+		setConnection();
 		System.out.println(">> Executing query");
 		stmt = connect.prepareStatement(query);
 		resultSet = stmt.executeQuery();
-		
-		connect.commit();
 		
 		return resultSet;
 	}
@@ -110,11 +108,11 @@ public class DBobject {
 	 */
 	
 	public void executeUpdate(String update) throws SQLException {
+		setConnection();
 		System.out.println(">> Executing update");
 		stmt = connect.prepareStatement(update);
 		stmt.executeUpdate();
 		
-		connect.commit();
 	}
 	
 	/**
@@ -126,6 +124,7 @@ public class DBobject {
 	 */
 	
 	public void addBatch(String update) {
+		setConnection();
 		System.out.println(">> Adding update to batch");
 		try {
 			stmt = connect.prepareStatement(update);
@@ -168,14 +167,14 @@ public class DBobject {
 	}
 	
 	/**
-	 * Closing connection to currently connected database, if one is connected
-	 * at all. Otherwise, do nothing. You should always commit or roll back before closing.
+	 * Closing connection to currently connected database, if one is connected at all. Otherwise, do nothing.
+	 * You should always close a connection after you've retrieved information/updated.
 	 * 
 	 * @throws SQLException
 	 */
 
 	public void closeConnection() throws SQLException {
-		System.out.println(">> Closing ResultSet");
+		System.out.println(">> Closing...");
 		if (resultSet != null) {
 			resultSet.close();
 		}
@@ -183,7 +182,6 @@ public class DBobject {
 			System.out.println(">> Nothing in ResultSet, cannot close");
 		}
 		
-		System.out.println(">> Closing statement");
 		if (stmt != null) {
 			stmt.close();
 		} 
@@ -191,13 +189,13 @@ public class DBobject {
 			System.out.println(">> No statement established, cannot close");
 		}
 
-		System.out.println(">> Closing connection");
 		if (connect != null) {
 			connect.close();
 		} 
 		else {
 			System.out.println(">> No database connected, cannot close");
 		}
+		System.out.println(">> Closed!");
 	}
 	
 	/**
@@ -360,7 +358,6 @@ public class DBobject {
 	}
 
 	public ObservableList<Ad> createObservableList(ArrayList<Ad> input) {
-		// TODO Auto-generated method stub
 		return FXCollections.observableArrayList(input);
 	}
 

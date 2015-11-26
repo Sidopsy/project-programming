@@ -19,7 +19,21 @@ public class Header {
 	private static ImageView imageView;
 	private static ImageView imageViewBack;
 	private static Button btnBack;
-	private static int toggleValue = 0;
+	private static int toggleValue = 1;
+	
+	/**
+	 * Constructor for header for all different windows
+	 * 
+	 * @param boolean for determining whether a small or large header should be created. True = large, false = small.
+	 */
+	
+	public Header(Boolean size) {
+		if (size) {
+			largeHeader();
+		} else {
+			smallHeader();
+		}
+	}
 	
 	/**
 	 * Creates the header for small windows in the application, this header makes no use of the back button.
