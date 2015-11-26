@@ -41,6 +41,7 @@ public class InputPage {
 	private static ObservableList<Object> obsListType, obsListGender;
 	private static Optional<String> result;
 	private static String name,species,newSpecies,type,newType,gender,age,description,agencyID;
+	private static String email,password,phone,street,zip,city;
 	private static File picture;
 	private static DBobject db = new DBobject();
 
@@ -318,8 +319,47 @@ public class InputPage {
 	}
 
 	private static void inputAgencyValues() {
-		// TODO Auto-generated method stub
+			System.out.println(agencyID);
+			name = tfName.getText();
+			email = tfEmail.getText();
+			phone = tfPhone.getText();
+			password = pfPassword.getText();
+			street = tfStreet.getText();
+			zip = tfZip.getText();
+			city = tfCity.getText();
+			
+			String insert = "INSERT INTO Agencies (Name,Email,Phone,Password)";
+			String values = 
+					" VALUES ('" + name  + "', '"+ email + "', '" 
+							+ phone + "', '" + password + "', '"
+							+ street + "', '" + zip + "', '" + city + "');";
 
+			System.out.println(values);
+			try {
+				db.executeUpdate(insert + values);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				int agencyId = db.fetchAgency(db.executeQuery("SELECT ID FROM Agencies ORDER BY ASC(ID)")).get(0).getID();
+				
+				String insertAdress = "INSERT INTO Addresses (AgencyId,Street,Zip,City)";
+				String valuesAdress = 
+						" VALUES ('" + password + "', '"
+								+ street + "', '" + zip + "', '" + city + "');";
+				
+				System.out.println(values);
+				try {
+					db.executeUpdate(insertAdress + valuesAdress);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	}
 
 	private static void inputAnimalValues() {

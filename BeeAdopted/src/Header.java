@@ -19,7 +19,7 @@ public class Header {
 	private static ImageView imageView;
 	private static ImageView imageViewBack;
 	private static Button btnBack;
-	private static int toggleValue = 0;
+	private static int toggleValue = 1;
 	
 	/**
 	 * Creates the header for small windows in the application, this header makes no use of the back button.

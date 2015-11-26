@@ -303,7 +303,7 @@ public class DBobject {
 	public ArrayList<Agency> fetchAgency(ResultSet input) throws SQLException {
 		ArrayList<Agency> result = new ArrayList<>();
 	        while (input.next()) {											// This while-loop adds the results to the arrayList.
-	        	String id = input.getString("ID");
+	        	int id = input.getInt("ID");
 	        	String name = input.getString("Name");
 	        	String rating = input.getString("AVG(Rating)");
 	        	String logo = input.getString("Logo");
@@ -368,7 +368,7 @@ public class DBobject {
 	 */
 	
 	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
-		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator());
+		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator(), "Select all" , new Separator());
 		
 		for (int i = 0; input.size() > i; i++) {
 			ArrayList<String> fetch = input.get(i);

@@ -56,7 +56,7 @@ public class ViewMaster extends Application {
 	private static RangeSlider slAge;
 	private static TextField tfDescription;
 	private static Agency chosenAgency = null;
-	private static Button btnSearch, btnBack;
+	private static Button btnSearch;
 	private static String city, species, type, age, gender, description, agency;
 	private static boolean firstSearch;
 	private static boolean firstScene = true;
@@ -65,7 +65,7 @@ public class ViewMaster extends Application {
 	private static LocalDate todayDate = LocalDate.now();
 	private static Date today = Date.valueOf(todayDate);
 	private static int minAge = 0;
-	private static int maxAge = 20;
+	private static int maxAge = 100;
 
 
 	/**
@@ -94,9 +94,9 @@ public class ViewMaster extends Application {
 
 		// Creating the window.
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
-		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
+		bpLayout1.setTop(Header.largeHeader());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
 		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
-		scene1 = new Scene(bpLayout1);	
+		scene1 = new Scene(bpLayout1, 800, 600);	
 
 		// Setting the currently open window to show the scene created above.
 		window.setScene(scene1);
@@ -109,29 +109,29 @@ public class ViewMaster extends Application {
 	 * @return Vbox header image and navigation buttons
 	 */
 
-	private StackPane header(){
-
-		// The StackPane to be returned and used as a header.
-		StackPane header = new StackPane();
-
-		// Specifying an image and adding it to the ImageView that is later to be added to the StackPane.
-		Image img = new Image(getClass().getResourceAsStream("BeeAdoptedLarge.png"));
-		ImageView headerImg = new ImageView();	
-
-		headerImg.setImage(img);								// Adding the image to ImageView so that it can be added to the StackPane.
-		headerImg.setOnMouseClicked(e -> backToStart());		// Click function to take the user back to the start page is also inserted into the header.
-
-		// Button for going back one step in the application.
-		btnBack = new Button("Back");
-		btnBack.setOnAction(e -> goBack());
-		btnBack.setVisible(false);
-
-		// All items created are added to Vbox.
-		header.getChildren().addAll(headerImg, btnBack);
-		header.setAlignment(Pos.CENTER_LEFT);					// Alignment of the items to the center left so that the back button is in an obvious place.
-
-		return header;
-	}
+//	private StackPane header(){
+//
+//		// The StackPane to be returned and used as a header.
+//		StackPane header = new StackPane();
+//
+//		// Specifying an image and adding it to the ImageView that is later to be added to the StackPane.
+//		Image img = new Image(getClass().getResourceAsStream("BeeAdoptedLarge.png"));
+//		ImageView headerImg = new ImageView();	
+//
+//		headerImg.setImage(img);								// Adding the image to ImageView so that it can be added to the StackPane.
+//		headerImg.setOnMouseClicked(e -> backToStart());		// Click function to take the user back to the start page is also inserted into the header.
+//
+//		// Button for going back one step in the application.
+//		btnBack = new Button("Back");
+//		btnBack.setOnAction(e -> goBack());
+//		btnBack.setVisible(false);
+//
+//		// All items created are added to Vbox.
+//		header.getChildren().addAll(headerImg, btnBack);
+//		header.setAlignment(Pos.CENTER_LEFT);					// Alignment of the items to the center left so that the back button is in an obvious place.
+//
+//		return header;
+//	}
 
 	/**
 	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
@@ -167,9 +167,9 @@ public class ViewMaster extends Application {
 				search();
 				System.out.println("Bobo");
 				bpLayout2 = new BorderPane();				// Preparing for a new scene.
-				bpLayout2.setTop(header());					// Setting the header as before.
+				bpLayout2.setTop(Header.largeHeader());					// Setting the header as before.
 				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
-				btnBack.setVisible(true);
+				Header.toggleBackButton();
 				scene2 = new Scene(bpLayout2);
 				window.setScene(scene2);
 			}
@@ -237,8 +237,8 @@ public class ViewMaster extends Application {
 		VBox ageBox = new VBox();
 		ageBox.setPadding(new Insets(0));
 		ageBox.setSpacing(2);
-		String minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies WHERE Agencies.ID == Ads.AgencyID;";
-		String maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies WHERE Agencies.ID == Ads.AgencyID;";
+		String minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= " + today + ";";
+		String maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= " + today + ";";
 		try {
 			minAge = Integer.parseInt(database.fetchResult(database.executeQuery(minAgeStatement)).get(0).get(0));
 			maxAge = Integer.parseInt(database.fetchResult(database.executeQuery(maxAgeStatement)).get(0).get(0));
@@ -295,9 +295,8 @@ public class ViewMaster extends Application {
 		btnSearch.setOnAction(e -> {
 			search();
 			bpLayout3 = new BorderPane();
-			bpLayout3.setTop(header());
+			bpLayout3.setTop(Header.largeHeader());
 			bpLayout3.setCenter(mainCenterView());
-			btnBack.setVisible(true);
 			tvAd.refresh();
 			scene3 = new Scene(bpLayout3,800,600);
 			window.setScene(scene3);
@@ -319,7 +318,7 @@ public class ViewMaster extends Application {
 		String searchStatement, searchSpecies, searchType, searchAge, searchGender, searchAgency;
 
 		// Null values are ignored as well as if the user left the cbs in their original posistions.
-		if (species != null && species != "Species"){
+		if (species != null && (species != "Species" || species != "Select all")){
 			searchSpecies = " and Species == '" + species + "'";
 		} else {
 			searchSpecies = "";
@@ -460,9 +459,9 @@ public class ViewMaster extends Application {
 			firstSearch = true;
 			search();
 			bpLayout2 = new BorderPane();
-			bpLayout2.setTop(header());
+			bpLayout2.setTop(Header.largeHeader());
 			bpLayout2.setCenter(mainCenterView());
-			btnBack.setVisible(false);
+			Header.toggleBackButton();
 			scene2 = new Scene(bpLayout2,800,600);
 			window.setScene(scene2);
 		} else {
@@ -477,7 +476,7 @@ public class ViewMaster extends Application {
 	 */
 
 	public void backToStart(){
-		btnBack.setVisible(false);
+		Header.toggleBackButton();
 		cbLocation.setValue("City");
 		window.setScene(scene1);	
 	}

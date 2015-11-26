@@ -13,7 +13,7 @@ import javafx.beans.property.SimpleStringProperty;
 public class AgencyExt extends Agency {
 	private final SimpleStringProperty email, phone, street, zip, city;
 	
-	public AgencyExt(String id, String logo, String name, String rating, String email, 
+	public AgencyExt(int id, String logo, String name, String rating, String email, 
 						  String phone, String street, String zip, String city) {
 		super(id, logo, name, rating);
 		this.email = new SimpleStringProperty(email);
@@ -23,7 +23,7 @@ public class AgencyExt extends Agency {
 		this.city = new SimpleStringProperty(city);
 	}
 	
-	public String getID() {
+	public int getID() {
 		return super.getID();
 	}
 	
