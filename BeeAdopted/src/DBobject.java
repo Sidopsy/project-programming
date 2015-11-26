@@ -324,7 +324,7 @@ public class DBobject {
 	protected ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) throws SQLException {
 		ArrayList<AgencyExt> result = new ArrayList<>();
 	        while (input.next()) {											// This while-loop adds the results to the arrayList.
-	        	String id = input.getString("ID");
+	        	int id = input.getInt("ID");
 	        	String logo = input.getString("Logo");
 	        	String name = input.getString("Name");
 	        	String rating = input.getString("AVG(Rating)");
