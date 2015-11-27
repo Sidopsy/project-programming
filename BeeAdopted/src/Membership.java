@@ -38,14 +38,14 @@ public abstract class Membership {
    
     
     
-    public static void verify(TextField a, TextField b){
+    public static void verifyLogin(TextField a, TextField b){
 		
     System.out.println("Verify is Working!");
    
-    if  ((a.getText() == "") && (b.getText() == "")) {
+    if  ((a.getText() == " ") && (b.getText() == "")) {
     		
     		
-    		login.setOnAction(e -> InputPage.display());
+    		login.setOnAction(e -> InputPage.start());
     	    System.out.println("It's alive!");
     	    window.close();
     	}
@@ -153,7 +153,9 @@ public abstract class Membership {
 	        Scene scene = new Scene(membership, 300, 200);
 	        window.setScene(scene);
 	        window.show();
+
 	        login.setOnAction(e -> MemberPage.memberPage());
+
 	        
 	        
 	    }
