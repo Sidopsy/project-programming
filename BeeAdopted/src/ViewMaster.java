@@ -173,12 +173,6 @@ public class ViewMaster extends Application {
 			}
 		});
 		
-		// Input page button to guide the user to the input section of the application.
-		Button btnLogin = new Button("Login");
-		btnLogin.setOnAction(e -> Membership.start());
-		
-		// Vbox is created using the items above.
-		firstPage.getChildren().addAll(lblLocation, cbLocation, btnLogin);
 
 		// Vbox is populated with the label, the choicebox and the content from loginBox()
 		firstPage.getChildren().addAll(lblLocation, cbLocation,new Separator(), loginBox());
@@ -200,7 +194,7 @@ public class ViewMaster extends Application {
 		pfPassword.setPromptText("Enter your password");
 		Button btnLogin = new Button("Login");
 		btnLogin.setOnAction(e -> {
-			InputPage.display();
+			MemberPage.memberPage();
 		});
 
 
