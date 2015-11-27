@@ -173,7 +173,7 @@ public class ViewAd {
 				+ "Agencies.ID == " + agencyID + ";";
 
 		// Saving all information about the Agency in extended format.
-		try {
+		
 			AgencyExt agencyExtended = db.fetchAgencyExt(db.executeQuery(sqlStatement)).get(0);
 			System.out.println(agencyExtended);
 
@@ -189,10 +189,7 @@ public class ViewAd {
 			// Adding all Agency information to the Vbox.
 			vbox.getChildren().addAll(name, rating, email, phone, street, zip, city);
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 
 		System.out.println("Shits not working");
 		return vbox;

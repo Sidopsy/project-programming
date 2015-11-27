@@ -1,6 +1,5 @@
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -152,12 +151,12 @@ public class ViewMaster extends Application {
 		Label lblLocation = new Label("Where are you?");
 
 		// This inputs information into the choicebox, namely the cities in which there are agencies.
-		try {
-			cbLocation = new ChoiceBox<>(database.createObservableList("City",database.fetchResult(database.executeQuery("SELECT Distinct City FROM  Addresses ORDER BY City;"))));
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		cbLocation = new ChoiceBox<>(database.createObservableList("City",database.fetchResult(
+									 database.executeQuery("SELECT Distinct City FROM "
+									 					 + "Addresses ORDER BY "
+									 					 + "City;"))));
+		database.closeConnection();
+		
 		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
 
 		cbLocation.setOnAction(e -> {
@@ -222,15 +221,11 @@ public class ViewMaster extends Application {
 		hbox.setPadding(new Insets(10, 10, 10, 10));
 		hbox.setSpacing(10);
 
-		try {
+
 			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Species;")));
 			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Type;")));
 			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Gender;")));
 			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID and City == '" + city + "' ORDER BY Name;")));
-
-		} catch (SQLException e2) {
-			e2.printStackTrace();
-		}
 
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
@@ -238,11 +233,9 @@ public class ViewMaster extends Application {
 			if(!((String)cbSpecies.getValue()).equals("Species")){
 				species = (String) cbSpecies.getValue();
 				sqlStatement = "SELECT Distinct Type FROM Ads WHERE Species == '" + species + "' ORDER BY Type;";
-				try {
-					obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery(sqlStatement)));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+				
+				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery(sqlStatement)));
+				
 				cbType.setItems(obsListType);
 				cbType.setValue("Type");
 			}
@@ -267,16 +260,12 @@ public class ViewMaster extends Application {
 			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= " + today + ";";
 			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= " + today + ";";
 		}
-		try {
-			minAge = Integer.parseInt(database.fetchResult(database.executeQuery(minAgeStatement)).get(0).get(0));
-			maxAge = Integer.parseInt(database.fetchResult(database.executeQuery(maxAgeStatement)).get(0).get(0));
-			System.out.println(minAge);
-			System.out.println(maxAge);
+		
+		minAge = Integer.parseInt(database.fetchResult(database.executeQuery(minAgeStatement)).get(0).get(0));
+		maxAge = Integer.parseInt(database.fetchResult(database.executeQuery(maxAgeStatement)).get(0).get(0));
+		System.out.println(minAge);
+		System.out.println(maxAge);
 
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
 		Label ageLabel = new Label("Age");
 		slAge = new RangeSlider();
@@ -399,14 +388,10 @@ public class ViewMaster extends Application {
 
 		}
 
-		try {
 			theSearch = database.fetchAd(database.executeQuery(searchStatement));
 			System.out.println(searchStatement);
 			System.out.println(theSearch.toString());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		
 	}
 
 	/**

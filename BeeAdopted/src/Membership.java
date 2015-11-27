@@ -53,6 +53,29 @@ public abstract class Membership {
 	}
 
 	/*(a.getText() == "beta@gmail.com") || 
+    //}
+    
+      
+  
+    
+    public static void verify(TextField a, TextField b){
+		
+    System.out.println("Verify is Working!");
+   
+    if  ((a.getText() == "") && (b.getText() == "")) {
+    		
+    		
+    		login.setOnAction(e -> InputPage.start());
+    	    System.out.println("It's alive!");
+    	    window.close();
+    	}
+    else {
+    	window.close();
+    }
+    }
+    
+    /*(a.getText() == "beta@gmail.com") || 
+>>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
 	(a.getText() == "charlie@gmail.com") ||
 	(a.getText() == "delta@gmail.com") ||
 	(a.getText() == "echo@gmail.com") ||
@@ -112,7 +135,6 @@ public abstract class Membership {
 
 
 	}
-
 }
 
 
