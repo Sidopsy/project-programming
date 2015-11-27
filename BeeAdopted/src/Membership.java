@@ -29,39 +29,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public abstract class Membership {
-
-
-<<<<<<< HEAD
     public static Stage window;
     public static Button login;
     public static Boolean isCorrect = false;
-
-   
-    
-    
-    public static void verifyLogin(TextField a, TextField b){
-=======
-	public static Stage window;
-	public static Button login;
-	// public static TextField nameInput;
-	// public static TextField passwordInput;
-
-
-	//public static Button LogInHere(Button b, TextField nameInput, TextField passwordInput){
-	//login = new Button("Log In");
-	//GridPane.setConstraints(login, 1, 2);
-	//add action Listener, button click shit.
-	//login.addEventHandler(login, handle());
-
-
-
-	//verify(nameInput, passwordInput);
-	//else 
-	//return login;
-	//}
-
-
-
 
 	public static void verify(TextField a, TextField b){
 
@@ -78,41 +48,6 @@ public abstract class Membership {
 			window.close();
 		}
 	}
-
-	/*(a.getText() == "beta@gmail.com") || 
-    //}
-    
-      
-  
-    
-    public static void verify(TextField a, TextField b){
->>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
-		
-    System.out.println("Verify is Working!");
-   
-    if  ((a.getText() == " ") && (b.getText() == "")) {
-    		
-    		
-    		login.setOnAction(e -> InputPage.start());
-    	    System.out.println("It's alive!");
-    	    window.close();
-    	}
-    else {
-    	window.close();
-    }
-    }
-    
-<<<<<<< HEAD
-   
-	
-=======
-    /*(a.getText() == "beta@gmail.com") || 
->>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
-	(a.getText() == "charlie@gmail.com") ||
-	(a.getText() == "delta@gmail.com") ||
-	(a.getText() == "echo@gmail.com") ||
-	(a.getText() == "omega@gmail.com")*/
->>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
 
 	public static void start() {
 		// TODO Auto-generated method stub
@@ -135,12 +70,7 @@ public abstract class Membership {
 		(nameInput).setPromptText("username");
 		GridPane.setConstraints(nameInput, 1, 0);
 
-<<<<<<< HEAD
-	        //Password Input
-	        PasswordField passwordInput = new PasswordField();
-	        (passwordInput).setPromptText("password");
-	        GridPane.setConstraints(passwordInput, 1, 1);
-	        
+	       
 	        
 	       
 	      
@@ -190,31 +120,18 @@ public abstract class Membership {
 	        
 	);*/
 	        
-	        //Create an Account
-	        Button createAccount = new Button("Create an Account");
-	        GridPane.setConstraints(createAccount, 1, 4);
-	    	createAccount.setOnAction(e -> CreateAccount.go());
+	     
 	    	
 	    	
 	       
 	        
-	        //Add everything to membership grid layout
-	        membership.getChildren().addAll(nameLabel, nameInput, 
-	        				passwordLabel, passwordInput, login, 
-	        				createAccount);
-	        
-	       // Membership.verify(nameInput, passwordInput);
-	        Scene scene = new Scene(membership, 300, 200);
-	        window.setScene(scene);
-	        window.show();
-
-	        login.setOnAction(e -> MemberPage.memberPage());
+	       
+	
 
 	        
 	        
-	    }
+	    
 			
-=======
 		//Password Label
 		Label passwordLabel = new Label("Password:");
 		GridPane.setConstraints(passwordLabel, 0, 1);
@@ -245,16 +162,8 @@ public abstract class Membership {
 		Scene scene = new Scene(membership, 300, 200);
 		window.setScene(scene);
 		window.show();
-
+		login.setOnAction(e -> MemberPage.memberPage());
 
 	}
->>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
 }
-<<<<<<< HEAD
-	
-	
-=======
-
->>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
-
 

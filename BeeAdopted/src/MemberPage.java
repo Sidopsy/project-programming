@@ -70,7 +70,7 @@ public class MemberPage extends ViewMaster{
         
         //Go to Input Page
         Button inputPage = new Button("Create a New Ad");
-        inputPage.setOnAction(e -> InputPage.start());
+        inputPage.setOnAction(e -> InputPage.display());
         GridPane.setConstraints(inputPage, 3, 0);  
         
         //Go to Display my adds
