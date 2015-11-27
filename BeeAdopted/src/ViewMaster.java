@@ -19,6 +19,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -51,17 +53,15 @@ public class ViewMaster extends Application {
 	private static BorderPane bpLayout1, bpLayout2, bpLayout3;
 	private static TableView<Ad> tvAd;
 	private static ArrayList<Ad> theSearch = null;
-	private static ObservableList<Object> obsListSpecies, obsListType, obsListAge, obsListGender, obsListAgencies;
-	private static ChoiceBox<Object> cbLocation, cbSpecies, cbType, cbAge, cbGender, cbAgencies;
+	private static ObservableList<Object> obsListSpecies, obsListType, obsListGender, obsListAgencies;
+	private static ChoiceBox<Object> cbLocation, cbSpecies, cbType, cbGender, cbAgencies;
 	private static RangeSlider slAge;
 	private static TextField tfDescription;
-	private static Agency chosenAgency = null;
 	private static Button btnSearch;
 	private static String city, species, type, age, gender, description, agency;
 	private static boolean firstSearch;
-	private static boolean firstScene = true;
 	private static DBobject database = new DBobject();
-	private static String sqlStatement,speciesStatement;
+	private static String sqlStatement;
 	private static LocalDate todayDate = LocalDate.now();
 	private static Date today = Date.valueOf(todayDate);
 	private static int minAge = 0;
@@ -109,29 +109,29 @@ public class ViewMaster extends Application {
 	 * @return Vbox header image and navigation buttons
 	 */
 
-//	private StackPane header(){
-//
-//		// The StackPane to be returned and used as a header.
-//		StackPane header = new StackPane();
-//
-//		// Specifying an image and adding it to the ImageView that is later to be added to the StackPane.
-//		Image img = new Image(getClass().getResourceAsStream("BeeAdoptedLarge.png"));
-//		ImageView headerImg = new ImageView();	
-//
-//		headerImg.setImage(img);								// Adding the image to ImageView so that it can be added to the StackPane.
-//		headerImg.setOnMouseClicked(e -> backToStart());		// Click function to take the user back to the start page is also inserted into the header.
-//
-//		// Button for going back one step in the application.
-//		btnBack = new Button("Back");
-//		btnBack.setOnAction(e -> goBack());
-//		btnBack.setVisible(false);
-//
-//		// All items created are added to Vbox.
-//		header.getChildren().addAll(headerImg, btnBack);
-//		header.setAlignment(Pos.CENTER_LEFT);					// Alignment of the items to the center left so that the back button is in an obvious place.
-//
-//		return header;
-//	}
+	//	private StackPane header(){
+	//
+	//		// The StackPane to be returned and used as a header.
+	//		StackPane header = new StackPane();
+	//
+	//		// Specifying an image and adding it to the ImageView that is later to be added to the StackPane.
+	//		Image img = new Image(getClass().getResourceAsStream("BeeAdoptedLarge.png"));
+	//		ImageView headerImg = new ImageView();	
+	//
+	//		headerImg.setImage(img);								// Adding the image to ImageView so that it can be added to the StackPane.
+	//		headerImg.setOnMouseClicked(e -> backToStart());		// Click function to take the user back to the start page is also inserted into the header.
+	//
+	//		// Button for going back one step in the application.
+	//		btnBack = new Button("Back");
+	//		btnBack.setOnAction(e -> goBack());
+	//		btnBack.setVisible(false);
+	//
+	//		// All items created are added to Vbox.
+	//		header.getChildren().addAll(headerImg, btnBack);
+	//		header.setAlignment(Pos.CENTER_LEFT);					// Alignment of the items to the center left so that the back button is in an obvious place.
+	//
+	//		return header;
+	//	}
 
 	/**
 	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
@@ -146,7 +146,7 @@ public class ViewMaster extends Application {
 		VBox firstPage = new VBox();
 
 		firstPage.setPadding(new Insets(0));
-		firstPage.setSpacing(40);
+		firstPage.setSpacing(75);
 
 		// Displayed above the choicebox for cities to let the user know what to do.
 		Label lblLocation = new Label("Where are you?");
@@ -165,9 +165,8 @@ public class ViewMaster extends Application {
 				city = (String) cbLocation.getValue();		// What location was input?
 				firstSearch = true;												
 				search();
-				System.out.println("Bobo");
 				bpLayout2 = new BorderPane();				// Preparing for a new scene.
-				bpLayout2.setTop(Header.largeHeader());					// Setting the header as before.
+				bpLayout2.setTop(Header.largeHeader());		// Setting the header as before.
 				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
 				Header.toggleBackButton();
 				scene2 = new Scene(bpLayout2);
@@ -175,15 +174,38 @@ public class ViewMaster extends Application {
 			}
 		});
 
-		// Input page button to guide the user to the input section of the application.
-		Button btnInput = new Button("Go to input page");
-		btnInput.setOnAction(e -> Membership.start());
-
-		// Vbox is created using the items above.
-		firstPage.getChildren().addAll(lblLocation, cbLocation, btnInput);
+		// Vbox is populated with the label, the choicebox and the content from loginBox()
+		firstPage.getChildren().addAll(lblLocation, cbLocation,new Separator(), loginBox());
 		firstPage.setAlignment(Pos.CENTER);
 
 		return firstPage;
+	}
+
+	private static HBox loginBox(){
+		HBox hbox = new HBox();
+		//	hbox.setPadding(new Insets(20));
+		hbox.setSpacing(100);
+		hbox.setAlignment(Pos.CENTER);
+		Button btnShow = new Button("Go to agency pages");
+		TextField tfEmail = new TextField();
+		PasswordField pfPassword = new PasswordField();
+
+		tfEmail.setPromptText("Enter your email");
+		pfPassword.setPromptText("Enter your password");
+		Button btnLogin = new Button("Login");
+		btnLogin.setOnAction(e -> {
+			InputPage.display();
+		});
+
+
+		btnShow.setOnAction(e -> {
+			hbox.getChildren().removeAll(hbox.getChildren());
+			hbox.getChildren().addAll(tfEmail,pfPassword,btnLogin);
+		});
+
+		hbox.getChildren().add(btnShow);
+
+		return hbox;
 	}
 
 
@@ -203,7 +225,6 @@ public class ViewMaster extends Application {
 		try {
 			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Species;")));
 			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Type;")));
-			obsListAge = database.createObservableList("Age",database.fetchResult(database.executeQuery("SELECT Distinct Age FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Age;")));
 			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Gender;")));
 			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID and City == '" + city + "' ORDER BY Name;")));
 
@@ -235,10 +256,17 @@ public class ViewMaster extends Application {
 		});
 
 		VBox ageBox = new VBox();
+		String minAgeStatement;
+		String maxAgeStatement;
 		ageBox.setPadding(new Insets(0));
 		ageBox.setSpacing(2);
-		String minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= " + today + ";";
-		String maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= " + today + ";";
+		if(city != "Select all"){
+			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= " + today + ";";
+			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= " + today + ";";
+		} else {
+			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= " + today + ";";
+			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= " + today + ";";
+		}
 		try {
 			minAge = Integer.parseInt(database.fetchResult(database.executeQuery(minAgeStatement)).get(0).get(0));
 			maxAge = Integer.parseInt(database.fetchResult(database.executeQuery(maxAgeStatement)).get(0).get(0));
@@ -253,12 +281,12 @@ public class ViewMaster extends Application {
 		Label ageLabel = new Label("Age");
 		slAge = new RangeSlider();
 		slAge.setMin(minAge);
-		slAge.setMax(maxAge);
-		slAge.setShowTickLabels(true);
-		slAge.setShowTickMarks(true);
+		slAge.setMax(maxAge = 100);
+	//	slAge.setShowTickLabels(true);
+	//	slAge.setShowTickMarks(true);
 		//slAge.setMajorTickUnit(15);
-		//slAge.setMinorTickCount(1);
-		//slAge.setBlockIncrement(5);
+	//	slAge.setMinorTickCount(maxAge/2);
+	//	slAge.setBlockIncrement(5);
 		ageBox.getChildren().addAll(ageLabel, slAge);
 
 
@@ -318,26 +346,26 @@ public class ViewMaster extends Application {
 		String searchStatement, searchSpecies, searchType, searchAge, searchGender, searchAgency;
 
 		// Null values are ignored as well as if the user left the cbs in their original posistions.
-		if (species != null && (species != "Species" || species != "Select all")){
+		if (species != null && species != "Species" || species != "Select all"){
 			searchSpecies = " and Species == '" + species + "'";
 		} else {
 			searchSpecies = "";
 		}
 
 		if (type != null && type != "Type"){
-			searchType = "and Type == '" + type + "'";
+			searchType = " and Type == '" + type + "'";
 		} else {
 			searchType = "";
 		}
 
 		if (age != null && age != "Age"){
-			searchAge = " and Age >= " + slAge.getHighValue() + " and Age <= " + slAge.getLowValue();
+			searchAge = " and Age >= " + slAge.getMin() + " and Age <= " + slAge.getMax();
 		} else {
 			searchAge = "";
 		}
 
 		if (gender != null && gender != "Gender"){
-			searchGender = " and Gender == '" + gender + "'";;
+			searchGender = " and Gender == '" + gender + "'";
 		} else {
 			searchGender = "";
 		}
@@ -349,16 +377,21 @@ public class ViewMaster extends Application {
 		}
 
 		if (firstSearch == true){	
-			searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate >= '" + today + "' ORDER BY Ads.ID;";
+			if(city != "Select all"){
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate >= '" + today + "' ORDER BY Ads.ID;";
+			} else {
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT (SELECT AVG(Rating) FROM Agencies,Ratings WHERE Agencies.ID == Ratings.AgencyID GROUP BY Agencies.ID	) AS Rating FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID) as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and EndDate >= '" + today + "' ORDER BY Ads.ID;";
+			}
 			firstSearch = false;
 		} else {
+			System.out.println("Bob0: " + searchSpecies + searchType + searchAge + searchGender);
 			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating)"
 					+ "Ads,Agencies,Ratings,Addresses WHERE "
 					+ "Agencies.ID == Addresses.AgencyID and "
 					+ "Agencies.ID == Ads.AgencyID and "
 					+ "Agencies.ID == Ratings.AgencyID and "
 					+ "City = '" + city + "' and "
-					+ "EndDate >= " + today +
+					+ "EndDate >= '" + today + "'" +
 					searchSpecies + 
 					searchType + 
 					searchAge + 
@@ -368,12 +401,12 @@ public class ViewMaster extends Application {
 
 		try {
 			theSearch = database.fetchAd(database.executeQuery(searchStatement));
+			System.out.println(searchStatement);
+			System.out.println(theSearch.toString());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		//	System.out.println(searchStatement);
-		//	System.out.println(theSearch.toString());
 	}
 
 	/**

@@ -160,7 +160,7 @@ public class InputPage {
 					e1.printStackTrace();
 				}
 			});
-			
+
 			TextField tfSpecies = new TextField();
 			// cb2.setOnAction(e -> species = (String) cb2.getValue());
 			CheckBox test = new CheckBox("New");
@@ -174,24 +174,24 @@ public class InputPage {
 				}
 			});
 
-//			btnMoreSpecies = new Button("+");
-//			btnMoreSpecies.setOnAction(e -> {
-//				TextInputDialog dialog = new TextInputDialog("");
-//				dialog.setTitle("New species");
-//				dialog.setHeaderText("Custom species");
-//				dialog.setContentText("Please enter the name of the species:");
-//
-//				Optional<String> result = dialog.showAndWait();
-//
-//				if (result.isPresent()) {
-//					newSpecies = result.get();
-//				}
-//
-//			});
+			//			btnMoreSpecies = new Button("+");
+			//			btnMoreSpecies.setOnAction(e -> {
+			//				TextInputDialog dialog = new TextInputDialog("");
+			//				dialog.setTitle("New species");
+			//				dialog.setHeaderText("Custom species");
+			//				dialog.setContentText("Please enter the name of the species:");
+			//
+			//				Optional<String> result = dialog.showAndWait();
+			//
+			//				if (result.isPresent()) {
+			//					newSpecies = result.get();
+			//				}
+			//
+			//			});
 			speciesHBox.getChildren().addAll(cbSpecies, test);
 			input.add(speciesHBox, 1, 2);
-			
-			
+
+
 
 
 			HBox typeHBox = new HBox();
@@ -319,47 +319,44 @@ public class InputPage {
 	}
 
 	private static void inputAgencyValues() {
-			System.out.println(agencyID);
-			name = tfName.getText();
-			email = tfEmail.getText();
-			phone = tfPhone.getText();
-			password = pfPassword.getText();
-			street = tfStreet.getText();
-			zip = tfZip.getText();
-			city = tfCity.getText();
-			
-			String insert = "INSERT INTO Agencies (Name,Email,Phone,Password)";
-			String values = 
-					" VALUES ('" + name  + "', '"+ email + "', '" 
-							+ phone + "', '" + password + "', '"
+		System.out.println(agencyID);
+		name = tfName.getText();
+		email = tfEmail.getText();
+		phone = tfPhone.getText();
+		password = pfPassword.getText();
+		street = tfStreet.getText();
+		zip = tfZip.getText();
+		city = tfCity.getText();
+
+		String insert = "INSERT INTO Agencies (Name,Email,Phone,Password)";
+		String values = 
+				" VALUES ('" + name  + "', '"+ email + "', '" 
+						+ phone + "', '" + password + "');";
+
+		System.out.println(values);
+		try {
+			db.executeUpdate(insert + values);
+			db.closeConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			int agencyId = db.fetchAgency(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC")).get(0).getID();
+			db.closeConnection();
+			String insertAdress = "INSERT INTO Addresses (AgencyId,Street,Zip,City)";
+			String valuesAdress = 
+					" VALUES (" + agencyId + ", '"
 							+ street + "', '" + zip + "', '" + city + "');";
 
 			System.out.println(values);
-			try {
-				db.executeUpdate(insert + values);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				int agencyId = db.fetchAgency(db.executeQuery("SELECT ID FROM Agencies ORDER BY ASC(ID)")).get(0).getID();
-				
-				String insertAdress = "INSERT INTO Addresses (AgencyId,Street,Zip,City)";
-				String valuesAdress = 
-						" VALUES ('" + password + "', '"
-								+ street + "', '" + zip + "', '" + city + "');";
-				
-				System.out.println(values);
-				try {
-					db.executeUpdate(insertAdress + valuesAdress);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			db.executeUpdate(insertAdress + valuesAdress);
+			db.closeConnection();
+
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	private static void inputAnimalValues() {
