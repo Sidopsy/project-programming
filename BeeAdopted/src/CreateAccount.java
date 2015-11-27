@@ -82,10 +82,22 @@ public class CreateAccount {
         GridPane.setConstraints(passwordInput, 1, 5);
         
         Button create = new Button("Create My Account");
-        GridPane.setConstraints(create, 0, 5);
+        GridPane.setConstraints(create, 0, 7);
+        
+        Label uploadText = new Label("Upload Picture");
+		GridPane.setConstraints(uploadText, 1, 6);
+
+		Button bowse = new Button("Browse");
+		bowse.setOnAction(e -> FileChooserExample.display());
+		GridPane.setConstraints(bowse, 3, 6);
 		
-        account.getChildren().addAll(nameLabel, nameInput, addressLabel, streetLabel, streetInput, cityLabel, cityInput, zipLabel, zipInput, phoneLabel, phoneInput, emailLabel, emailInput, passwordLabel, passwordInput, create );
-		Scene createAccountScene = new Scene(account, 650, 200);
+        account.getChildren().addAll(nameLabel, nameInput, addressLabel, 
+        							streetLabel, streetInput, cityLabel, 
+        							cityInput, zipLabel, zipInput, phoneLabel, 
+        							phoneInput, emailLabel, emailInput, 
+        							passwordLabel, passwordInput, create,
+        							uploadText, bowse);
+		Scene createAccountScene = new Scene(account, 650, 300);
         createAccountWindow.setScene(createAccountScene);
         createAccountWindow.show();
         Membership.window.close();

@@ -1,14 +1,31 @@
 
-import java.awt.Event;
 
+import java.awt.Checkbox;
+import java.awt.Event;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.JOptionPane;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public abstract class Membership {
@@ -16,25 +33,10 @@ public abstract class Membership {
 
     public static Stage window;
     public static Button login;
-   // public static TextField nameInput;
-   // public static TextField passwordInput;
+    public static Boolean isCorrect = false;
+
+   
     
-    
-    //public static Button LogInHere(Button b, TextField nameInput, TextField passwordInput){
-    //login = new Button("Log In");
-    //GridPane.setConstraints(login, 1, 2);
-	//add action Listener, button click shit.
-    //login.addEventHandler(login, handle());
-    
-    
-    
-    //verify(nameInput, passwordInput);
-    //else 
-	//return login;
-    //}
-    
-      
-  
     
     public static void verify(TextField a, TextField b){
 		
@@ -52,12 +54,9 @@ public abstract class Membership {
     }
     }
     
-    /*(a.getText() == "beta@gmail.com") || 
-	(a.getText() == "charlie@gmail.com") ||
-	(a.getText() == "delta@gmail.com") ||
-	(a.getText() == "echo@gmail.com") ||
-	(a.getText() == "omega@gmail.com")*/
+   
 	
+
 	public static void start() {
 		// TODO Auto-generated method stub
 		
@@ -84,36 +83,83 @@ public abstract class Membership {
 	        GridPane.setConstraints(passwordLabel, 0, 1);
 
 	        //Password Input
-	        TextField passwordInput = new TextField();
+	        PasswordField passwordInput = new PasswordField();
 	        (passwordInput).setPromptText("password");
 	        GridPane.setConstraints(passwordInput, 1, 1);
 	        
+	        
+	       
+	      
 	        //Login Button
 	        login = new Button("Log In");
-	        GridPane.setConstraints(login, 1, 2);
+	        GridPane.setConstraints(login, 1, 3);
 	        
-	        login.setOnAction(e -> verify(nameInput, passwordInput));
+	        //login.setOnAction(e -> verify(nameInput, passwordInput));
+	        //login.setOnAction(e -> MemberPage.memberPage());
+	        	//verify(nameInput,passwordInput);
+	        	//if(isCorrect == true){
+	        	//InputPage.display();
+	        	
+	        	/*try {String query = "select Email, Password from Agencies where Email=? and Password=abc123 ";
+	        	PreparedStatement pst = (PreparedStatement) db.fetchResult((db.executeQuery(query)));
+	        		
+	        		//ArrayList<String> pst = db.fetchResult((db.executeQuery(query))).get(0);
+	        		
+	        		pst.setString(0,nameInput.getText());
+	        		pst.setString(1, passwordInput.getText());
+	        		ResultSet rs = pst.executeQuery();
+	        		
+	        		int count = 0;
+	        		while(rs.next()) {
+	        			count += count;
+	        		}
+	        		if (count == 1)	{
+	        			JOptionPane.showMessageDialog( null, "Usename and Password is correct");
+	        			login.setOnAction(e2 -> MemberPage.memberPage());
+	        		}
+	        		else if (count >1){
+	        			JOptionPane.showMessageDialog(null, "Duplicate Username and Password");
+	        		}
+	        		else{
+	        			JOptionPane.showMessageDialog( null, "Usename and Password is not correct. Please try again.");
+	        		}
+	        		rs.close();
+	        		pst.close();
+	        		
+	        		}catch (Exception e1){
+	        		 JOptionPane.showMessageDialog( null, e1);
+	        	 }
+	        	
+	        	
+	        	}
+	        	
 	        
+	);*/
 	        
 	        //Create an Account
 	        Button createAccount = new Button("Create an Account");
-	        GridPane.setConstraints(createAccount, 1, 3);
+	        GridPane.setConstraints(createAccount, 1, 4);
 	    	createAccount.setOnAction(e -> CreateAccount.go());
+	    	
+	    	
 	       
 	        
-	        //Add everything to membership grip layout
-	        membership.getChildren().addAll(nameLabel, nameInput, passwordLabel, passwordInput, login, createAccount);
+	        //Add everything to membership grid layout
+	        membership.getChildren().addAll(nameLabel, nameInput, 
+	        				passwordLabel, passwordInput, login, 
+	        				createAccount);
 	        
 	       // Membership.verify(nameInput, passwordInput);
 	        Scene scene = new Scene(membership, 300, 200);
 	        window.setScene(scene);
 	        window.show();
-	        login.setOnAction(e -> InputPage.display());
+	        login.setOnAction(e -> MemberPage.memberPage());
 	        
 	        
 	    }
 			
 }
+	
 	
 
 

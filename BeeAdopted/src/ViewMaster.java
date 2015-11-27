@@ -167,11 +167,11 @@ public class ViewMaster extends Application {
 		});
 		
 		// Input page button to guide the user to the input section of the application.
-		Button btnInput = new Button("Go to input page");
-		btnInput.setOnAction(e -> Membership.start());
+		Button btnLogin = new Button("Login");
+		btnLogin.setOnAction(e -> Membership.start());
 		
 		// Vbox is created using the items above.
-		firstPage.getChildren().addAll(lblLocation, cbLocation, btnInput);
+		firstPage.getChildren().addAll(lblLocation, cbLocation, btnLogin);
 		firstPage.setAlignment(Pos.CENTER);
 		
 		return firstPage;

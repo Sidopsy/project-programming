@@ -283,7 +283,7 @@ public class InputPage {
 		input.add(tfCity, 1, 3);
 
 
-		Label uploadText = new Label("Upload logotype");
+		Label uploadText = new Label("Upload Logo");
 		input.add(uploadText, 0,4);
 
 		Button bowse = new Button("Browse");
