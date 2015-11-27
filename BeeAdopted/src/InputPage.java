@@ -1,9 +1,13 @@
 import java.io.File;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -13,10 +17,16 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderRepeat;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -24,7 +34,7 @@ import javafx.stage.Stage;
  * This class creates a new window and lets the user input information into the database throught the GUI.
  * 
  * @author 		Mattias Landkvist
- * @refactored 	Måns Thörnvik
+ * @refactored 	M??ns Th??rnvik
  * 				Added new layout touches and input restrictions on all input fields.
  */
 
@@ -49,7 +59,7 @@ public class InputPage {
 	 * 
 	 */
 
-	public static void start() {
+	public static void display(){
 		window = new Stage();
 
 		window.initModality(Modality.APPLICATION_MODAL);
@@ -75,9 +85,9 @@ public class InputPage {
 	 */
 
 	private static HBox chooseInput() {
-		HBox hBox = new HBox();
-		hBox.setPadding(new Insets(10, 10, 10, 10));
-		hBox.setSpacing(10);
+		HBox hbox = new HBox();
+		hbox.setPadding(new Insets(10, 10, 10, 10));
+		hbox.setSpacing(10);
 
 		Button btnAgencyInput = new Button("New agency?");
 		Button btnAnimalInput = new Button("New animal?");
@@ -98,10 +108,10 @@ public class InputPage {
 			window.setScene(sceneInputConfirmation);
 		});
 
-		hBox.getChildren().addAll(btnAgencyInput, btnAnimalInput);
-		hBox.setAlignment(Pos.CENTER);
+		hbox.getChildren().addAll(btnAgencyInput, btnAnimalInput);
+		hbox.setAlignment(Pos.CENTER);
 
-		return hBox;
+		return hbox;
 	}
 
 	/**
@@ -193,8 +203,8 @@ public class InputPage {
 														  + "Agencies ORDER BY "
 														  + "Name;"))));
 		db.closeConnection();
-
-		cbAgencies.setValue(cbAgencies.getItems().get(0));
+		
+		cbAgencies.setValue(cbAgencies.getItems().get(0));		
 
 		
 		chbNewType = new CheckBox("New");			// Checkboxes for adding new species and types
@@ -213,6 +223,7 @@ public class InputPage {
 									  			   + "Ads ORDER BY "
 									  			   + "Type;")));
 				db.closeConnection();
+
 
 				cbType.setItems(obsListType);		// Loading type list into type CB
 				cbType.setValue("Type");			// Setting default value to "Type"
@@ -268,6 +279,7 @@ public class InputPage {
 														 + "Ads ORDER BY "
 														 + "Species;"))));
 		db.closeConnection();
+
 
 		cbSpecies.setValue("Species");				// Setting default value to "Species"
 		cbSpecies.setMinWidth(100);					// Setting size of the CB
@@ -565,33 +577,36 @@ public class InputPage {
 	 */
 	
 	private static void inputAgencyValues() {
-        String name = tfName.getText();
-        String email = tfEmail.getText();
-        String phone = tfPhone.getText();
-        String password = pfPassword.getText();
-        String street = tfStreet.getText();
-        String zip = tfZip.getText();
-        String city = tfCity.getText();
+		//System.out.println(agencyID);
+		String name = tfName.getText();
+		String email = tfEmail.getText();
+		String phone = tfPhone.getText();
+		String password = pfPassword.getText();
+		String street = tfStreet.getText();
+		String zip = tfZip.getText();
+		String city = tfCity.getText();
 
-        String insert = "INSERT INTO Agencies (Name,Email,Phone,Password)";
-        String values = " VALUES ('" + name  + "', '"+ email + "', '"
-                        + phone + "', '" + password + "', '"
-                        + street + "', '" + zip + "', '" + city + "');";
-        System.out.println(values);
-        
-        db.executeUpdate(insert + values);
+		String insert = "INSERT INTO Agencies (Name,Email,Phone,Password)";
+		String values = 
+				" VALUES ('" + name  + "', '"+ email + "', '" 
+						+ phone + "', '" + password + "');";
 
-        int agencyId = db.fetchAgency(db.executeQuery("SELECT ID FROM Agencies ORDER BY ASC(ID)")).get(0).getID();
+		System.out.println(values);
+			db.executeUpdate(insert + values);
+			db.closeConnection();
+		
+			int agencyId = db.fetchAgency(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC")).get(0).getID();
+			db.closeConnection();
+			String insertAdress = "INSERT INTO Addresses (AgencyId,Street,Zip,City)";
+			String valuesAdress = 
+					" VALUES (" + agencyId + ", '"
+							+ street + "', '" + zip + "', '" + city + "');";
 
-        String insertAdress = "INSERT INTO Addresses (AgencyId,Street,Zip,City) ";
-        String valuesAdress = "VALUES ('" + password + "', '" + street + "', "
-        							+ "'" + zip + "', '" + city + "');";
+			System.out.println(values);
+			db.executeUpdate(insertAdress + valuesAdress);
+			db.closeConnection();
 
-        System.out.println(values);
-        db.executeUpdate(insertAdress + valuesAdress);
-
-  
-    }
+	}
 
 	/**
 	 * Method for finalizing and inputing values into the database, based on what was entered into the input page GUI.
@@ -641,4 +656,5 @@ public class InputPage {
 		db.executeUpdate(insert + values);
 		db.closeConnection();
 	}
+
 }

@@ -124,7 +124,7 @@ public class DBobject {
 	 * @throws SQLException
 	 */
 	
-	public void executeUpdate(String update) {
+	public void executeUpdate(String update){
 		setConnection();
 		System.out.println(">> Executing update");
 		
@@ -207,20 +207,20 @@ public class DBobject {
 				System.out.println(">> Nothing in ResultSet, cannot close");
 			}
 		
-			if (stmt != null) {
-				stmt.close();
-			} 
-			else {
-				System.out.println(">> No statement established, cannot close");
-			}
+		if (stmt != null) {
+			stmt.close();
+		} 
+		else {
+			System.out.println(">> No statement established, cannot close");
+		}
 
-			if (connect != null) {
-				connect.close();
-			} 
-			else {
-				System.out.println(">> No database connected, cannot close");
-			}
-		} catch (SQLException e) {
+		if (connect != null) {
+			connect.close();
+		} 
+		else {
+			System.out.println(">> No database connected, cannot close");
+		}
+		}catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
 		System.out.println(">> Closed!");
@@ -360,7 +360,7 @@ public class DBobject {
 	
 	protected ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
 		ArrayList<AgencyExt> result = new ArrayList<>();
-		try {	
+	    try {	
 			while (input.next()) {											// This while-loop adds the results to the arrayList.
 	        		int id = input.getInt("ID");
 	        		String logo = input.getString("Logo");
@@ -389,7 +389,7 @@ public class DBobject {
 	 */
 	
 	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
-		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator());
+		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator(), "Select all" , new Separator());
 		
 		for (int i = 0; input.size() > i; i++) {
 			ArrayList<String> fetch = input.get(i);
