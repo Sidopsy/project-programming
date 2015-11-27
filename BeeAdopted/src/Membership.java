@@ -43,7 +43,7 @@ public abstract class Membership {
     if  ((a.getText() == "") && (b.getText() == "")) {
     		
     		
-    		login.setOnAction(e -> InputPage.display());
+    		login.setOnAction(e -> InputPage.start());
     	    System.out.println("It's alive!");
     	    window.close();
     	}
@@ -108,7 +108,7 @@ public abstract class Membership {
 	        Scene scene = new Scene(membership, 300, 200);
 	        window.setScene(scene);
 	        window.show();
-	        login.setOnAction(e -> InputPage.display());
+	        login.setOnAction(e -> InputPage2.start());
 	        
 	        
 	    }
