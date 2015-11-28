@@ -168,7 +168,7 @@ public class ViewMaster extends Application {
 				bpLayout2.setTop(Header.largeHeader());		// Setting the header as before.
 				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
 				Header.toggleBackButton();
-				scene2 = new Scene(bpLayout2);
+				scene2 = new Scene(bpLayout2,800,600);
 				window.setScene(scene2);
 			}
 		});
@@ -217,10 +217,13 @@ public class ViewMaster extends Application {
 	 * @return Hbox displaying filers
 	 */
 
-	public HBox filter(){
-		HBox hbox = new HBox();
-		hbox.setPadding(new Insets(10, 10, 10, 10));
-		hbox.setSpacing(10);
+	public VBox filter(){
+		VBox filters = new VBox();
+		filters.setAlignment(Pos.CENTER);
+		
+		HBox primaryFilters = new HBox();
+		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
+		primaryFilters.setSpacing(75);
 
 
 			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Species;")));
@@ -229,6 +232,7 @@ public class ViewMaster extends Application {
 			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID and City == '" + city + "' ORDER BY Name;")));
 
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
+		cbSpecies.setPrefWidth(150);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
 		cbSpecies.setOnAction(e -> {
 			if(!((String)cbSpecies.getValue()).equals("Species")){
@@ -243,6 +247,7 @@ public class ViewMaster extends Application {
 		});
 
 		cbType = new ChoiceBox<>(obsListType);
+		cbType.setPrefWidth(150);
 		cbType.setValue(cbType.getItems().get(0));
 		cbType.setOnAction(e -> {
 			type = (String) cbType.getValue();
@@ -255,11 +260,11 @@ public class ViewMaster extends Application {
 		ageBox.setPadding(new Insets(0));
 		ageBox.setSpacing(2);
 		if(city != "Select all"){
-			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= " + today + ";";
-			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= " + today + ";";
+			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= '" + today + "';";
+			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= '" + today + "';";
 		} else {
-			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= " + today + ";";
-			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= " + today + ";";
+			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
+			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
 		}
 		
 		minAge = Integer.parseInt(database.fetchResult(database.executeQuery(minAgeStatement)).get(0).get(0));
@@ -271,8 +276,9 @@ public class ViewMaster extends Application {
 		Label ageLabel = new Label("Age");
 		slAge = new RangeSlider();
 		slAge.setMin(minAge);
-		slAge.setMax(maxAge = 100);
-	//	slAge.setShowTickLabels(true);
+		slAge.setMax(maxAge);
+		slAge.setShowTickLabels(true);
+		slAge.setPrefWidth(150);
 	//	slAge.setShowTickMarks(true);
 		//slAge.setMajorTickUnit(15);
 	//	slAge.setMinorTickCount(maxAge/2);
@@ -297,16 +303,23 @@ public class ViewMaster extends Application {
 		//		//	cbGender.setDisable(false);
 		//		});
 
-
+		
+		HBox secondaryFilters = new HBox();
+		secondaryFilters.setPadding(new Insets(10, 10, 10, 10));
+		secondaryFilters.setSpacing(75);
+		
 		cbGender = new ChoiceBox<>(obsListGender);
+		cbGender.setPrefWidth(150);
 		cbGender.setValue(cbGender.getItems().get(0));
 		cbGender.setOnAction(e -> gender = (String) cbGender.getValue());
 
 		cbAgencies = new ChoiceBox<>(obsListAgencies);
+		cbAgencies.setPrefWidth(150);
 		cbAgencies.setValue(cbAgencies.getItems().get(0));
 		cbAgencies.setOnAction(e -> agency = (String) cbAgencies.getValue());
 
 		tfDescription = new TextField();
+		tfDescription.setPrefWidth(150);
 		tfDescription.setPromptText("Description");
 
 		btnSearch = new Button("Search");
@@ -320,9 +333,22 @@ public class ViewMaster extends Application {
 			window.setScene(scene3);
 		});
 
-		hbox.getChildren().addAll(cbSpecies,cbType,slAge,cbGender,cbAgencies,tfDescription,btnSearch);
-
-		return hbox;
+		
+		Button btnShowMoreFilters = new Button("Show more filters");
+		
+		primaryFilters.getChildren().addAll(cbSpecies,cbType,slAge,btnSearch);
+		secondaryFilters.getChildren().addAll(cbGender,cbAgencies,tfDescription);
+		filters.getChildren().addAll(primaryFilters, btnShowMoreFilters);
+		
+		
+		btnShowMoreFilters.setOnAction(e -> {
+			filters.getChildren().removeAll(filters.getChildren());
+			filters.getChildren().addAll(primaryFilters, secondaryFilters);
+		});
+		
+		
+		
+		return filters;
 	}
 
 	/**

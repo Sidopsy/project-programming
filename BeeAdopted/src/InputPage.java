@@ -79,7 +79,7 @@ public class InputPage {
 	 */
 	
 
-	private static HBox chooseInput() {
+//	private static HBox chooseInput() {
 //		HBox hbox = new HBox();
 //		hbox.setPadding(new Insets(10, 10, 10, 10));
 //		hbox.setSpacing(10);
@@ -107,7 +107,7 @@ public class InputPage {
 //		hbox.setAlignment(Pos.CENTER);
 //
 //		return hbox;
-	}
+//	}
 
 	
 	/**
