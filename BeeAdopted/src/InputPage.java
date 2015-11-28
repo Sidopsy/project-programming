@@ -1,14 +1,12 @@
+import java.awt.Dialog;
 import java.io.File;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -17,18 +15,14 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.BorderRepeat;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * This class creates a new window and lets the user input information into the database throught the GUI.
@@ -40,8 +34,8 @@ import javafx.stage.Stage;
 
 public class InputPage {
 	private static Stage window;
-	private static Scene sceneInput, sceneInputConfirmation;
-	private static BorderPane layoutInput, layoutInputConfirmation;
+	private static Scene sceneInput;
+	private static BorderPane layoutInput;
 
 	private static TextField tfName, tfAge, tfNewSpecies, tfNewType, tfEmail, tfPhone, tfStreet, tfZip, tfCity;
 	private static TextArea taDescription;
@@ -83,37 +77,39 @@ public class InputPage {
 	 * @return a horizontal box with two options, either to input an animal or
 	 *         an agency
 	 */
+	
 
 	private static HBox chooseInput() {
-		HBox hbox = new HBox();
-		hbox.setPadding(new Insets(10, 10, 10, 10));
-		hbox.setSpacing(10);
-
-		Button btnAgencyInput = new Button("New agency?");
-		Button btnAnimalInput = new Button("New animal?");
-
-		btnAgencyInput.setOnAction(e -> {
-			layoutInputConfirmation = new BorderPane();
-			layoutInputConfirmation.setTop(Header.smallHeader());
-			layoutInputConfirmation.setCenter(inputAgencyView());
-			sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
-			window.setScene(sceneInputConfirmation);
-		});
-
-		btnAnimalInput.setOnAction(e -> {
-			layoutInputConfirmation = new BorderPane();
-			layoutInputConfirmation.setTop(Header.smallHeader());
-			layoutInputConfirmation.setCenter(inputAnimalView());
-			sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
-			window.setScene(sceneInputConfirmation);
-		});
-
-		hbox.getChildren().addAll(btnAgencyInput, btnAnimalInput);
-		hbox.setAlignment(Pos.CENTER);
-
-		return hbox;
+//		HBox hbox = new HBox();
+//		hbox.setPadding(new Insets(10, 10, 10, 10));
+//		hbox.setSpacing(10);
+//
+//		Button btnAgencyInput = new Button("New agency?");
+//		Button btnAnimalInput = new Button("New animal?");
+//
+//		btnAgencyInput.setOnAction(e -> {
+//			layoutInputConfirmation = new BorderPane();
+//			layoutInputConfirmation.setTop(Header.smallHeader());
+//			layoutInputConfirmation.setCenter(inputAgencyView());
+//			sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
+//			window.setScene(sceneInputConfirmation);
+//		});
+//
+//		btnAnimalInput.setOnAction(e -> {
+//			layoutInputConfirmation = new BorderPane();
+//			layoutInputConfirmation.setTop(Header.smallHeader());
+//			layoutInputConfirmation.setCenter(inputAnimalView());
+//			sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
+//			window.setScene(sceneInputConfirmation);
+//		});
+//
+//		hbox.getChildren().addAll(btnAgencyInput, btnAnimalInput);
+//		hbox.setAlignment(Pos.CENTER);
+//
+//		return hbox;
 	}
 
+	
 	/**
 	 * 
 	 * 
@@ -130,40 +126,35 @@ public class InputPage {
 
 		Label lblName, lblAge, lblGender;
 
-		Button btnAddPicture, btnSaveAd;
-
 		CheckBox chbNewSpecies, chbNewType;
 
+		Button btnAddPicture, btnSaveAd;
+
+		Alert alert;
 		
 		// Adding items to the first row of the GridPane.
 		lblName = new Label("Name");
 		lblAge = new Label("Age");
 		lblGender = new Label("Gender");
-
-		gridPane.add(lblName, 0, 0);
-		gridPane.add(lblAge, 0, 0);
-		gridPane.add(lblGender, 1, 0);
-		GridPane.setMargin(lblName, new Insets(-45, 0, 0, 0));
-		GridPane.setMargin(lblAge, new Insets(-45, 0, 0, 160));
-		GridPane.setMargin(lblGender, new Insets(-45, 0, 0, 143));
-
+		
+		
 		tfName = new TextField();
 		tfName.setPromptText("...");
 		tfName.setMinWidth(150);
 		tfName.setMaxWidth(150);
-
 		tfName.setOnKeyReleased(e -> {
 			validateInputString(tfName);
 		});
+		
 		
 		tfAge = new TextField();
 		tfAge.setPromptText("...");
 		tfAge.setMinWidth(50);
 		tfAge.setMaxWidth(50);
-
 		tfAge.setOnKeyReleased(e -> {
 			validateInputInteger(tfAge);
 		});
+		
 		
 		ObservableList<Object> genders = FXCollections.observableArrayList("...", new Separator());
 		genders.add("Male");
@@ -173,11 +164,18 @@ public class InputPage {
 		cbGenders.setMinWidth(100);
 		cbGenders.setMaxWidth(100);
 
+		
+		gridPane.add(lblName, 0, 0);
+		gridPane.add(lblAge, 0, 0);
+		gridPane.add(lblGender, 1, 0);
 		gridPane.add(tfName, 0, 0);
 		gridPane.add(tfAge, 0, 0);
 		gridPane.add(cbGenders, 1, 0);
-		GridPane.setMargin(tfAge, new Insets(0, 0, 0, 160));
-		GridPane.setMargin(cbGenders, new Insets(0, 0, 0, 143));
+		GridPane.setMargin(lblName, 	new Insets(-45, 0, 0, 0));
+		GridPane.setMargin(lblAge, 		new Insets(-45, 0, 0, 160));
+		GridPane.setMargin(lblGender, 	new Insets(-45, 0, 0, 143));
+		GridPane.setMargin(tfAge, 		new Insets(0, 0, 0, 160));
+		GridPane.setMargin(cbGenders, 	new Insets(0, 0, 0, 143));
 
 		
 		// Items are added to row two in the GridPane
@@ -185,10 +183,10 @@ public class InputPage {
 		taDescription.setPromptText("Description...");
 		taDescription.setMinSize(500, 150);
 		taDescription.setMaxSize(500, 150);
-		
 		taDescription.setOnKeyReleased(e -> {
 			validateInputTextArea(taDescription);
 		});
+		
 		
 		GridPane.setColumnSpan(taDescription, 2);
 		gridPane.add(taDescription, 0, 2);
@@ -200,9 +198,10 @@ public class InputPage {
 		 */
 		cbAgencies = new ChoiceBox<>(db.createObservableList("Agency", db.fetchResult(
 									 db.executeQuery("SELECT Distinct Name FROM "
-														  + "Agencies ORDER BY "
-														  + "Name;"))));
+												   + "Agencies ORDER BY "
+												   + "Name;"))));
 		db.closeConnection();
+		
 		
 		cbAgencies.setValue(cbAgencies.getItems().get(0));		
 
@@ -220,8 +219,8 @@ public class InputPage {
 				// Loading all types into type CB when TF has been used
 				obsListType = db.createObservableList("Type", db.fetchResult(
 							  db.executeQuery("SELECT Distinct Type FROM "
-									  			   + "Ads ORDER BY "
-									  			   + "Type;")));
+									  		+ "Ads ORDER BY "
+									  		+ "Type;")));
 				db.closeConnection();
 
 
@@ -233,9 +232,6 @@ public class InputPage {
 				
 				cbType.setDisable(true);			// Disable choosing type before species specified
 				cbType.setVisible(true);			// Show CB again for types
-					
-				cbType.setItems(obsListType);		// All Types added into Type CB
-				cbType.setValue("Type");			// Set value to Type
 				
 				chbNewType.setSelected(false);		// Setting CHB unselected
 				chbNewType.setDisable(true);		// Checking new type is disabled until species chosen
@@ -272,12 +268,11 @@ public class InputPage {
 			}
 		});
 		
-		
-		// Preparing a list of all species in the DB
+
 		cbSpecies = new ChoiceBox<>(db.createObservableList("Species", db.fetchResult(
 									db.executeQuery("SELECT Distinct Species FROM "
-														 + "Ads ORDER BY "
-														 + "Species;"))));
+												  + "Ads ORDER BY "
+												  + "Species;"))));
 		db.closeConnection();
 
 
@@ -286,14 +281,14 @@ public class InputPage {
 		cbSpecies.setMaxWidth(100);
 		cbSpecies.setOnAction(e -> {				// On action (selection) it should...
 			if ((String) cbSpecies.getValue() != "Species") {	// If it has changed from "Species", do:
-				// Update the list of types by sorting our the types belonging to other species
 				obsListType = db.createObservableList("Type", db.fetchResult(
 							  db.executeQuery("SELECT Distinct Type FROM "
-									  			   + "Ads WHERE "
-									  			   + "Species == '" + (String) cbSpecies.getValue() + "' ORDER BY "
-									  			   + "Type;")));
+									  	    + "Ads WHERE "
+									  		+ "Species == '" + (String) cbSpecies.getValue() + "' ORDER BY "
+									  		+ "Type;")));
 				db.closeConnection();
 
+				
 				cbType.setItems(obsListType);		// Add the updated list to the CB with types
 				cbType.setValue("Type");			// Setting default value of Type CB to "Type"
 				cbType.setDisable(false);			// Enabling type CB
@@ -308,25 +303,24 @@ public class InputPage {
 		});
 
 		
-		// Standard list of types
 		cbType = new ChoiceBox<>(db.createObservableList("Type", db.fetchResult(
 								 db.executeQuery("SELECT Distinct Type FROM "
-													  + "Ads ORDER BY "
-													  + "Type;"))));
+											   + "Ads ORDER BY "
+											   + "Type;"))));
 		db.closeConnection();
 
+		
 		cbType.setValue("Type");					// Setting default value of type CB to "Type"
 		cbType.setMinWidth(100);					// Setting size of type CB
 		cbType.setMaxWidth(100);
 		cbType.setDisable(true);					// Type CB is disables by default
-
+		
 		
 		tfNewSpecies = new TextField();				// TF for new species
 		tfNewSpecies.setMinWidth(100);				// Setting size for TF
 		tfNewSpecies.setMaxWidth(100);
 		tfNewSpecies.setVisible(false);				// TF not visible by default
 		tfNewSpecies.setPromptText("Species...");	// Prompt text for TF to be displayed in the background
-		
 		tfNewSpecies.setOnKeyReleased(e -> {
 			validateInputString(tfNewSpecies);
 			if (tfNewSpecies.getLength() != 0) {	// This actually becomes true when 2 characters have been entered, for some reason
@@ -351,7 +345,6 @@ public class InputPage {
 		tfNewType.setMaxWidth(100);
 		tfNewType.setVisible(false);
 		tfNewType.setPromptText("Type...");
-
 		tfNewType.setOnKeyReleased(e -> {
 			validateInputString(tfNewType);
 		});
@@ -359,15 +352,12 @@ public class InputPage {
 		
 		gridPane.add(cbSpecies, 0, 3);				// Adding CB for species to gridpane, column 0, row 3
 		gridPane.add(tfNewSpecies, 0, 3);			// Adding CHB for new species to gridpane, column 0, row 3
-
 		gridPane.add(cbType, 1, 3);
 		gridPane.add(tfNewType, 1, 3);
-
 		gridPane.add(chbNewSpecies, 0, 3);
-		GridPane.setMargin(chbNewSpecies, new Insets(0, 0, 0, 110));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
-
 		gridPane.add(chbNewType, 1, 3);
-		GridPane.setMargin(chbNewType, new Insets(0, 0, 0, 110));
+		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 110));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
+		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 110));
 
 		
 		// The following items are added to row four
@@ -378,25 +368,35 @@ public class InputPage {
 
 		
 		// This item is added to the last row (5)
+		alert = new Alert(AlertType.INFORMATION);
+		
 		btnSaveAd = new Button("Save ad");
 		btnSaveAd.setMinWidth(100);
 		btnSaveAd.setMaxWidth(100);
-		
 		btnSaveAd.setOnAction(e -> {
 			if (validateAdInputs()) {	
+				System.out.println(">> Input values OK");
 				inputAdValues();
-				layoutInputConfirmation = new BorderPane();
-				layoutInputConfirmation.setTop(Header.smallHeader());
-				sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
-				window.setScene(sceneInputConfirmation);
-			} else {}
+				alert.setTitle("Success");
+				alert.setHeaderText("Advertisement has been submitted");
+				alert.setContentText("Your advertisement is now visible to all system users.");
+				alert.showAndWait();
+				window.close();
+			} else {System.out.println(">> Input values incorrect");}
 		});
+		
+		
 		gridPane.add(btnSaveAd, 0, 5);
 
 		
 		return gridPane;
 	}
 
+	/**
+	 * 
+	 * @return GridPane with agency input.
+	 */
+	
 	private static GridPane inputAgencyView() {
 		GridPane input = new GridPane();
 		input.setHgap(40);
@@ -466,34 +466,34 @@ public class InputPage {
 	 */
 	
 	private static boolean validateAdInputs() {
-		if ((validateChoiceBox(cbSpecies)) &&			// Species and types have been chosen manually, both "new" TFs are validated
-			(validateChoiceBox(cbType))) {	
-			
+		if ((!validateChoiceBox(cbSpecies)) &&			// Species and types have been chosen manually, both "new" TFs are validated
+			(!validateChoiceBox(cbType))) {	
+
 			return (validateInputString(tfName)) && 
 				   (validateInputInteger(tfAge)) && 
-				   !(validateChoiceBox(cbGenders)) &&	// "!" because the validation of CBs check whether they are in their original position or not.
+				   (validateChoiceBox(cbGenders)) &&	// "!" because the validation of CBs check whether they are in their original position or not.
 				   (validateInputTextArea(taDescription)) && 
 				   (validateInputString(tfNewSpecies)) && 
 				   (validateInputString(tfNewType)); 
-		} else if (validateChoiceBox(cbSpecies)) {		// Species is in its original position, TF for new species is validated.
+		} else if (!validateChoiceBox(cbSpecies)) {		// Species is in its original position, TF for new species is validated.
 			
 			return (validateInputString(tfName)) && 
 				   (validateInputInteger(tfAge)) && 
-				   !(validateChoiceBox(cbGenders)) &&
+				   (validateChoiceBox(cbGenders)) &&
 				   (validateInputTextArea(taDescription)) &&
 				   (validateInputString(tfNewSpecies));
-		} else if (validateChoiceBox(cbType)) {			// Type is in its original position, TF for new type is validated.
+		} else if (!validateChoiceBox(cbType)) {			// Type is in its original position, TF for new type is validated.
 			
 			return (validateInputString(tfName)) && 
 				   (validateInputInteger(tfAge)) && 
-				   !(validateChoiceBox(cbGenders)) &&
+				   (validateChoiceBox(cbGenders)) &&
 				   (validateInputTextArea(taDescription)) &&
 				   (validateInputString(tfNewType));
 		} else {										// Nethier CBs were in their original states, none of the "new" TFs are validated.
-			
+
 			return (validateInputString(tfName)) && 
 				   (validateInputInteger(tfAge)) && 
-				   !(validateChoiceBox(cbGenders)) &&
+				   (validateChoiceBox(cbGenders)) &&
 				   (validateInputTextArea(taDescription));
 		}
 	}
@@ -501,11 +501,18 @@ public class InputPage {
 	/**
 	 * Performs a check whether a choice box is in its default position, stating information about it's use.
 	 *
-	 * @return boolean representing if parameter choice box is in its original position, true for "YES" and false for "NO".
+	 * @return boolean representing if parameter choice box is in its original position, true if it is NOT - since this is the
+	 * not the desired position, another should be chosen. False means that the CB value has not been changed.
 	 */
 	
 	private static boolean validateChoiceBox(ChoiceBox<Object> cb) {
-		return (cb.getValue() == cb.getItems().get(0));		
+		if ((cb.getValue().equals("Species")) || (cb.getValue().equals("Gender")) || cb.getValue().equals("Type")) {
+			cb.setStyle("-fx-focus-color: red ; -fx-text-fill: EB221A ; -fx-text-box-border: red;");
+			return false;
+		} else {
+			cb.setStyle("-fx-box-border: teal;");
+			return true;
+		}
 	}
 	
 	/**
@@ -515,23 +522,19 @@ public class InputPage {
 	 */
 	
 	private static boolean validateInputString(TextField tf) {
-		if (tf.getLength() < 30) {										// Checking number of characters in TF
+		if ((tf.getLength() < 30) && (tf.getLength() > 0)) {										// Checking number of characters in TF
 			for (int index = 0; index < tf.getLength(); index++)	{
 				if (!(Character.isAlphabetic(tf.getText().charAt(index))) && !(tf.getText().charAt(index) == ' ')) {
 					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-					return false;										// Loop is broken, a character that is not alphabetical was found.
-				} else if ((index == tf.getLength() - 1)) {				// Everything was scanned and all was alphabetic, return true
-					tf.setStyle("-fx-box-border: teal;");
-					return true;
-				} else {												// Do we need this else?
-					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-				}
+					return false;										// Loop is broken, a character that is not alphabetical was found
+				} else {}
 			}
+			tf.setStyle("-fx-box-border: teal;");
+			return true;
 		} else {														// Number of chars too many
 			tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
 			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -541,18 +544,19 @@ public class InputPage {
 	 */
 	
 	private static boolean validateInputInteger(TextField tf) {
-		for (int index = 0; index < tf.getLength(); index++)	{
-			if (!Character.isDigit(tf.getText().charAt(index))) {		// "Not a digit" was encountered
-				tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-				return false;											// Loop is broken, a character that is not numerical was found.
-			} else if ((index == tf.getLength() - 1) && Integer.parseInt(tf.getText()) < 100) {
-				tf.setStyle("-fx-box-border: teal;");
-				return true;
-			} else {													// Do we need this else?
-				tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
+		if ((tf.getLength() < 3) && (tf.getLength() > 0)) {	
+			for (int index = 0; index < tf.getLength(); index++)	{
+				if (!Character.isDigit(tf.getText().charAt(index))) {		// "Not a digit" was encountered
+					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
+					return false;											// Loop is broken, a character that is not numerical was found.
+				} else {}
 			}
+			tf.setStyle("-fx-box-border: teal;");
+			return true;
+		} else {
+			tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
+			return false;
 		}
-		return false;
 	}
 	
 	/**
@@ -563,12 +567,12 @@ public class InputPage {
 	 */
 	
 	private static boolean validateInputTextArea(TextArea ta) {
-		if (ta.getLength() > 254) {
-			ta.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-			return false;
-		} else {
+		if ((ta.getLength() < 254) && (ta.getLength() > 0)) {
 			ta.setStyle("-fx-box-border: teal;");
 			return true;
+		} else {
+			ta.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
+			return false;
 		}
 	}
 
@@ -636,13 +640,13 @@ public class InputPage {
 		gender = (String) cbGenders.getValue();
 		description = taDescription.getText().trim();	// Trimming TAs with possibility of spaces
 			
-		if (!validateChoiceBox(cbSpecies)) {			// If gets executed when the default value of CB is NOT chosen
+		if (validateChoiceBox(cbSpecies)) {				// If gets executed when the default value of CB is NOT chosen
 			species = (String) cbSpecies.getValue();
 		} else {
 			species = tfNewSpecies.getText().trim();
 		}
 
-		if (!validateChoiceBox(cbType)) {
+		if (validateChoiceBox(cbType)) {
 			type = (String) cbType.getValue();
 		} else {
 			type = tfNewType.getText().trim();
@@ -654,7 +658,6 @@ public class InputPage {
 		System.out.println(">> " + insert + "\n" + ">> " + values);
 		
 		db.executeUpdate(insert + values);
-		db.closeConnection();
 	}
 
 }
