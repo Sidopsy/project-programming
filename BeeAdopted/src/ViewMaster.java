@@ -161,7 +161,12 @@ public class ViewMaster extends Application {
 
 		cbLocation.setOnAction(e -> {
 			if(!cbLocation.getValue().equals("Table")){
-				city = (String) cbLocation.getValue();		// What location was input?
+				if(!cbLocation.getValue().equals("Select all")){
+					city = " and City == '" + cbLocation.getValue() + "'";		// What location was input?
+				} else {
+					city = "";
+				}
+				
 				firstSearch = true;												
 				search();
 				bpLayout2 = new BorderPane();				// Preparing for a new scene.
@@ -225,12 +230,12 @@ public class ViewMaster extends Application {
 		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		primaryFilters.setSpacing(75);
 
-
-			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Species;")));
-			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Type;")));
-			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Gender;")));
-			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID and City == '" + city + "' ORDER BY Name;")));
-
+			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Species;")));
+			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
+			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Gender;")));
+			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID " + city + " ORDER BY Name;")));
+		
+		
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setPrefWidth(150);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
@@ -244,6 +249,12 @@ public class ViewMaster extends Application {
 				cbType.setItems(obsListType);
 				cbType.setValue("Type");
 			}
+//			
+//			} else {
+//				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
+//				cbType.setItems(obsListType);
+//				cbType.setValue("Type");
+//			}
 		});
 
 		cbType = new ChoiceBox<>(obsListType);
@@ -259,8 +270,8 @@ public class ViewMaster extends Application {
 		ageBox.setPadding(new Insets(0));
 		ageBox.setSpacing(2);
 		if(city != "Select all"){
-			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= '" + today + "';";
-			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= '" + today + "';";
+			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
+			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
 		} else {
 			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
 			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
@@ -392,21 +403,21 @@ public class ViewMaster extends Application {
 
 		if (firstSearch == true){	
 			if(city != "Select all"){
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate >= '" + today + "' ORDER BY Ads.ID;";
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + ") as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Ads.ID;";
 			} else {
 				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT (SELECT AVG(Rating) FROM Agencies,Ratings WHERE Agencies.ID == Ratings.AgencyID GROUP BY Agencies.ID	) AS Rating FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID) as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and EndDate >= '" + today + "' ORDER BY Ads.ID;";
 			}
 			firstSearch = false;
 		} else {
 			System.out.println("Bob0: " + searchSpecies + searchType + searchAge + searchGender);
-			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM "
+			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + ") as Rating FROM "
 					+ "Ads,Agencies,Ratings,Addresses WHERE "
 					+ "Agencies.ID == Addresses.AgencyID and "
 					+ "Agencies.ID == Ads.AgencyID and "
 					+ "Agencies.ID == Ratings.AgencyID and "
-					+ "City = '" + city + "' and "
 					+ "EndDate >= '" + today + "' and "
 					+ "Age >= " + slAge.getLowValue() + " and Age <= " + slAge.getHighValue()
+					+ city
 					+ searchSpecies
 					+ searchType
 					+ searchAge 
@@ -417,6 +428,11 @@ public class ViewMaster extends Application {
 		}
 
 			theSearch = database.fetchAd(database.executeQuery(searchStatement));
+			species = null;
+			type = null;
+			age = null;
+			gender = null;
+			agency = null;
 			System.out.println(searchStatement);
 			System.out.println(theSearch.toString());
 		
@@ -428,40 +444,57 @@ public class ViewMaster extends Application {
 	 * @return TableView<Ad>
 	 */
 
-	public VBox searchResults(){
-		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(10,10,10,10));
-		vbox.setSpacing(2);
+	public TableView<Ad> searchResults(){
+//		VBox vbox = new VBox();
+//		vbox.setPadding(new Insets(10,10,10,10));
+//		vbox.setSpacing(2);
 
 		tvAd = new TableView<Ad>();
 		tvAd.setEditable(true);
+		//tvAd.setStyle("table.css");
 		//tvAd.setMinWidth(0);
 
 		// Columns to be added to the TableView.
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
+		pictureCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/5));
+		pictureCol.maxWidthProperty().bind(pictureCol.prefWidthProperty());
+		pictureCol.setResizable(false);
+		
+		TableColumn<Ad, String> nameCol = new TableColumn<>("Name");
+		nameCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/5));
+		nameCol.maxWidthProperty().bind(nameCol.prefWidthProperty());
+		pictureCol.setResizable(false);
+		
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
+		speciesCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/5));
+		speciesCol.maxWidthProperty().bind(speciesCol.prefWidthProperty());
+		speciesCol.setResizable(false);
+		
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
-		TableColumn<Ad, String> genderCol = new TableColumn<>("Gender");
-		TableColumn<Ad, String> endCol = new TableColumn<>("End date");
-		TableColumn<Ad, String> agencyCol = new TableColumn<>("Agency");
+		typeCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/5));
+		typeCol.maxWidthProperty().bind(typeCol.prefWidthProperty());
+		typeCol.setResizable(false);
+		
 		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
+		ratingCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/5));
+		ratingCol.maxWidthProperty().bind(ratingCol.prefWidthProperty());
+		ratingCol.setResizable(false);
+		
 
-		pictureCol.setMinWidth(115);
-		speciesCol.setMinWidth(115);
-		typeCol.setMinWidth(115);
-		genderCol.setMinWidth(115);
-		endCol.setMinWidth(115);
-		agencyCol.setMinWidth(115);
-		ratingCol.setMinWidth(115);
+//		pictureCol.setPrefWidth(110);
+//		speciesCol.setPrefWidth(110);
+//		typeCol.setPrefWidth(110);
+//		genderCol.setPrefWidth(110);
+//		endCol.setPrefWidth(110);
+//		agencyCol.setPrefWidth(110);
+//		ratingCol.setPrefWidth(110);
 
 		ObservableList<Ad> adList = database.createObservableList(theSearch);
 
 		pictureCol.setCellValueFactory(new PropertyValueFactory<>("picture"));
+		nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-		genderCol.setCellValueFactory(new PropertyValueFactory<>("gender"));
-		endCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
-		agencyCol.setCellValueFactory(new PropertyValueFactory<>("agencyName"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
 
 		tvAd.setRowFactory( tv -> {
@@ -478,10 +511,9 @@ public class ViewMaster extends Application {
 
 		tvAd.setItems(adList);
 
-		tvAd.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol,endCol, agencyCol, ratingCol);
-
-		vbox.getChildren().add(tvAd);
-		return vbox;
+		tvAd.getColumns().addAll(pictureCol, nameCol, speciesCol, typeCol, ratingCol);
+		//vbox.getChildren().add(tvAd);
+		return tvAd;
 	}
 
 	public VBox mainCenterView(){
