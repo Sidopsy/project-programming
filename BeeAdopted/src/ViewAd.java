@@ -131,8 +131,8 @@ public class ViewAd {
 
 		animalPicture = new ImageView();
 		animalPicture.setPreserveRatio(false);
-		animalPicture.setFitWidth(300);
-		animalPicture.setFitHeight(300);
+		animalPicture.setFitWidth(200);
+		animalPicture.setFitHeight(200);
 
 		// Labels for displaying information about said Ad.
 		Label species = new Label("Species: " + ad.getSpecies());
