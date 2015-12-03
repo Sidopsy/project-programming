@@ -85,7 +85,7 @@ public class CreateAccount {
 		GridPane.setConstraints(uploadText, 1, 6);
 
 		Button browse = new Button("Browse");
-		browse.setOnAction(e -> FileChooserExample.display());
+		browse.setOnAction(InputPage.btnLoadEventListener);
 		GridPane.setConstraints(browse, 3, 6);
 		
         account.getChildren().addAll(nameLabel, nameInput, addressLabel, 

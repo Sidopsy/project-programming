@@ -1,6 +1,15 @@
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
+import javax.xml.bind.DatatypeConverter;
+
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -28,9 +37,10 @@ public class ViewAd {
 	static Stage window;
 	static Scene sceneAd, sceneAdopt;
 	static BorderPane bpLayoutAd, bpLayoutAdopt;
+	public static ImageView adIMAG;
 	private static DBobject db = new DBobject();
 
-	public static void display(String title, Ad ad){
+	public static void display(String title, Ad ad) throws IOException, SQLException {
 		window = new Stage();
 
 		// Sets Modality and window title.
@@ -62,7 +72,7 @@ public class ViewAd {
 	 * @return header as stackpane
 	 */
 
-	private static StackPane header(){
+	private static StackPane header() {
 
 		// StackPane to be returned.
 		StackPane head = new StackPane();
@@ -83,7 +93,7 @@ public class ViewAd {
 	 * @return Hbox containing Ad and Agency information
 	 */
 
-	private static HBox showAd(Ad ad, int agencyID){
+	private static HBox showAd(Ad ad, int agencyID) throws IOException, SQLException {
 
 		// Creating the Hbox to be returned.
 		HBox hbox = new HBox();
@@ -104,7 +114,7 @@ public class ViewAd {
 	 * @return GridPane
 	 */
 
-	private static GridPane getAd(Ad ad) {
+	private static GridPane getAd(Ad ad) throws IOException, SQLException {
 
 		// GridPane to be returned.
 		GridPane grid = new GridPane();							// Gridpane in which the Ad will be shown.
@@ -131,6 +141,42 @@ public class ViewAd {
 		grid.add(age,0,2);
 		grid.add(description,1,2);
 
+
+		adIMAG = new ImageView();
+		adIMAG.setPreserveRatio(false);
+		adIMAG.setFitWidth(300);
+		adIMAG.setFitHeight(300);
+		grid.add(adIMAG, 0, 5);
+
+
+		java.sql.Connection conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");
+		db.closeConnection();
+
+		BufferedImage image = null;  //Buffered image coming from database
+		InputStream fis = null; //Inputstream
+
+		try{
+
+			ResultSet databaseResults;  //Returned results from DB
+
+			Statement stmt = conn.createStatement(); //Create the SQL statement
+
+			databaseResults= stmt.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";"); //Execute query
+			db.closeConnection();
+
+			fis = databaseResults.getBinaryStream("Picture");  //It happens that the 3rd column in my database is where the image is stored (a BLOB)
+
+			image = javax.imageio.ImageIO.read(fis);  //create the BufferedImaged
+
+
+			if(image != null){
+				Image newPic = SwingFXUtils.toFXImage(image, null);
+				adIMAG.setImage(newPic);
+			} 
+		} catch (Exception e){
+			//print error if caught
+		}
+
 		// Buttons for adopting or closing the ad.
 		Button adoptButton = new Button("Adopt");
 		Button closeButton = new Button("Close the window");
@@ -144,9 +190,14 @@ public class ViewAd {
 		closeButton.setOnAction(e -> window.close());
 
 
-
 		return grid;
 	}
+	
+	public static byte[] toByteArray(String s) {
+	    return DatatypeConverter.parseHexBinary(s);
+	}
+	
+	
 
 	/**
 	 * This method returns a Vbox containing information about the Agency that has the currently viewed Ad. 
@@ -173,23 +224,23 @@ public class ViewAd {
 				+ "Agencies.ID == " + agencyID + ";";
 
 		// Saving all information about the Agency in extended format.
-		
-			AgencyExt agencyExtended = db.fetchAgencyExt(db.executeQuery(sqlStatement)).get(0);
-			System.out.println(agencyExtended);
 
-			// Transfering the Agency information into labels.
-			Label name = new Label("Name: " + agencyExtended.getName());
-			Label rating = new Label("Rating: " + agencyExtended.getRating());
-			Label email = new Label("Email: " + agencyExtended.getEmail());
-			Label phone = new Label("Phone: " + agencyExtended.getPhone());
-			Label street = new Label("Street: " + agencyExtended.getStreet());
-			Label zip = new Label("ZIP: " + agencyExtended.getZip());
-			Label city = new Label("City: " + agencyExtended.getCity());
+		AgencyExt agencyExtended = db.fetchAgencyExt(db.executeQuery(sqlStatement)).get(0);
+		System.out.println(agencyExtended);
 
-			// Adding all Agency information to the Vbox.
-			vbox.getChildren().addAll(name, rating, email, phone, street, zip, city);
+		// Transfering the Agency information into labels.
+		Label name = new Label("Name: " + agencyExtended.getName());
+		Label rating = new Label("Rating: " + agencyExtended.getRating());
+		Label email = new Label("Email: " + agencyExtended.getEmail());
+		Label phone = new Label("Phone: " + agencyExtended.getPhone());
+		Label street = new Label("Street: " + agencyExtended.getStreet());
+		Label zip = new Label("ZIP: " + agencyExtended.getZip());
+		Label city = new Label("City: " + agencyExtended.getCity());
 
-		
+		// Adding all Agency information to the Vbox.
+		vbox.getChildren().addAll(name, rating, email, phone, street, zip, city);
+
+
 
 		System.out.println("Shits not working");
 		return vbox;

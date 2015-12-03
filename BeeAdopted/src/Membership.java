@@ -162,7 +162,7 @@ public abstract class Membership {
 		Scene scene = new Scene(membership, 300, 200);
 		window.setScene(scene);
 		window.show();
-		login.setOnAction(e -> MemberPage.memberPage());
+		login.setOnAction(e -> MemberPage.display());
 
 	}
 }
