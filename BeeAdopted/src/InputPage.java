@@ -90,7 +90,50 @@ public class InputPage {
 	/**
 	 * Creates the standard view for inserting ads into the application.
 	 * 
+<<<<<<< HEAD
 	 * @return GridPane containing the option of inputing ads.
+=======
+	 * @return a horizontal box with two options, either to input an animal or
+	 *         an agency
+	 */
+	
+
+//	private static HBox chooseInput() {
+//		HBox hbox = new HBox();
+//		hbox.setPadding(new Insets(10, 10, 10, 10));
+//		hbox.setSpacing(10);
+//
+//		Button btnAgencyInput = new Button("New agency?");
+//		Button btnAnimalInput = new Button("New animal?");
+//
+//		btnAgencyInput.setOnAction(e -> {
+//			layoutInputConfirmation = new BorderPane();
+//			layoutInputConfirmation.setTop(Header.smallHeader());
+//			layoutInputConfirmation.setCenter(inputAgencyView());
+//			sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
+//			window.setScene(sceneInputConfirmation);
+//		});
+//
+//		btnAnimalInput.setOnAction(e -> {
+//			layoutInputConfirmation = new BorderPane();
+//			layoutInputConfirmation.setTop(Header.smallHeader());
+//			layoutInputConfirmation.setCenter(inputAnimalView());
+//			sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
+//			window.setScene(sceneInputConfirmation);
+//		});
+//
+//		hbox.getChildren().addAll(btnAgencyInput, btnAnimalInput);
+//		hbox.setAlignment(Pos.CENTER);
+//
+//		return hbox;
+//	}
+
+	
+	/**
+	 * 
+	 * 
+	 * @return GridPane with option to input animals
+>>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
 	 */
 
 	public static GridPane inputAnimalView() {

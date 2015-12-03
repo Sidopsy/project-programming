@@ -22,6 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -37,7 +38,7 @@ public class ViewAd {
 	static Stage window;
 	static Scene sceneAd, sceneAdopt;
 	static BorderPane bpLayoutAd, bpLayoutAdopt;
-	public static ImageView adIMAG;
+	public static ImageView animalPicture;
 	private static DBobject db = new DBobject();
 
 	public static void display(String title, Ad ad) throws IOException, SQLException {
@@ -53,6 +54,7 @@ public class ViewAd {
 		bpLayoutAd.setTop(header());						// Show the iAdopt image.
 		bpLayoutAd.setCenter(showAd(ad, ad.getAgencyID()));			// Center of the BorderPane will show the Ad.
 		sceneAd = new Scene(bpLayoutAd,600,550);
+		sceneAd.getStylesheets().add("table.css");
 
 		// This is the view of the Ad once adopt is pressed.
 		bpLayoutAdopt = new BorderPane();
@@ -97,6 +99,7 @@ public class ViewAd {
 
 		// Creating the Hbox to be returned.
 		HBox hbox = new HBox();
+		hbox.getStyleClass().add("hbox");
 		hbox.setPadding(new Insets(10));
 		hbox.setSpacing(10);
 
@@ -114,39 +117,28 @@ public class ViewAd {
 	 * @return GridPane
 	 */
 
-	private static GridPane getAd(Ad ad) throws IOException, SQLException {
+	private static VBox getAd(Ad ad) throws IOException, SQLException {
 
 		// GridPane to be returned.
-		GridPane grid = new GridPane();							// Gridpane in which the Ad will be shown.
-		grid.setHgap(10);										// Horizontal gaps between columns.
-		grid.setVgap(10);										// Vertical gaps between columns.
-		grid.setPadding(new Insets(10,10,10,10));				// Setting the padding around the content.
-		grid.setStyle("-fx-border-style: solid;"
+		VBox vbox = new VBox();
+		vbox.getStyleClass().add("hbox");
+		vbox.setPrefSize(350, 400);
+		vbox.setSpacing(10);										// Vertical gaps between columns.
+		vbox.setPadding(new Insets(2,2,2,2));				// Setting the padding around the content.
+		vbox.setStyle("-fx-border-style: solid;"
 				+ "-fx-border-width: 1;"
 				+ "-fx-border-color: black");
 
+		animalPicture = new ImageView();
+		animalPicture.setPreserveRatio(false);
+		animalPicture.setFitWidth(300);
+		animalPicture.setFitHeight(300);
+
 		// Labels for displaying information about said Ad.
-		Label name = new Label("Name: " + ad.getName());
 		Label species = new Label("Species: " + ad.getSpecies());
-		Label type = new Label("Type: " + ad.getType());
-		Label gender = new Label("Gender: " + ad.getGender());
-		Label age = new Label("Age: " + ad.getAge());
-		Label description = new Label("Description: " + ad.getDescription());
-
-		// Adding said labels to the GridPane so that they are displayed in a particular order.
-		grid.add(name,0,0);
-		grid.add(species,1,0);
-		grid.add(type,0,1);
-		grid.add(gender,1,1);
-		grid.add(age,0,2);
-		grid.add(description,1,2);
-
-
-		adIMAG = new ImageView();
-		adIMAG.setPreserveRatio(false);
-		adIMAG.setFitWidth(300);
-		adIMAG.setFitHeight(300);
-		grid.add(adIMAG, 0, 5);
+		Text nameAgeGenderType= new Text(ad.getName() + " is a " + ad.getAge() + "year old " + ad.getGender().toLowerCase() + " " + ad.getType().toLowerCase());
+		Text description = new Text("Description: " + ad.getDescription());
+		description.autosize();
 
 
 		java.sql.Connection conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");
@@ -161,7 +153,7 @@ public class ViewAd {
 
 			Statement stmt = conn.createStatement(); //Create the SQL statement
 
-			databaseResults= stmt.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";"); //Execute query
+			databaseResults = stmt.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";"); //Execute query
 			db.closeConnection();
 
 			fis = databaseResults.getBinaryStream("Picture");  //It happens that the 3rd column in my database is where the image is stored (a BLOB)
@@ -171,7 +163,7 @@ public class ViewAd {
 
 			if(image != null){
 				Image newPic = SwingFXUtils.toFXImage(image, null);
-				adIMAG.setImage(newPic);
+				animalPicture.setImage(newPic);
 			} 
 		} catch (Exception e){
 			//print error if caught
@@ -181,23 +173,20 @@ public class ViewAd {
 		Button adoptButton = new Button("Adopt");
 		Button closeButton = new Button("Close the window");
 
-		// Adding said buttons to the GridPane.
-		grid.add(adoptButton, 0,3);
-		grid.add(closeButton, 0, 4);
-
 		// Associating actions with the buttons.
 		adoptButton.setOnAction(e -> window.setScene(sceneAdopt));
 		closeButton.setOnAction(e -> window.close());
 
 
-		return grid;
+		vbox.getChildren().addAll(animalPicture,species,nameAgeGenderType, description, adoptButton, closeButton);
+
+
+		return vbox;
 	}
 	
 	public static byte[] toByteArray(String s) {
 	    return DatatypeConverter.parseHexBinary(s);
 	}
-	
-	
 
 	/**
 	 * This method returns a Vbox containing information about the Agency that has the currently viewed Ad. 
@@ -210,7 +199,8 @@ public class ViewAd {
 
 		// The Vbox to be returned.
 		VBox vbox = new VBox();
-
+		vbox.getStyleClass().add("hbox");
+		vbox.setPrefSize(250, 400);
 		vbox.setPadding(new Insets(10));
 		vbox.setSpacing(10);
 		vbox.setStyle("-fx-border-style: solid;"
@@ -224,9 +214,11 @@ public class ViewAd {
 				+ "Agencies.ID == " + agencyID + ";";
 
 		// Saving all information about the Agency in extended format.
-
 		AgencyExt agencyExtended = db.fetchAgencyExt(db.executeQuery(sqlStatement)).get(0);
 		System.out.println(agencyExtended);
+		
+		Image picture = new Image("PlaceholderSmall.png");
+		ImageView agencyPicture = new ImageView(picture);
 
 		// Transfering the Agency information into labels.
 		Label name = new Label("Name: " + agencyExtended.getName());
@@ -238,8 +230,7 @@ public class ViewAd {
 		Label city = new Label("City: " + agencyExtended.getCity());
 
 		// Adding all Agency information to the Vbox.
-		vbox.getChildren().addAll(name, rating, email, phone, street, zip, city);
-
+		vbox.getChildren().addAll(agencyPicture, name, rating, email, phone, street, zip, city);
 
 
 		System.out.println("Shits not working");

@@ -1,4 +1,4 @@
-/bin/
-/BeeHive2
-/BeeHive
+/.classpath
 /.gitignore
+/BeeHive
+/bin/

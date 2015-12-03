@@ -65,6 +65,7 @@ public class ViewMaster extends Application {
 	private static Date today = Date.valueOf(todayDate);
 	private static int minAge = 0;
 	private static int maxAge = 100;
+	private static Label back, name;
 
 
 	/**
@@ -93,9 +94,12 @@ public class ViewMaster extends Application {
 
 		// Creating the window.
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
-		bpLayout1.setTop(Header.largeHeader());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
+		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
 		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
-		scene1 = new Scene(bpLayout1, 800, 600);	
+		back.setVisible(false);
+		scene1 = new Scene(bpLayout1, 800, 600);
+		scene1.getStylesheets().add("table.css");
+		
 
 		// Setting the currently open window to show the scene created above.
 		window.setScene(scene1);
@@ -108,29 +112,28 @@ public class ViewMaster extends Application {
 	 * @return Vbox header image and navigation buttons
 	 */
 
-	//	private StackPane header(){
-	//
-	//		// The StackPane to be returned and used as a header.
-	//		StackPane header = new StackPane();
-	//
-	//		// Specifying an image and adding it to the ImageView that is later to be added to the StackPane.
-	//		Image img = new Image(getClass().getResourceAsStream("BeeAdoptedLarge.png"));
-	//		ImageView headerImg = new ImageView();	
-	//
-	//		headerImg.setImage(img);								// Adding the image to ImageView so that it can be added to the StackPane.
-	//		headerImg.setOnMouseClicked(e -> backToStart());		// Click function to take the user back to the start page is also inserted into the header.
-	//
-	//		// Button for going back one step in the application.
-	//		btnBack = new Button("Back");
-	//		btnBack.setOnAction(e -> goBack());
-	//		btnBack.setVisible(false);
-	//
-	//		// All items created are added to Vbox.
-	//		header.getChildren().addAll(headerImg, btnBack);
-	//		header.setAlignment(Pos.CENTER_LEFT);					// Alignment of the items to the center left so that the back button is in an obvious place.
-	//
-	//		return header;
-	//	}
+		private BorderPane header(){
+	
+			// The StackPane to be returned and used as a header.
+			BorderPane header = new BorderPane();
+			header.getStyleClass().add("header");
+	
+			back = new Label("<");
+			back.setId("backbutton");
+			back.getStyleClass().add("backbutton");
+			//back.setOnMouseClicked(e -> backToStart());
+			
+			name = new Label("BeeAdopted");
+			name.setId("beeadopted");
+			name.getStyleClass().add("beeadopted");
+			
+				
+			// All items created are added to HBox.
+			header.setLeft(back);
+			header.setCenter(name);					// Alignment of the items to the center left so that the back button is in an obvious place.
+	
+			return header;
+		}
 
 	/**
 	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
@@ -143,6 +146,7 @@ public class ViewMaster extends Application {
 
 		// The Vbox to be returned.
 		VBox firstPage = new VBox();
+		firstPage.getStyleClass().add("vbox");
 
 		firstPage.setPadding(new Insets(0));
 		firstPage.setSpacing(75);
@@ -161,14 +165,19 @@ public class ViewMaster extends Application {
 
 		cbLocation.setOnAction(e -> {
 			if(!cbLocation.getValue().equals("Table")){
-				city = (String) cbLocation.getValue();		// What location was input?
+				if(!cbLocation.getValue().equals("Select all")){
+					city = " and City == '" + cbLocation.getValue() + "'";		// What location was input?
+				} else {
+					city = "";
+				}
+				
 				firstSearch = true;												
 				search();
 				bpLayout2 = new BorderPane();				// Preparing for a new scene.
-				bpLayout2.setTop(Header.largeHeader());		// Setting the header as before.
+				bpLayout2.setTop(header());		// Setting the header as before.
 				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
-				Header.toggleBackButton();
 				scene2 = new Scene(bpLayout2,800,600);
+				scene2.getStylesheets().add("table.css");
 				window.setScene(scene2);
 			}
 		});
@@ -183,7 +192,8 @@ public class ViewMaster extends Application {
 
 	private static HBox loginBox(){
 		HBox hbox = new HBox();
-		//	hbox.setPadding(new Insets(20));
+		//hbox.getStyleClass().add("hbox");
+		//hbox.setPadding(new Insets(20));
 		hbox.setSpacing(100);
 		hbox.setAlignment(Pos.CENTER);
 		Button btnShow = new Button("Go to agency pages");
@@ -219,18 +229,20 @@ public class ViewMaster extends Application {
 
 	public VBox filter(){
 		VBox filters = new VBox();
+		filters.getStyleClass().add("vbox");
 		filters.setAlignment(Pos.CENTER);
 		
 		HBox primaryFilters = new HBox();
+		primaryFilters.getStyleClass().add("hbox");
 		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		primaryFilters.setSpacing(75);
-
-
-			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Species;")));
-			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Type;")));
-			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and City == '" + city + "' and EndDate >= '" + today + "' ORDER BY Gender;")));
-			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID and City == '" + city + "' ORDER BY Name;")));
-
+			
+			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Species;")));
+			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
+			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Gender;")));
+			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID " + city + " ORDER BY Name;")));
+		
+		
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setPrefWidth(150);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
@@ -244,6 +256,12 @@ public class ViewMaster extends Application {
 				cbType.setItems(obsListType);
 				cbType.setValue("Type");
 			}
+//			
+//			} else {
+//				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
+//				cbType.setItems(obsListType);
+//				cbType.setValue("Type");
+//			}
 		});
 
 		cbType = new ChoiceBox<>(obsListType);
@@ -259,8 +277,8 @@ public class ViewMaster extends Application {
 		ageBox.setPadding(new Insets(0));
 		ageBox.setSpacing(2);
 		if(city != "Select all"){
-			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= '" + today + "';";
-			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and  City == '" + city + "' and EndDate >= '" + today + "';";
+			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
+			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
 		} else {
 			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
 			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
@@ -291,6 +309,7 @@ public class ViewMaster extends Application {
 
 		
 		HBox secondaryFilters = new HBox();
+		secondaryFilters.getStyleClass().add("hbox");
 		secondaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		secondaryFilters.setSpacing(75);
 		
@@ -319,6 +338,7 @@ public class ViewMaster extends Application {
 			Header.toggleBackButton();
 			tvAd.refresh();
 			scene2 = new Scene(bpLayout2,800,600);
+			scene2.getStylesheets().add("table.css");
 			window.setScene(scene2);
 		});
 
@@ -392,21 +412,21 @@ public class ViewMaster extends Application {
 
 		if (firstSearch == true){	
 			if(city != "Select all"){
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and City = '" + city + "' and EndDate >= '" + today + "' ORDER BY Ads.ID;";
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + ") as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Ads.ID;";
 			} else {
 				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT (SELECT AVG(Rating) FROM Agencies,Ratings WHERE Agencies.ID == Ratings.AgencyID GROUP BY Agencies.ID	) AS Rating FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID) as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and EndDate >= '" + today + "' ORDER BY Ads.ID;";
 			}
 			firstSearch = false;
 		} else {
 			System.out.println("Bob0: " + searchSpecies + searchType + searchAge + searchGender);
-			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID and City = '" + city + "') as Rating FROM "
+			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + ") as Rating FROM "
 					+ "Ads,Agencies,Ratings,Addresses WHERE "
 					+ "Agencies.ID == Addresses.AgencyID and "
 					+ "Agencies.ID == Ads.AgencyID and "
 					+ "Agencies.ID == Ratings.AgencyID and "
-					+ "City = '" + city + "' and "
 					+ "EndDate >= '" + today + "' and "
 					+ "Age >= " + slAge.getLowValue() + " and Age <= " + slAge.getHighValue()
+					+ city
 					+ searchSpecies
 					+ searchType
 					+ searchAge 
@@ -417,6 +437,11 @@ public class ViewMaster extends Application {
 		}
 
 			theSearch = database.fetchAd(database.executeQuery(searchStatement));
+			species = null;
+			type = null;
+			age = null;
+			gender = null;
+			agency = null;
 			System.out.println(searchStatement);
 			System.out.println(theSearch.toString());
 		
@@ -428,10 +453,10 @@ public class ViewMaster extends Application {
 	 * @return TableView<Ad>
 	 */
 
-	public VBox searchResults(){
-		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(10,10,10,10));
-		vbox.setSpacing(2);
+	public TableView<Ad> searchResults(){
+//		VBox vbox = new VBox();
+//		vbox.setPadding(new Insets(10,10,10,10));
+//		vbox.setSpacing(2);
 
 		tvAd = new TableView<Ad>();
 		tvAd.setEditable(true);
@@ -439,29 +464,45 @@ public class ViewMaster extends Application {
 
 		// Columns to be added to the TableView.
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
+//		pictureCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+//		pictureCol.maxWidthProperty().bind(pictureCol.prefWidthProperty());
+//		pictureCol.setResizable(false);
+//		
+		TableColumn<Ad, String> nameCol = new TableColumn<>("Name");
+//		nameCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+//		nameCol.maxWidthProperty().bind(nameCol.prefWidthProperty());
+//		pictureCol.setResizable(false);
+//		
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
+//		speciesCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+//		speciesCol.maxWidthProperty().bind(speciesCol.prefWidthProperty());
+//		speciesCol.setResizable(false);
+//		
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
-		TableColumn<Ad, String> genderCol = new TableColumn<>("Gender");
-		TableColumn<Ad, String> endCol = new TableColumn<>("End date");
-		TableColumn<Ad, String> agencyCol = new TableColumn<>("Agency");
+//		typeCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+//		typeCol.maxWidthProperty().bind(typeCol.prefWidthProperty());
+//		typeCol.setResizable(false);
+//		
 		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
+//		ratingCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+//		ratingCol.maxWidthProperty().bind(ratingCol.prefWidthProperty());
+//		ratingCol.setResizable(false);
+//		
 
-		pictureCol.setMinWidth(115);
-		speciesCol.setMinWidth(115);
-		typeCol.setMinWidth(115);
-		genderCol.setMinWidth(115);
-		endCol.setMinWidth(115);
-		agencyCol.setMinWidth(115);
-		ratingCol.setMinWidth(115);
+//		pictureCol.setPrefWidth(110);
+//		speciesCol.setPrefWidth(110);
+//		typeCol.setPrefWidth(110);
+//		genderCol.setPrefWidth(110);
+//		endCol.setPrefWidth(110);
+//		agencyCol.setPrefWidth(110);
+//		ratingCol.setPrefWidth(110);
 
 		ObservableList<Ad> adList = database.createObservableList(theSearch);
 
 		pictureCol.setCellValueFactory(new PropertyValueFactory<>("picture"));
+		nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-		genderCol.setCellValueFactory(new PropertyValueFactory<>("gender"));
-		endCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
-		agencyCol.setCellValueFactory(new PropertyValueFactory<>("agencyName"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
 
 		tvAd.setRowFactory( tv -> {
@@ -482,10 +523,10 @@ public class ViewMaster extends Application {
 
 		tvAd.setItems(adList);
 
-		tvAd.getColumns().addAll(pictureCol, speciesCol, typeCol, genderCol,endCol, agencyCol, ratingCol);
-
-		vbox.getChildren().add(tvAd);
-		return vbox;
+		tvAd.getColumns().addAll(pictureCol, nameCol, speciesCol, typeCol, ratingCol);
+		//vbox.getChildren().add(tvAd);
+		tvAd.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		return tvAd;
 	}
 
 	public VBox mainCenterView(){
@@ -505,19 +546,7 @@ public class ViewMaster extends Application {
 		if(window.getScene() == scene2){
 			cbLocation.setValue("City");
 			window.setScene(scene1);
-		} else if (window.getScene() == scene3){
-			firstSearch = true;
-			search();
-			bpLayout2 = new BorderPane();
-			bpLayout2.setTop(Header.largeHeader());
-			bpLayout2.setCenter(mainCenterView());
-			Header.toggleBackButton();
-			scene2 = new Scene(bpLayout2,800,600);
-			window.setScene(scene2);
-		} else {
-			cbLocation.setValue("City");
-			window.setScene(scene1);
-		}
+		} 
 	}
 
 
@@ -526,7 +555,6 @@ public class ViewMaster extends Application {
 	 */
 
 	public void backToStart(){
-		Header.toggleBackButton();
 		cbLocation.setValue("City");
 		window.setScene(scene1);	
 	}

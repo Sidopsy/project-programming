@@ -1,0 +1,148 @@
+.background {
+	-fx-background-color: white;
+}
+
+/* HBox class */
+.hbox {
+	-fx-background-color: white;
+}
+
+.hbox .choice-box {
+	-fx-background-color: white;
+}
+
+.hbox .label {
+	-fx-font-size: 11pt;
+	-fx-text-fill: black;
+}
+
+.hbox .button {
+	-fx-text-fill: white;
+	-fx-font-family: "Arial Narrow";
+	-fx-font-weight: bold;
+	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+
+/* VBox class */
+.vbox {
+	-fx-background-color: white;
+}
+
+.vbox .label {
+	-fx-font-size: 20pt;
+	-fx-alignment: center;
+}
+
+.vbox .choice-box {
+	-fx-background-color: white;
+}
+
+.vbox .choice-box .label{
+	-fx-font-size: 11pt;
+}
+
+
+/* GridPane class */
+.gridpane {
+	-fx-background-color: white;
+}
+
+
+
+.label {
+	-fx-font-size: 11pt;
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: black;
+	-fx-opacity: 0.6;
+}
+
+.label-bright {
+	-fx-font-size: 11pt;
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: black;
+	-fx-opacity: 1;
+}
+
+.label-header {
+	-fx-font-size: 24pt;
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: black;
+	-fx-opacity: 1;
+}
+
+.choice-box {
+	-fx-background-color: white;
+	-fx-mark-color: green ;
+}
+
+
+.choice-box .label {
+	-fx-text-fill: black;
+}
+
+.table-view {
+	-fx-base: white;
+	-fx-control-inner-background: white;
+	-fx-control-inner-background-alt: white;
+	-fx-table-header-border-color: transparent;
+}
+
+.table-view *.scroll-bar:horizontal *.increment-button,
+.table-view *.scroll-bar:horizontal *.decrement-button {
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.table-view *.scroll-bar:horizontal *.increment-arrow, 
+.table-view *.scroll-bar:horizontal *.decrement-arrow {
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-shape: null;
+}
+
+.table-row-cell {
+	-fx-cell-size: 50px;
+}
+
+.table-view .column-header-background {
+	-fx-background-color: white;
+}
+
+.table-view .column-header, .table-view .filler {
+	-fx-size: 35;
+	-fx-background-color: white;
+	-fx-border-width: 0 0 1 0;
+	-fx-border-color: transparent transparent black transparent;
+	-fx-border-insets: 0 10 1 0;
+}
+
+.table-view .column-header .label {
+	-fx-font-size: 20pt;
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: black;
+	-fx-alignment: center;
+	-fx-opacity: 1;
+}
+
+.header {
+	-fx-background-color: teal;
+	-fx-alignment: center-left;
+}
+
+
+.header .backbutton {
+	-fx-font-size: 100pt;
+	-fx-font-family: "Helvetica";
+}
+
+.header .beeadopted {
+	-fx-font-size: 50pt;
+	-fx-font-family: "Helvetica";
+}
+
