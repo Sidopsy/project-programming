@@ -1,16 +1,24 @@
 
 
 import java.awt.Checkbox;
+import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
+
+import org.sqlite.SQLiteConfig;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -32,26 +40,49 @@ public abstract class Membership {
     public static Stage window;
     public static Button login;
     public static Boolean isCorrect = false;
+    
+	private static int id = 0;
+	private static String logo = "";
+	private static String name = "";
+	private static String rating = "";
+	private static String email = "";
+	private static String phone = "";
+	private static String street = "";
+	private static String zip = "";
+	private static String city = "";
+    	
+    static DBobject db = new DBobject();
+	public static AgencyExt result = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
+	
 
-	public static void verify(TextField a, TextField b){
+	public static boolean verify(String a, String b){
+		System.out.println(">> Executing query bitchez");
+		String query = "SELECT Email, Password FROM Agencies WHERE Email == '" + a + "' AND Password == '" + b + "';";
+		System.out.println(query);
+		String resultEmail = "";
+		String resultPass = "";
+		String enteredEmail = a;
+		String enteredPass = b;
+		try {
+			resultEmail = db.fetchResult(db.executeQuery(query)).get(0).get(0);
+			resultPass = db.fetchResult(db.executeQuery(query)).get(0).get(1);
+			db.closeConnection();
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}		
+		System.out.println(resultEmail);
+		System.out.println(a);
+		System.out.println(resultPass);
+		System.out.println(b);
+		return((a.length() > 0) && (resultEmail.equals(a)) && 
+				((b.length()) > 0) && (resultPass.equals(b)));
+		
+}
 
-		System.out.println("Verify is Working!");
-
-		if  ((a.getText() == "") && (b.getText() == "")) {
-
-
-			login.setOnAction(e -> InputPage.display());
-			System.out.println("It's alive!");
-			window.close();
-		}
-		else {
-			window.close();
-		}
-	}
-
-	public static void start() {
-		// TODO Auto-generated method stub
-
+	public static void display() {
+	
+		//AgencyExt result = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
+		
 		window = new Stage();
 		window.setTitle("BeeAdopted - Login");
 
@@ -69,90 +100,52 @@ public abstract class Membership {
 		TextField nameInput = new TextField();
 		(nameInput).setPromptText("username");
 		GridPane.setConstraints(nameInput, 1, 0);
-
-	       
-	        
-	       
-	      
+		
 	        //Login Button
 	        login = new Button("Log In");
 	        GridPane.setConstraints(login, 1, 3);
-	        
-	        //login.setOnAction(e -> verify(nameInput, passwordInput));
-	        //login.setOnAction(e -> MemberPage.memberPage());
-	        	//verify(nameInput,passwordInput);
-	        	//if(isCorrect == true){
-	        	//InputPage.display();
-	        	
-	        	/*try {String query = "select Email, Password from Agencies where Email=? and Password=abc123 ";
-	        	PreparedStatement pst = (PreparedStatement) db.fetchResult((db.executeQuery(query)));
-	        		
-	        		//ArrayList<String> pst = db.fetchResult((db.executeQuery(query))).get(0);
-	        		
-	        		pst.setString(0,nameInput.getText());
-	        		pst.setString(1, passwordInput.getText());
-	        		ResultSet rs = pst.executeQuery();
-	        		
-	        		int count = 0;
-	        		while(rs.next()) {
-	        			count += count;
-	        		}
-	        		if (count == 1)	{
-	        			JOptionPane.showMessageDialog( null, "Usename and Password is correct");
-	        			login.setOnAction(e2 -> MemberPage.memberPage());
-	        		}
-	        		else if (count >1){
-	        			JOptionPane.showMessageDialog(null, "Duplicate Username and Password");
-	        		}
-	        		else{
-	        			JOptionPane.showMessageDialog( null, "Usename and Password is not correct. Please try again.");
-	        		}
-	        		rs.close();
-	        		pst.close();
-	        		
-	        		}catch (Exception e1){
-	        		 JOptionPane.showMessageDialog( null, e1);
-	        	 }
-	        	
-	        	
-	        	}
-	        	
-	        
-	);*/
-	        
-	     
-	    	
-	    	
-	       
-	        
-	       
 	
-
-	        
-	        
-	    
-			
 		//Password Label
 		Label passwordLabel = new Label("Password:");
 		GridPane.setConstraints(passwordLabel, 0, 1);
 
 		//Password Input
-		TextField passwordInput = new TextField();
+		PasswordField passwordInput = new PasswordField();
 		(passwordInput).setPromptText("password");
 		GridPane.setConstraints(passwordInput, 1, 1);
 
 		//Login Button
 		login = new Button("Log In");
 		GridPane.setConstraints(login, 1, 2);
-
+		
 		//login.setOnAction(e -> verify(nameInput, passwordInput));
-		login.setOnAction(e -> InputPage.display());
-
+//		login.setOnAction(e -> {
+//			if(Membership.verify(nameInput, passwordInput)) {
+//				
+//				String query = "SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
+//						   + "Agencies, Addresses, Ratings WHERE "
+//						   + "Email = '" + nameInput.getText() + "'";
+//				//String enteredName = nameInput.getText();
+//				//AgencyExt result = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
+//				
+//				
+//				try{ result.equals(db.fetchResult(db.executeQuery(query)).get(0).get(0));
+//					db.closeConnection();
+//				}catch(Exception e1){
+//					System.err.println(e.getClass().getName() + ": " + e1.getMessage());
+//				};
+//				
+//				MemberPage.display();
+//				
+//			}
+//			
+//			
+//		});
 
 		//Create an Account
 		Button createAccount = new Button("Create an Account");
 		GridPane.setConstraints(createAccount, 1, 3);
-		createAccount.setOnAction(e -> CreateAccount.go());
+		createAccount.setOnAction(e -> CreateAccount.display());
 
 
 		//Add everything to membership grip layout
@@ -162,7 +155,7 @@ public abstract class Membership {
 		Scene scene = new Scene(membership, 300, 200);
 		window.setScene(scene);
 		window.show();
-		login.setOnAction(e -> MemberPage.memberPage());
+		
 
 	}
 }

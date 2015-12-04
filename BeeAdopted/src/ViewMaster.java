@@ -1,4 +1,3 @@
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class ViewMaster extends Application {
 	private static Button btnSearch;
 	private static String city, species, type, age, gender, agency;
 	private static boolean firstSearch;
-	private static DBobject database = new DBobject();
+	private static DBobject db = new DBobject();
 	private static String sqlStatement;
 	private static LocalDate todayDate = LocalDate.now();
 	private static Date today = Date.valueOf(todayDate);
@@ -99,7 +98,7 @@ public class ViewMaster extends Application {
 		back.setVisible(false);
 		scene1 = new Scene(bpLayout1, 800, 600);
 		scene1.getStylesheets().add("table.css");
-		
+
 
 		// Setting the currently open window to show the scene created above.
 		window.setScene(scene1);
@@ -112,28 +111,28 @@ public class ViewMaster extends Application {
 	 * @return Vbox header image and navigation buttons
 	 */
 
-		private BorderPane header(){
-	
-			// The StackPane to be returned and used as a header.
-			BorderPane header = new BorderPane();
-			header.getStyleClass().add("header");
-	
-			back = new Label("<");
-			back.setId("backbutton");
-			back.getStyleClass().add("backbutton");
-			//back.setOnMouseClicked(e -> backToStart());
-			
-			name = new Label("BeeAdopted");
-			name.setId("beeadopted");
-			name.getStyleClass().add("beeadopted");
-			
-				
-			// All items created are added to HBox.
-			header.setLeft(back);
-			header.setCenter(name);					// Alignment of the items to the center left so that the back button is in an obvious place.
-	
-			return header;
-		}
+	private BorderPane header(){
+
+		// The StackPane to be returned and used as a header.
+		BorderPane header = new BorderPane();
+		header.getStyleClass().add("header");
+
+		back = new Label("<");
+		back.setId("backbutton");
+		back.getStyleClass().add("backbutton");
+		//back.setOnMouseClicked(e -> backToStart());
+
+		name = new Label("BeeAdopted");
+		name.setId("beeadopted");
+		name.getStyleClass().add("beeadopted");
+
+
+		// All items created are added to HBox.
+		header.setLeft(back);
+		header.setCenter(name);					// Alignment of the items to the center left so that the back button is in an obvious place.
+
+		return header;
+	}
 
 	/**
 	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
@@ -155,12 +154,12 @@ public class ViewMaster extends Application {
 		Label lblLocation = new Label("Where are you?");
 
 		// This inputs information into the choicebox, namely the cities in which there are agencies.
-		cbLocation = new ChoiceBox<>(database.createObservableList("City",database.fetchResult(
-									 database.executeQuery("SELECT Distinct City FROM "
-									 					 + "Addresses ORDER BY "
-									 					 + "City;"))));
-		database.closeConnection();
-		
+		cbLocation = new ChoiceBox<>(db.createObservableList("City",db.fetchResult(
+				db.executeQuery("SELECT Distinct City FROM "
+						+ "Addresses ORDER BY "
+						+ "City;"))));
+		db.closeConnection();
+
 		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
 
 		cbLocation.setOnAction(e -> {
@@ -170,7 +169,7 @@ public class ViewMaster extends Application {
 				} else {
 					city = "";
 				}
-				
+
 				firstSearch = true;												
 				search();
 				bpLayout2 = new BorderPane();				// Preparing for a new scene.
@@ -181,7 +180,7 @@ public class ViewMaster extends Application {
 				window.setScene(scene2);
 			}
 		});
-		
+
 
 		// Vbox is populated with the label, the choicebox and the content from loginBox()
 		firstPage.getChildren().addAll(lblLocation, cbLocation,new Separator(), loginBox());
@@ -193,7 +192,7 @@ public class ViewMaster extends Application {
 	private static HBox loginBox(){
 		HBox hbox = new HBox();
 		//hbox.getStyleClass().add("hbox");
-		//	hbox.setPadding(new Insets(20));
+		//hbox.setPadding(new Insets(20));
 		hbox.setSpacing(100);
 		hbox.setAlignment(Pos.CENTER);
 		Button btnShow = new Button("Go to agency pages");
@@ -204,13 +203,39 @@ public class ViewMaster extends Application {
 		pfPassword.setPromptText("Enter your password");
 		Button btnLogin = new Button("Login");
 		btnLogin.setOnAction(e -> {
-			InputPage.display();
+			String email = tfEmail.getText();
+			String password = pfPassword.getText();
+			if(Membership.verify(email, password)) {
+				System.out.println("Ayaaaayy!");
+				String query = "SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
+						+ "Agencies, Addresses, Ratings WHERE "
+						+ "Email = '" + tfEmail.getText() + "'";
+				//String enteredName = nameInput.getText();
+				//AgencyExt result = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
+
+
+				try{ 
+					Membership.result.equals(db.fetchResult(db.executeQuery(query)).get(0).get(0));
+					db.closeConnection();
+				}catch(Exception e1){
+					System.err.println(e.getClass().getName() + ": " + e1.getMessage());
+				};
+
+				MemberPage.display();
+
+			}
 		});
 
+		
+		Button btnCreateAccount = new Button("Create account");
+		btnCreateAccount.setOnAction(e -> {
+			CreateAccount.display();
+		});
+		
 
 		btnShow.setOnAction(e -> {
 			hbox.getChildren().removeAll(hbox.getChildren());
-			hbox.getChildren().addAll(tfEmail,pfPassword,btnLogin);
+			hbox.getChildren().addAll(tfEmail, pfPassword, btnLogin, btnCreateAccount);
 		});
 
 		hbox.getChildren().add(btnShow);
@@ -231,18 +256,18 @@ public class ViewMaster extends Application {
 		VBox filters = new VBox();
 		filters.getStyleClass().add("vbox");
 		filters.setAlignment(Pos.CENTER);
-		
+
 		HBox primaryFilters = new HBox();
 		primaryFilters.getStyleClass().add("hbox");
 		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		primaryFilters.setSpacing(75);
 
-			obsListSpecies = database.createObservableList("Species",database.fetchResult(database.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Species;")));
-			obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
-			obsListGender = database.createObservableList("Gender",database.fetchResult(database.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Gender;")));
-			obsListAgencies = database.createObservableList("Agencies",database.fetchResult(database.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID " + city + " ORDER BY Name;")));
-		
-		
+		obsListSpecies = db.createObservableList("Species",db.fetchResult(db.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Species;")));
+		obsListType = db.createObservableList("Type",db.fetchResult(db.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
+		obsListGender = db.createObservableList("Gender",db.fetchResult(db.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Gender;")));
+		obsListAgencies = db.createObservableList("Agencies",db.fetchResult(db.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID " + city + " ORDER BY Name;")));
+
+
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setPrefWidth(150);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
@@ -250,25 +275,25 @@ public class ViewMaster extends Application {
 			if(!((String)cbSpecies.getValue()).equals("Species")){
 				species = (String) cbSpecies.getValue();
 				sqlStatement = "SELECT Distinct Type FROM Ads WHERE Species == '" + species + "' ORDER BY Type;";
-				
-				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery(sqlStatement)));
-				
+
+				obsListType = db.createObservableList("Type",db.fetchResult(db.executeQuery(sqlStatement)));
+
 				cbType.setItems(obsListType);
 				cbType.setValue("Type");
 			}
-//			
-//			} else {
-//				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
-//				cbType.setItems(obsListType);
-//				cbType.setValue("Type");
-//			}
+			//			
+			//			} else {
+			//				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
+			//				cbType.setItems(obsListType);
+			//				cbType.setValue("Type");
+			//			}
 		});
 
 		cbType = new ChoiceBox<>(obsListType);
 		cbType.setPrefWidth(150);
 		cbType.setValue(cbType.getItems().get(0));
 		cbType.setOnAction(e -> {
-				type = (String) cbType.getValue();
+			type = (String) cbType.getValue();
 		});
 
 		VBox ageBox = new VBox();
@@ -283,9 +308,9 @@ public class ViewMaster extends Application {
 			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
 			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
 		}
-		
-		minAge = Integer.parseInt(database.fetchResult(database.executeQuery(minAgeStatement)).get(0).get(0));
-		maxAge = Integer.parseInt(database.fetchResult(database.executeQuery(maxAgeStatement)).get(0).get(0));
+
+		minAge = Integer.parseInt(db.fetchResult(db.executeQuery(minAgeStatement)).get(0).get(0));
+		maxAge = Integer.parseInt(db.fetchResult(db.executeQuery(maxAgeStatement)).get(0).get(0));
 		System.out.println(minAge);
 		System.out.println(maxAge);
 
@@ -300,19 +325,19 @@ public class ViewMaster extends Application {
 		slAge.setBlockIncrement(3);
 		slAge.setPrefWidth(150);
 		slAge.setHighValue(maxAge);
-	//	slAge.setShowTickMarks(true);
+		//	slAge.setShowTickMarks(true);
 		//slAge.setMajorTickUnit(15);
-	//	slAge.setMinorTickCount(maxAge/2);
-	//	slAge.setBlockIncrement(5);
+		//	slAge.setMinorTickCount(maxAge/2);
+		//	slAge.setBlockIncrement(5);
 		ageBox.getChildren().addAll(ageLabel, slAge);
 
 
-		
+
 		HBox secondaryFilters = new HBox();
 		secondaryFilters.getStyleClass().add("hbox");
 		secondaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		secondaryFilters.setSpacing(75);
-		
+
 		cbGender = new ChoiceBox<>(obsListGender);
 		cbGender.setPrefWidth(150);
 		cbGender.setValue(cbGender.getItems().get(0));
@@ -342,21 +367,21 @@ public class ViewMaster extends Application {
 			window.setScene(scene2);
 		});
 
-		
+
 		Button btnShowMoreFilters = new Button("Show more filters");
-		
+
 		primaryFilters.getChildren().addAll(cbSpecies,cbType,slAge,btnSearch);
 		secondaryFilters.getChildren().addAll(cbGender,cbAgencies,tfDescription);
 		filters.getChildren().addAll(primaryFilters, btnShowMoreFilters);
-		
-		
+
+
 		btnShowMoreFilters.setOnAction(e -> {
 			filters.getChildren().removeAll(filters.getChildren());
 			filters.getChildren().addAll(primaryFilters, secondaryFilters);
 		});
-		
-		
-		
+
+
+
 		return filters;
 	}
 
@@ -373,8 +398,8 @@ public class ViewMaster extends Application {
 		// Null values are ignored as well as if the user left the cbs in their original posistions.
 		if (species != null && species != "Species" && species != "Select all"){
 			searchSpecies = " and Species == '" + species + "'";
-			
-			
+
+
 		} else {
 			searchSpecies = "";
 		}
@@ -383,7 +408,7 @@ public class ViewMaster extends Application {
 			searchType = " and Type == '" + type + "'";
 		} else {
 			searchType = "";
-			
+
 		}
 
 		if (age != null && age != "Age"){
@@ -403,7 +428,7 @@ public class ViewMaster extends Application {
 		} else {
 			searchAgency = "";
 		}
-		
+
 		if (tfDescription != null && tfDescription.getLength() > 0) {
 			searchDescription = " and Description == '%" + tfDescription.getText() + "%'";
 		} else {
@@ -436,15 +461,15 @@ public class ViewMaster extends Application {
 
 		}
 
-			theSearch = database.fetchAd(database.executeQuery(searchStatement));
-			species = null;
-			type = null;
-			age = null;
-			gender = null;
-			agency = null;
-			System.out.println(searchStatement);
-			System.out.println(theSearch.toString());
-		
+		theSearch = db.fetchAd(db.executeQuery(searchStatement));
+		species = null;
+		type = null;
+		age = null;
+		gender = null;
+		agency = null;
+		System.out.println(searchStatement);
+		System.out.println(theSearch.toString());
+
 	}
 
 	/**
@@ -454,51 +479,50 @@ public class ViewMaster extends Application {
 	 */
 
 	public TableView<Ad> searchResults(){
-//		VBox vbox = new VBox();
-//		vbox.setPadding(new Insets(10,10,10,10));
-//		vbox.setSpacing(2);
+		//		VBox vbox = new VBox();
+		//		vbox.setPadding(new Insets(10,10,10,10));
+		//		vbox.setSpacing(2);
 
 		tvAd = new TableView<Ad>();
 		tvAd.setEditable(true);
-		
 		//tvAd.setMinWidth(0);
 
 		// Columns to be added to the TableView.
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
-//		pictureCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-//		pictureCol.maxWidthProperty().bind(pictureCol.prefWidthProperty());
-//		pictureCol.setResizable(false);
-//		
+		//		pictureCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+		//		pictureCol.maxWidthProperty().bind(pictureCol.prefWidthProperty());
+		//		pictureCol.setResizable(false);
+		//		
 		TableColumn<Ad, String> nameCol = new TableColumn<>("Name");
-//		nameCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-//		nameCol.maxWidthProperty().bind(nameCol.prefWidthProperty());
-//		pictureCol.setResizable(false);
-//		
+		//		nameCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+		//		nameCol.maxWidthProperty().bind(nameCol.prefWidthProperty());
+		//		pictureCol.setResizable(false);
+		//		
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
-//		speciesCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-//		speciesCol.maxWidthProperty().bind(speciesCol.prefWidthProperty());
-//		speciesCol.setResizable(false);
-//		
+		//		speciesCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+		//		speciesCol.maxWidthProperty().bind(speciesCol.prefWidthProperty());
+		//		speciesCol.setResizable(false);
+		//		
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
-//		typeCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-//		typeCol.maxWidthProperty().bind(typeCol.prefWidthProperty());
-//		typeCol.setResizable(false);
-//		
+		//		typeCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+		//		typeCol.maxWidthProperty().bind(typeCol.prefWidthProperty());
+		//		typeCol.setResizable(false);
+		//		
 		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
-//		ratingCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-//		ratingCol.maxWidthProperty().bind(ratingCol.prefWidthProperty());
-//		ratingCol.setResizable(false);
-//		
+		//		ratingCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
+		//		ratingCol.maxWidthProperty().bind(ratingCol.prefWidthProperty());
+		//		ratingCol.setResizable(false);
+		//		
 
-//		pictureCol.setPrefWidth(110);
-//		speciesCol.setPrefWidth(110);
-//		typeCol.setPrefWidth(110);
-//		genderCol.setPrefWidth(110);
-//		endCol.setPrefWidth(110);
-//		agencyCol.setPrefWidth(110);
-//		ratingCol.setPrefWidth(110);
+		//		pictureCol.setPrefWidth(110);
+		//		speciesCol.setPrefWidth(110);
+		//		typeCol.setPrefWidth(110);
+		//		genderCol.setPrefWidth(110);
+		//		endCol.setPrefWidth(110);
+		//		agencyCol.setPrefWidth(110);
+		//		ratingCol.setPrefWidth(110);
 
-		ObservableList<Ad> adList = database.createObservableList(theSearch);
+		ObservableList<Ad> adList = db.createObservableList(theSearch);
 
 		pictureCol.setCellValueFactory(new PropertyValueFactory<>("picture"));
 		nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -515,7 +539,6 @@ public class ViewMaster extends Application {
 					try {
 						ViewAd.display(ad.getName(), ad);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

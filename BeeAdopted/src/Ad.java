@@ -1,4 +1,7 @@
 
+import java.sql.Blob;
+
+import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -12,7 +15,7 @@ import javafx.beans.property.SimpleStringProperty;
 public class Ad {
 	private final SimpleStringProperty picture, name, gender, species, type, description, startDate, endDate, agencyName, rating;
 	private final SimpleIntegerProperty id, age, agencyID;
-
+	
 	public Ad(int id, String picture, String name, String gender, String species, String type, 
 				int age, String description, String start, String end, int agencyID, String agencyName, String rating) {
 		this.id = new SimpleIntegerProperty(id);

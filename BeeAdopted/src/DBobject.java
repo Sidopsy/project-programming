@@ -17,7 +17,7 @@ import javafx.scene.control.Separator;
  */
 
 public class DBobject {
-	private static Connection connect = null;
+	public static Connection connect = null;
 	public PreparedStatement stmt = null;
 	public ResultSet resultSet = null;
 	private final String dbType;
@@ -46,7 +46,7 @@ public class DBobject {
 	 * 
 	 */
 	
-	private void setConnection() {
+	public void setConnection() {
 		System.out.println(">> Connecting to database");
 		try {
 			SQLiteConfig dbProperties = new SQLiteConfig();
