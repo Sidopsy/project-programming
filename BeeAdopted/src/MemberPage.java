@@ -52,15 +52,9 @@ public class MemberPage {
 	private static TextArea taAdDescription;
 	private static CheckBox chbNewSpecies, chbNewType, chbReActivate;
 	
-	private static AgencyExt agencyInfo;
+	private static AgencyExt agency;
 	
 	private static ObservableList<Object> obsListType;
-	
-	private static String selectAgency = "SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
-									   + "Agencies, Addresses, Ratings WHERE "
-									   + "Agencies.ID = Addresses.AgencyID and "
-									   + "Agencies.ID = Addresses.AgencyID and "
-									   + "Agencies.ID = 1;";
 	
 	private static DBobject db = new DBobject();
 
@@ -70,8 +64,8 @@ public class MemberPage {
 	 * 
 	 */
 
-	public static void display() {
-//		agencyInfo = agency;			// This is where the agency should come in.
+	public static void display(AgencyExt agencyInfo) {
+		agency = agencyInfo;			// This is where the agency should come in.
 		
 		window = new Stage();
 
@@ -117,10 +111,6 @@ public class MemberPage {
 		col3.setHalignment(HPos.LEFT);
 		col3.setPercentWidth(33);
 		gridPane.getColumnConstraints().addAll(col1, col2, col3);
-		
-		
-		agencyInfo = db.fetchAgencyExt(db.executeQuery(selectAgency)).get(0);	// Loads the current user's information.
-		db.closeConnection();
 		
 		
 		addMemberLabels(gridPane);				// Calls a method to add labels to the members view.
@@ -174,14 +164,17 @@ public class MemberPage {
 		
 		tfName = new TextField();
 		tfName.setEditable(false);			// Cannot edit Agency name?
-		tfName.setText(agencyInfo.getName());
+		tfName.setText(agency.getName());
 		tfName.setMinWidth(150);
 		tfName.setMaxWidth(150);
+		tfName.setOnKeyReleased(e -> {
+			validateInputName(tfName);
+		});
 		
 		
 		tfPhone = new TextField();
 		tfPhone.setEditable(false);
-		tfPhone.setText(agencyInfo.getPhone());
+		tfPhone.setText(agency.getPhone());
 		tfPhone.setPromptText("Phone...");
 		tfPhone.setMinWidth(150);
 		tfPhone.setMaxWidth(150);
@@ -192,7 +185,7 @@ public class MemberPage {
 		
 		tfEmail = new TextField();
 		tfEmail.setEditable(false);
-		tfEmail.setText(agencyInfo.getEmail());
+		tfEmail.setText(agency.getEmail());
 		tfEmail.setPromptText("Email...");
 		tfEmail.setMinWidth(150);
 		tfEmail.setMaxWidth(150);
@@ -203,7 +196,7 @@ public class MemberPage {
 		
 		tfStreet = new TextField();
 		tfStreet.setEditable(false);
-		tfStreet.setText(agencyInfo.getStreet());
+		tfStreet.setText(agency.getStreet());
 		tfStreet.setPromptText("Street...");
 		tfStreet.setMinWidth(150);
 		tfStreet.setMaxWidth(150);
@@ -214,7 +207,7 @@ public class MemberPage {
 		
 		tfZip = new TextField();
 		tfZip.setEditable(false);
-		tfZip.setText(agencyInfo.getZip());
+		tfZip.setText(agency.getZip());
 		tfZip.setPromptText("ZIP code...");
 		tfZip.setMinWidth(100);
 		tfZip.setMaxWidth(100);
@@ -225,7 +218,7 @@ public class MemberPage {
 		
 		tfCity = new TextField();
 		tfCity.setEditable(false);
-		tfCity.setText(agencyInfo.getCity());
+		tfCity.setText(agency.getCity());
 		tfCity.setPromptText("City...");
 		tfCity.setMinWidth(150);
 		tfCity.setMaxWidth(150);
@@ -284,6 +277,8 @@ public class MemberPage {
 			btnSaveInfo.setVisible(true);
 			btnCancelEdit.setVisible(true);
 			
+			tfName.setEditable(true);
+			
 			tfPhone.setEditable(true);
 			
 			tfEmail.setEditable(true);
@@ -299,11 +294,8 @@ public class MemberPage {
 		btnSaveInfo.setMaxWidth(50);
 		btnSaveInfo.setVisible(false);
 		btnSaveInfo.setOnAction(e -> {
-			if ((validateInputPhone(tfPhone)) && 
-				(validateInputEmail(tfEmail)) && 
-				(validateInputStreet(tfStreet)) && 
-				(validateInputZip(tfZip)) && 
-				(validateInputCity(tfCity))) {
+			if (validateMemberInfo(tfName, tfPhone, tfEmail, 
+									tfStreet, tfZip, tfCity)) {
 				
 				btnSaveInfo.setVisible(false);
 				btnCancelEdit.setVisible(false);
@@ -311,19 +303,22 @@ public class MemberPage {
 				
 				updateMemberInfo();
 				
-				tfPhone.setText(agencyInfo.getPhone());
+				tfName.setText(agency.getName());
+				tfName.setEditable(false);
+				
+				tfPhone.setText(agency.getPhone());
 				tfPhone.setEditable(false);
 			
-				tfEmail.setText(agencyInfo.getEmail());
+				tfEmail.setText(agency.getEmail());
 				tfEmail.setEditable(false);
 			
-				tfStreet.setText(agencyInfo.getStreet());
+				tfStreet.setText(agency.getStreet());
 				tfStreet.setEditable(false);
 			
-				tfZip.setText(agencyInfo.getZip());
+				tfZip.setText(agency.getZip());
 				tfZip.setEditable(false);
 			
-				tfCity.setText(agencyInfo.getCity());
+				tfCity.setText(agency.getCity());
 				tfCity.setEditable(false);
 			} else {
 				alert.setHeaderText("Changes could not be saved");
@@ -342,19 +337,22 @@ public class MemberPage {
 			
 			resetMemberTextFields();
 			
-			tfPhone.setText(agencyInfo.getPhone());
+			tfName.setText(agency.getName());
+			tfName.setEditable(false);
+			
+			tfPhone.setText(agency.getPhone());
 			tfPhone.setEditable(false);
 		
-			tfEmail.setText(agencyInfo.getEmail());
+			tfEmail.setText(agency.getEmail());
 			tfEmail.setEditable(false);
 		
-			tfStreet.setText(agencyInfo.getStreet());
+			tfStreet.setText(agency.getStreet());
 			tfStreet.setEditable(false);
 		
-			tfZip.setText(agencyInfo.getZip());
+			tfZip.setText(agency.getZip());
 			tfZip.setEditable(false);
 		
-			tfCity.setText(agencyInfo.getCity());
+			tfCity.setText(agency.getCity());
 			tfCity.setEditable(false);
 		});
 		
@@ -378,7 +376,7 @@ public class MemberPage {
 		
 		btnInputPage = new Button("New ad");
 		btnInputPage.setOnAction(e -> {
-			InputPage.display();
+			InputPage.display(agency);
 		});
 		
 		
@@ -420,12 +418,12 @@ public class MemberPage {
 				   + "(SELECT AVG(Rating) "
 				   + "FROM Agencies, Ratings "
 				   + "WHERE Agencies.ID = Ratings.AgencyID and "
-				   + "Agencies.ID = " + agencyInfo.getID() + ") as Rating "
+				   + "Agencies.ID = " + agency.getID() + ") as Rating "
 				   + "FROM Ads, Agencies, Addresses, Ratings "
 				   + "WHERE Agencies.ID = Addresses.AgencyID and "
 				   + "Agencies.ID = Ratings.AgencyID and "
 				   + "Agencies.ID = Ads.AgencyID and "
-				   + "Agencies.ID = " + agencyInfo.getID() + " "
+				   + "Agencies.ID = " + agency.getID() + " "
 				   + "ORDER BY StartDate DESC;";
 		ArrayList<Ad> alAgencyAds = db.fetchAd(db.executeQuery(sql));
 		db.closeConnection();
@@ -820,13 +818,17 @@ public class MemberPage {
 		btnSaveAd.setMinWidth(110);
 		btnSaveAd.setMaxWidth(110);
 		btnSaveAd.setOnAction(e -> {
-			if (validateAdUpdate()) {
+			if (InputPage.validateAdInfo(tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
+										tfAdNewSpecies, tfAdNewType, taAdDescription)) {
 				System.out.println(">> Update values OK");
+				
 				updateMemberAd(ad);
+				
 				alert.setAlertType(AlertType.INFORMATION);		// Needed to set alert back to info after an error.
 				alert.setTitle("Success");
 				alert.setHeaderText("Advertisement has been updated");
 				alert.setContentText("Your advertisement has been successfully updated.");
+				
 				if (chbReActivate.isSelected()) {
 					alert.setContentText(reActivateMessage);
 				}
@@ -834,6 +836,7 @@ public class MemberPage {
 				window.setScene(sceneMP);
 			} else {
 				System.out.println(">> Update values incorrect");
+				
 				alert.setAlertType(AlertType.ERROR);
 				alert.setTitle("Failiure");
 				alert.setHeaderText("Changes could not be saved");
@@ -863,6 +866,7 @@ public class MemberPage {
 	 */
 	
 	public static void resetMemberTextFields() {
+		tfName.setStyle("-fx-box-border: teal;");
 		tfPhone.setStyle("-fx-box-border: teal;");
 		tfEmail.setStyle("-fx-box-border: teal;");
 		tfStreet.setStyle("-fx-box-border: teal;");
@@ -871,10 +875,35 @@ public class MemberPage {
 	}
 	
 	/**
+	 * Validate name.
+	 * 
+	 * @param TextField
+	 * @return boolean representing if value entered was within its limits (true) or not.
+	 */
+	
+	public static boolean validateInputName(TextField tf) {
+		if ((tf.getLength() <= 30) && (tf.getLength() >= 1)) {										// Checking number of characters in TF
+			for (int index = 0; index < tf.getLength(); index++)	{
+				if (!(Character.isAlphabetic(tf.getText().charAt(index))) && 
+					!(tf.getText().charAt(index) == ' ' && 
+					!(tf.getText().charAt(index) == '\''))) {
+					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
+					return false;										// Loop is broken, a character that is not alphabetical was found
+				} else {}
+			}
+			tf.setStyle("-fx-box-border: teal;");
+			return true;
+		} else {														// Number of chars too many
+			tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
+			return false;
+		}
+	}
+	
+	/**
 	 * Validate phone no.
 	 * 
 	 * @param TextField
-	 * @return boolean if value entered was within its limits (true) or not.
+	 * @return boolean representing if value entered was within its limits (true) or not.
 	 */
 	
 	public static boolean validateInputPhone(TextField tf) {
@@ -897,7 +926,7 @@ public class MemberPage {
 	 * Validate email TextField.
 	 * 
 	 * @param TextField
-	 * @return boolean if value entered was within its limits (true) or not.
+	 * @return boolean representing if value entered was within its limits (true) or not.
 	 */
 	
 	public static boolean validateInputEmail(TextField tf) {
@@ -922,8 +951,8 @@ public class MemberPage {
 	/**
 	 * Validate street TextField.
 	 * 
-	 * @param TextFielw
-	 * @return boolean if value entered was within its limits (true) or not.
+	 * @param TextField
+	 * @return boolean representing if value entered was within its limits (true) or not.
 	 */
 	
 	public static boolean validateInputStreet(TextField tf) {
@@ -948,7 +977,7 @@ public class MemberPage {
 	 * Validate zip TextField.
 	 * 
 	 * @param TextField
-	 * @return boolean if value entered was within its limits (true) or not.
+	 * @return boolean representing if value entered was within its limits (true) or not.
 	 */
 	
 	public static boolean validateInputZip(TextField tf) {
@@ -971,7 +1000,7 @@ public class MemberPage {
 	 * Validate city TextField.
 	 * 
 	 * @param TextField
-	 * @return boolean if value entered was within its limits (true) or not.
+	 * @return boolean representing if value entered was within its limits (true) or not.
 	 */
 	
 	public static boolean validateInputCity(TextField tf) {
@@ -992,6 +1021,17 @@ public class MemberPage {
 	}
 
 	/**
+	 * Validates all member info input fields simultaneously.
+	 */
+	
+	public static boolean validateMemberInfo(TextField name, TextField phone, TextField email, 
+											TextField street, TextField zip, TextField city) {
+		return (validateInputName(name)) && (validateInputPhone(phone)) && (validateInputEmail(email)) && 
+				(validateInputStreet(street)) && (validateInputZip(zip)) && (validateInputCity(city));
+		
+	}
+	
+	/**
 	 * This method updates new input information from the TextFields after the "Save" button has been pressed, assuming
 	 * any new, valid information has been entered.
 	 * 
@@ -1003,65 +1043,41 @@ public class MemberPage {
 		updateAddress = "UPDATE Addresses SET ";
 		valuesInfo = "";
 		valuesAddress = "";
-		whereInfo = " WHERE ID = " + agencyInfo.getID() + ";";
-		whereAddress = " WHERE Addresses.AgencyID = " + agencyInfo.getID() + ";";
+		whereInfo = " WHERE ID = " + agency.getID() + ";";
+		whereAddress = " WHERE Addresses.AgencyID = " + agency.getID() + ";";
 	
 		/*
 		 * Updating agency table
 		 */
-	
-		if (validateInputPhone(tfPhone)) {
-			valuesInfo += "Phone = '" + tfPhone.getText() + "'";
-		} else {}
-	
-		if (validateInputEmail(tfEmail)) {
-			if (valuesInfo.contains("=")) {
-				valuesInfo += ", ";
-			} else {}
-			valuesInfo += "Email = '" + tfEmail.getText() + "'";
-		} else {}
-	
-		if (valuesInfo.contains("=")) {
-			updateInfo += valuesInfo + whereInfo;
-			System.out.println(">> Here comes an info update:");
-			System.out.println(">> " + updateInfo);
-			db.executeUpdate(updateInfo);
-		} else {
-			System.out.println(">> Entered info values not OK or non-existant");
-		}
-	
+		
+		valuesInfo += "Name = '" + tfName.getText() + "', ";
+		valuesInfo += "Phone = '" + tfPhone.getText() + "', ";
+		valuesInfo += "Email = '" + tfEmail.getText() + "'";
+		updateInfo += valuesInfo + whereInfo;
+		
+		System.out.println(">> Here comes an info update:");
+		System.out.println(">> " + updateInfo);
+		
+		db.executeUpdate(updateInfo);
+		
 		/*
 		 * Updating address table
 		 */
 	
-		if (validateInputStreet(tfStreet)) {
-			valuesAddress += "Street = '" + tfStreet.getText().trim() + "'";
-		} else {}
+		valuesAddress += "Street = '" + tfStreet.getText().trim() + "', ";
+		valuesAddress += "ZIP = '" + tfZip.getText() + "', ";
+		valuesAddress += "City = '" + tfCity.getText().trim() + "'";
+		updateAddress += valuesAddress + whereAddress;
+		
+		System.out.println(">> Here comes an address update:");
+		System.out.println(">> " + updateAddress);
+		
+		db.executeUpdate(updateAddress);
 	
-		if (validateInputZip(tfZip)) {
-			if (valuesAddress.contains("=")) {
-				valuesAddress += ", ";
-			} else {}
-			valuesAddress += "ZIP = '" + tfZip.getText() + "'";
-		} else {}
-	
-		if (validateInputCity(tfCity)) {
-			if (valuesAddress.contains("=")) {
-				valuesAddress += ", ";
-			} else {}
-			valuesAddress += "City = '" + tfCity.getText().trim() + "'";
-		} else {}
-	
-		if (valuesAddress.contains("=")) {
-			updateAddress += valuesAddress + whereAddress;
-			System.out.println(">> Here comes an address update:");
-			System.out.println(">> " + updateAddress);
-			db.executeUpdate(updateAddress);
-		} else {
-			System.out.println(">> Entered address values not OK or non-existant");
-		}
-	
-		agencyInfo = db.fetchAgencyExt(db.executeQuery(selectAgency)).get(0);	// refresh current agency information
+		
+		agency = db.fetchAgencyExt(db.executeQuery("SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
+												+ "Agencies, Addresses, Ratings WHERE "
+												+ "Agencies.ID = '" + agency.getID() + "';")).get(0);
 		db.closeConnection();
 	
 		resetMemberTextFields();
@@ -1085,17 +1101,6 @@ public class MemberPage {
 		
 		
 		return todaysDate.after(new GregorianCalendar(year, month, day));
-	}
-	
-	/**
-	 * This method is purely for convenience, it calls the total validation of the Input page. Ensures that all entered values for Ad updates are within their limits.
-	 * 
-	 * @return boolean representing whether the input values are OK (true).
-	 */
-	
-	public static boolean validateAdUpdate() {
-		return InputPage.validateAdInputs(tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
-										tfAdNewSpecies, tfAdNewType, taAdDescription);
 	}
 	
 	/**
@@ -1171,7 +1176,7 @@ public class MemberPage {
 		String updatePassword, value, where;
 		updatePassword = "UPDATE Agencies SET ";
 		value = "Password = '" + pfPassword.getText() + "'";
-		where = " WHERE ID = " + agencyInfo.getID() + ";";
+		where = " WHERE ID = " + agency.getID() + ";";
 		
 		updatePassword += value + where;
 		

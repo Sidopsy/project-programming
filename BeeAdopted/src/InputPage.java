@@ -60,9 +60,10 @@ public class InputPage {
 
 	private static File picture;
 	private static File file;
-	public static ImageView myImageView;
+	private static ImageView myImageView;
 	private static FileChooser filechooser;
-
+	private static AgencyExt agency;
+	
 	private static DBobject db = new DBobject();
 
 	/**
@@ -70,73 +71,32 @@ public class InputPage {
 	 * 
 	 */
 
-	public static void display(){
+	public static void display(AgencyExt agencyInfo){
 		window = new Stage();
 
+		agency = agencyInfo;
+		
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Input page");
 		window.setMinWidth(250);
 
 		layoutInput = new BorderPane();
 		layoutInput.setTop(Header.smallHeader());
-		layoutInput.setCenter(inputAnimalView());
+		layoutInput.setCenter(viewInputAd());
 
 		sceneInput = new Scene(layoutInput, 600, 550);
 
 		window.setScene(sceneInput);
 		window.showAndWait();
 	}
-
-	/**
-	 * Creates the standard view for inserting ads into the application.
-	 * 
-<<<<<<< HEAD
-	 * @return GridPane containing the option of inputing ads.
-=======
-	 * @return a horizontal box with two options, either to input an animal or
-	 *         an agency
-	 */
-	
-
-//	private static HBox chooseInput() {
-//		HBox hbox = new HBox();
-//		hbox.setPadding(new Insets(10, 10, 10, 10));
-//		hbox.setSpacing(10);
-//
-//		Button btnAgencyInput = new Button("New agency?");
-//		Button btnAnimalInput = new Button("New animal?");
-//
-//		btnAgencyInput.setOnAction(e -> {
-//			layoutInputConfirmation = new BorderPane();
-//			layoutInputConfirmation.setTop(Header.smallHeader());
-//			layoutInputConfirmation.setCenter(inputAgencyView());
-//			sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
-//			window.setScene(sceneInputConfirmation);
-//		});
-//
-//		btnAnimalInput.setOnAction(e -> {
-//			layoutInputConfirmation = new BorderPane();
-//			layoutInputConfirmation.setTop(Header.smallHeader());
-//			layoutInputConfirmation.setCenter(inputAnimalView());
-//			sceneInputConfirmation = new Scene(layoutInputConfirmation, 600, 550);
-//			window.setScene(sceneInputConfirmation);
-//		});
-//
-//		hbox.getChildren().addAll(btnAgencyInput, btnAnimalInput);
-//		hbox.setAlignment(Pos.CENTER);
-//
-//		return hbox;
-//	}
-
 	
 	/**
 	 * 
 	 * 
 	 * @return GridPane with option to input animals
->>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
 	 */
 
-	public static GridPane inputAnimalView() {
+	public static GridPane viewInputAd() {
 		GridPane gridPane = new GridPane();
 		gridPane.setHgap(7);
 		gridPane.setVgap(7);
@@ -149,16 +109,6 @@ public class InputPage {
 		addInputTextFields(gridPane);
 		addInputBoxes(gridPane);
 		addInputButtons(gridPane);
-
-		/*
-		 * What to do with the agencies... NOT IN USE!!!
-		 */
-		cbAgencies = new ChoiceBox<>(db.createObservableList("Agency", db.fetchResult(
-				db.executeQuery("SELECT Distinct Name FROM "
-						+ "Agencies ORDER BY "
-						+ "Name;"))));
-		db.closeConnection();
-		cbAgencies.setValue(cbAgencies.getItems().get(0));		
 
 
 		return gridPane;
@@ -460,7 +410,7 @@ public class InputPage {
 		btnSaveAd.setMinWidth(110);
 		btnSaveAd.setMaxWidth(110);
 		btnSaveAd.setOnAction(e -> {
-			if (validateAdInputs(tfName, tfAge, cbGenders, cbSpecies, cbType, 
+			if (validateAdInfo(tfName, tfAge, cbGenders, cbSpecies, cbType, 
 					tfNewSpecies, tfNewType, taDescription)) {
 
 				System.out.println(">> Input values OK");
@@ -559,7 +509,7 @@ public class InputPage {
 		Class.forName("org.sqlite.JDBC");
 		Connection conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");
 		
-		PreparedStatement ps = conn.prepareStatement("UPDATE Ads SET Picture = ? WHERE ID == " + db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID Desc")).get(0).get(0));
+		PreparedStatement ps = conn.prepareStatement("UPDATE Ads SET Picture = ? WHERE ID == " + db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC")).get(0).get(0));
 		db.closeConnection();
 		ps.setBytes(1, animal_image);
 		s = ps.executeUpdate();
@@ -582,80 +532,13 @@ public class InputPage {
 	}
 
 	/**
-	 * TODO Decide what to do with this method.
-	 * 
-	 * @return GridPane with agency input.
-	 */
-
-	//	private static GridPane inputAgencyView() {
-	//		GridPane input = new GridPane();
-	//		input.setHgap(40);
-	//		input.setVgap(20);
-	//		input.setPadding(new Insets(10, 10, 10, 10));
-	//
-	//		Button btnSaveAgency;
-	//		
-	//		tfName = new TextField();
-	//		tfName.setPromptText("Name");
-	//		tfName.setMaxWidth(150);
-	//		input.add(tfName, 0, 0);
-	//
-	//		tfEmail = new TextField();
-	//		tfEmail.setPromptText("Email");
-	//		tfEmail.setMaxWidth(150);
-	//		input.add(tfEmail, 1, 0);
-	//
-	//		tfPhone = new TextField();
-	//		tfPhone.setPromptText("Phone number");
-	//		tfPhone.setMaxWidth(150);
-	//		input.add(tfPhone, 0, 1);
-	//
-	//		pfPassword = new PasswordField();
-	//		pfPassword.setPromptText("Password");
-	//		pfPassword.setMaxWidth(150);
-	//		input.add(pfPassword, 1, 1);
-	//
-	//		tfStreet = new TextField();
-	//		tfStreet.setPromptText("Street");
-	//		tfStreet.setMaxWidth(150);
-	//		input.add(tfStreet, 0, 2);
-	//
-	//		tfZip = new TextField();
-	//		tfZip.setPromptText("ZIP");
-	//		tfZip.setMaxWidth(150);
-	//		input.add(tfZip, 0, 3);
-	//
-	//		tfCity = new TextField();
-	//		tfCity.setPromptText("City");
-	//		tfCity.setMaxWidth(150);
-	//		input.add(tfCity, 1, 3);
-	//
-	//		Label uploadText = new Label("Upload logotype");
-	//		input.add(uploadText, 0, 4);
-	//
-	//		Button bowse = new Button("Browse");
-	//		bowse.setOnAction(e -> FileChooserExample.display());
-	//		input.add(bowse, 1, 4);
-	//
-	//		btnSaveAgency = new Button("Save agency");
-	//		input.add(btnSaveAgency, 0, 5);
-	//
-	//		// input.getChildren().addAll(cb1, cb2, cb3, cb4, cb5, tf, ta, btn);
-	//		btnSaveAgency.setOnAction(e -> inputAgencyValues());
-	//
-	//		input.setAlignment(Pos.CENTER);
-	//
-	//		return input;
-	//	}
-
-	/**
 	 * Used to validate all input fields at once. This only checks that allowed valued have been entered into CBs and TFs.
 	 * 
 	 * @return boolean representing if all text inputs are correct and shows the program that it is OK to go ahead and send the
 	 * information to the database.
 	 */
 
-	public static boolean validateAdInputs(TextField name, TextField age, ChoiceBox<Object> gender, ChoiceBox<Object> species, ChoiceBox<Object> type, 
+	public static boolean validateAdInfo(TextField name, TextField age, ChoiceBox<Object> gender, ChoiceBox<Object> species, ChoiceBox<Object> type, 
 			TextField newSpecies, TextField newType, TextArea description) {
 
 		validateChoiceBox(gender);
@@ -782,41 +665,6 @@ public class InputPage {
 	}
 
 	/**
-	 * TODO TBD
-	 */
-
-	//	private static void inputAgencyValues() {
-	//		//System.out.println(agencyID);
-	//		String name = tfName.getText();
-	//		String email = tfEmail.getText();
-	//		String phone = tfPhone.getText();
-	//		String password = pfPassword.getText();
-	//		String street = tfStreet.getText();
-	//		String zip = tfZip.getText();
-	//		String city = tfCity.getText();
-	//
-	//		String insert = "INSERT INTO Agencies (Name,Email,Phone,Password)";
-	//		String values = 
-	//				" VALUES ('" + name  + "', '"+ email + "', '" 
-	//						+ phone + "', '" + password + "');";
-	//
-	//		System.out.println(values);
-	//			db.executeUpdate(insert + values);
-	//			db.closeConnection();
-	//		
-	//			int agencyId = db.fetchAgency(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC")).get(0).getID();
-	//			db.closeConnection();
-	//			String insertAdress = "INSERT INTO Addresses (AgencyId,Street,Zip,City)";
-	//			String valuesAdress = 
-	//					" VALUES (" + agencyId + ", '"
-	//							+ street + "', '" + zip + "', '" + city + "');";
-	//
-	//			System.out.println(values);
-	//			db.executeUpdate(insertAdress + valuesAdress);
-	//			db.closeConnection();
-	//	}
-
-	/**
 	 * Method for finalizing and inputing values into the database, based on what has been entered into the input page GUI.
 	 * Values entered into TextFields and ChoiceBoxes are first validated before submitted with an INSERT.
 	 * 
@@ -846,10 +694,11 @@ public class InputPage {
 		} else {
 			type = tfNewType.getText().trim();
 		}
+		
 
 		String insert = "INSERT INTO Ads (Name, Species, Type, Gender, Age, Description, AgencyID) ";
 		String values = "VALUES ('" + name + "', '" + species + "', '" + type + "', '" + gender + "', " + age
-				+ ", '" + description + "', " + 1 + ");";		// Exchange 1 with the agencies ID.
+				+ ", '" + description + "', " + agency.getID() + ");";		// Exchange 1 with the agencies ID.
 		System.out.println(">> " + insert + "\n" + ">> " + values);
 
 		db.executeUpdate(insert + values);
