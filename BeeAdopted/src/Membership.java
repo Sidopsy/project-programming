@@ -27,7 +27,7 @@ public class Membership {
 			resultPassword = db.fetchResult(db.executeQuery(sql)).get(0).get(1);// First arrayList, second item
 			db.closeConnection();
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			System.err.println(">> ArrayList<AgencyExt> returned nothing...");
 		}		
 		
 		return((resultEmail.length() > 0) && (resultEmail.equals(a)) && 

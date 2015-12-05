@@ -25,6 +25,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -55,15 +56,14 @@ public class InputPage {
 	private static TextArea taDescription;
 	private static CheckBox chbNewSpecies, chbNewType;
 
-	private static ChoiceBox<Object> cbAgencies, cbSpecies, cbType, cbGenders;
+	private static ChoiceBox<Object> cbSpecies, cbType, cbGenders;
 	private static ObservableList<Object> obsListType;
 
-	private static File picture;
-	private static File file;
+	private static File file = null;
 	private static ImageView myImageView;
 	private static FileChooser filechooser;
 	private static AgencyExt agency;
-	
+
 	private static DBobject db = new DBobject();
 
 	/**
@@ -75,7 +75,7 @@ public class InputPage {
 		window = new Stage();
 
 		agency = agencyInfo;
-		
+
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Input page");
 		window.setMinWidth(250);
@@ -89,14 +89,14 @@ public class InputPage {
 		window.setScene(sceneInput);
 		window.showAndWait();
 	}
-	
+
 	/**
 	 * 
 	 * 
 	 * @return GridPane with option to input animals
 	 */
 
-	public static GridPane viewInputAd() {
+	private static GridPane viewInputAd() {
 		GridPane gridPane = new GridPane();
 		gridPane.setHgap(7);
 		gridPane.setVgap(7);
@@ -121,7 +121,7 @@ public class InputPage {
 	 * @return GridPane containing the labels neccessary to guide the user.
 	 */
 
-	public static GridPane addInputLabels(GridPane inputGridPane) {
+	private static GridPane addInputLabels(GridPane inputGridPane) {
 		GridPane gridPane = inputGridPane;
 		Label lblName, lblAge, lblGender;
 
@@ -149,7 +149,7 @@ public class InputPage {
 	 * @return GridPane containing the textfields neccessary for inputing information about ads.
 	 */
 
-	public static GridPane addInputTextFields(GridPane inputGridPane) {
+	private static GridPane addInputTextFields(GridPane inputGridPane) {
 		GridPane gridPane = inputGridPane;
 
 		ContextMenu strings = new ContextMenu();
@@ -160,7 +160,7 @@ public class InputPage {
 		tfName.setMinWidth(150);
 		tfName.setMaxWidth(150);
 		tfName.setOnKeyReleased(e -> {
-			validateInputString(tfName);
+			InputValidation.validateInputTextFieldString(tfName);
 		});
 
 
@@ -169,7 +169,7 @@ public class InputPage {
 		tfAge.setMinWidth(50);
 		tfAge.setMaxWidth(50);
 		tfAge.setOnKeyReleased(e -> {
-			validateInputInteger(tfAge);
+			InputValidation.validateInputAge(tfAge);
 		});
 
 
@@ -178,7 +178,7 @@ public class InputPage {
 		taDescription.setMinSize(500, 150);
 		taDescription.setMaxSize(500, 150);
 		taDescription.setOnKeyReleased(e -> {
-			validateInputTextArea(taDescription);
+			InputValidation.validateInputTextArea(taDescription);
 		});
 
 
@@ -188,7 +188,7 @@ public class InputPage {
 		tfNewSpecies.setVisible(false);				// TF not visible by default
 		tfNewSpecies.setPromptText("Species...");	// Prompt text for TF to be displayed in the background
 		tfNewSpecies.setOnKeyReleased(e -> {
-			validateInputString(tfNewSpecies);
+			InputValidation.validateInputTextFieldString(tfNewSpecies);
 			if (tfNewSpecies.getLength() != 0) {	// This actually becomes true when 2 characters have been entered, for some reason
 				cbType.setDisable(false);			// The type CB should no longer be disabled
 				chbNewType.setDisable(false);		// CHB should no longer be disables
@@ -212,7 +212,7 @@ public class InputPage {
 		tfNewType.setVisible(false);
 		tfNewType.setPromptText("Type...");
 		tfNewType.setOnKeyReleased(e -> {
-			validateInputString(tfNewType);
+			InputValidation.validateInputTextFieldString(tfNewType);
 		});
 
 
@@ -222,7 +222,7 @@ public class InputPage {
 		gridPane.add(taDescription, 0, 3);
 		gridPane.add(tfNewSpecies, 0, 2);			// Adding CHB for new species to gridpane, column 0, row 3
 		gridPane.add(tfNewType, 1, 2);
-		GridPane.setMargin(tfAge, 		new Insets(0, 0, 0, 160));
+		GridPane.setMargin(tfAge, 			new Insets(0, 0, 0, 160));
 		GridPane.setMargin(tfNewType, 		new Insets(0, 0, 0, -97));
 
 
@@ -236,7 +236,7 @@ public class InputPage {
 	 * @return GridPane containing the boxes (choice and check) neccessary for inputing information about ads.
 	 */
 
-	public static GridPane addInputBoxes(GridPane inputGridPane) {
+	private static GridPane addInputBoxes(GridPane inputGridPane) {
 		GridPane gridPane = inputGridPane;
 
 
@@ -248,7 +248,7 @@ public class InputPage {
 		cbGenders.setMinWidth(100);
 		cbGenders.setMaxWidth(100);
 		cbGenders.setOnAction(e -> {
-			validateChoiceBox(cbGenders);
+			InputValidation.validateChoiceBox(cbGenders);
 		});
 
 
@@ -290,7 +290,8 @@ public class InputPage {
 				tfNewType.clear();					// Clearing any added value from the type TF
 				tfNewType.setVisible(false);		// Hide type TF
 
-				cbType.setValue("Type");			// Setting value to Standard before showing, no need to retrieve values from DB since checkbox was pressed at this point and the above if has been run.
+				cbType.setValue("Type");			// Setting value to Standard before showing, no need to retrieve values from 
+													// DB since checkbox was pressed at this point and the above if has been run.
 				cbType.setDisable(true);			// Disable choosing type before species specified
 				cbType.setVisible(true);			// Show CB again for types
 
@@ -324,7 +325,7 @@ public class InputPage {
 		cbSpecies.setMinWidth(100);					// Setting size of the CB
 		cbSpecies.setMaxWidth(100);
 		cbSpecies.setOnAction(e -> {				// On action (selection) it should...
-			validateChoiceBox(cbSpecies);
+			InputValidation.validateChoiceBox(cbSpecies);
 			if ((String) cbSpecies.getValue() != "Species") {	// If it has changed from "Species", do:
 				obsListType = db.createObservableList("Type", db.fetchResult(
 						db.executeQuery("SELECT Distinct Type FROM "
@@ -359,7 +360,7 @@ public class InputPage {
 		cbType.setDisable(true);					// Type CB is disables by default
 		cbType.setOnAction(e -> {
 			try {
-				validateChoiceBox(cbType);
+				InputValidation.validateChoiceBox(cbType);
 			} catch (Exception error) {}			// When Type is activated by selecting a species, validate points to null
 		});											// which throws and error, catch lets us ignore it.
 
@@ -385,12 +386,12 @@ public class InputPage {
 	 * @return GridPane containing the buttons neccessary for inputing information about ads.
 	 */
 
-	public static GridPane addInputButtons(GridPane inputGridPane) {
+	private static GridPane addInputButtons(GridPane inputGridPane) {
 		GridPane gridPane = inputGridPane;
 		Button btnAddPicture, btnSaveAd, btnClose;
 		Alert alert;
 
-		
+
 		myImageView = new ImageView();
 		myImageView.setPreserveRatio(false);
 		myImageView.setFitWidth(100);
@@ -410,15 +411,18 @@ public class InputPage {
 		btnSaveAd.setMinWidth(110);
 		btnSaveAd.setMaxWidth(110);
 		btnSaveAd.setOnAction(e -> {
-			if (validateAdInfo(tfName, tfAge, cbGenders, cbSpecies, cbType, 
-					tfNewSpecies, tfNewType, taDescription)) {
-
+			if (InputValidation.validateAdInfo(tfName, tfAge, cbGenders, cbSpecies, cbType, 
+											   tfNewSpecies, tfNewType, taDescription)) {
 				System.out.println(">> Input values OK");
 				inputAdValues();
-				try {
-					upload();
-				} catch (Exception e1) {
-					e1.printStackTrace();
+				if (file != null) {	
+					try {
+						inputPicture();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					
 				}
 				alert.setAlertType(AlertType.INFORMATION);
 				alert.setTitle("Success");
@@ -454,23 +458,18 @@ public class InputPage {
 	 * Eventhandler for Image input into database.
 	 */
 
-	static EventHandler<ActionEvent> btnLoadEventListener
-	= new EventHandler<ActionEvent>(){
+	public static EventHandler<ActionEvent> btnLoadEventListener = new EventHandler<ActionEvent>() {
 
-		@Override
 		public void handle(ActionEvent t) {
 			FileChooser fileChooser = new FileChooser();
-
 			//Set extension filters
 			FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
 			fileChooser.getExtensionFilters().addAll(extFilterPNG);
-
 			//Show open file dialog
 			file = fileChooser.showOpenDialog(null);
 
 			try {
 				BufferedImage bufferedImage = ImageIO.read(file);
-
 				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
 
 				if (image != null) {
@@ -482,14 +481,14 @@ public class InputPage {
 
 		}
 	};
-	
+
 	/**
-	 * Det här bara funkar, ingen vet varför.
+	 * Upload of picture when a new ad is input.
 	 * 
 	 * @throws Exception
 	 */
 
-	public static void upload() throws Exception {
+	private static void inputPicture() throws Exception {
 		byte[] animal_image = null;
 		int s = 0;
 		FileInputStream fis = new FileInputStream(file);
@@ -505,11 +504,12 @@ public class InputPage {
 			System.err.println(ex.getMessage());
 		}
 		animal_image = bos.toByteArray();
-		
+
 		Class.forName("org.sqlite.JDBC");
 		Connection conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");
-		
-		PreparedStatement ps = conn.prepareStatement("UPDATE Ads SET Picture = ? WHERE ID == " + db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC")).get(0).get(0));
+
+		PreparedStatement ps = conn.prepareStatement("UPDATE Ads SET Picture = ? WHERE ID == " + 
+		db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC")).get(0).get(0));
 		db.closeConnection();
 		ps.setBytes(1, animal_image);
 		s = ps.executeUpdate();
@@ -518,157 +518,24 @@ public class InputPage {
 			System.out.print("Image Uploaded");
 		}
 
+		file = null;
+		
 		ps.close();
 		conn.close();
 	}
 
 
-	public static FileChooser getFilechooser() {
+	private static FileChooser getFilechooser() {
 		return filechooser;
 	}
 
-	public static void setFilechooser(FileChooser filechooser) {
-		InputPage.filechooser = filechooser;
-	}
-
-	/**
-	 * Used to validate all input fields at once. This only checks that allowed valued have been entered into CBs and TFs.
-	 * 
-	 * @return boolean representing if all text inputs are correct and shows the program that it is OK to go ahead and send the
-	 * information to the database.
-	 */
-
-	public static boolean validateAdInfo(TextField name, TextField age, ChoiceBox<Object> gender, ChoiceBox<Object> species, ChoiceBox<Object> type, 
-			TextField newSpecies, TextField newType, TextArea description) {
-
-		validateChoiceBox(gender);
-		validateInputInteger(age);
-		validateInputTextArea(description);
-		if ((!validateChoiceBox(species)) &&			// Species and types have been chosen manually, both "new" TFs are validated
-				(!validateChoiceBox(type))) {	
-
-			return (validateInputString(name)) && 
-					(validateInputInteger(age)) && 
-					(validateChoiceBox(gender)) &&	
-					(validateInputTextArea(description)) && 
-					(validateInputString(newSpecies)) && 
-					(validateInputString(newType)); 
-
-		} else if (!validateChoiceBox(species)) {		// Species is in its original position, TF for new species is validated.
-
-			return (validateInputString(name)) && 
-					(validateInputInteger(age)) && 
-					(validateChoiceBox(gender)) &&
-					(validateInputTextArea(description)) &&
-					(validateInputString(newSpecies));
-
-		} else if (!validateChoiceBox(type)) {			// Type is in its original position, TF for new type is validated.
-
-			return (validateInputString(name)) && 
-					(validateInputInteger(age)) && 
-					(validateChoiceBox(gender)) &&
-					(validateInputTextArea(description)) &&
-					(validateInputString(newType));
-
-		} else {										// Nethier CBs were in their original states, none of the "new" TFs are validated.
-
-			return (validateInputString(name)) && 
-					(validateInputInteger(age)) && 
-					(validateChoiceBox(gender)) &&
-					(validateInputTextArea(description));
-		}
-	}
-
-	/**
-	 * Performs a check whether a choice box is in its default position, stating information about it's use.
-	 *
-	 * @param ChoiceBox for either a species, gender or type.
-	 * @return boolean representing if parameter choice box is in its original position, true if it is NOT - since this is the
-	 * not the desired position, another should be chosen. False means that the CB value has not been changed.
-	 */
-
-	public static boolean validateChoiceBox(ChoiceBox<Object> cb) {
-		if ((cb.getValue().equals("Species")) || (cb.getValue().equals("...")) || (cb.getValue().equals("Type"))) {
-			cb.setStyle("-fx-focus-color: red ; -fx-border-color: red;");
-			return false;
-		} else {
-			cb.setStyle("-fx-box-border: teal;");
-			return true;
-		}
-	}
-
-	/**
-	 * Ensures that text fields only contain alphabetical characters and or spaces, otherwise it will change the borde color to red.
-	 * 
-	 * @param TextField that should only contain letters, spaces also accepted.
-	 * @return boolean representing if the input inside the TextField is within it's allowed limits. No more than 30 or less
-	 * than one character(s), only letters and or spaces are allowed.
-	 */
-
-	public static boolean validateInputString(TextField tf) {
-		if ((tf.getLength() <= 30) && (tf.getLength() > 0)) {										// Checking number of characters in TF
-			for (int index = 0; index < tf.getLength(); index++)	{
-				if (!(Character.isAlphabetic(tf.getText().charAt(index))) && !(tf.getText().charAt(index) == ' ')) {
-					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-					return false;										// Loop is broken, a character that is not alphabetical was found
-				} else {}
-			}
-			tf.setStyle("-fx-box-border: teal;");
-			return true;
-		} else {														// Number of chars too many
-			tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-			return false;
-		}
-	}
-
-	/**
-	 * Ensures that text fields only contain digits, otherwise it will change the borde color to red.
-	 * 
-	 * @param TextField that should only contain numbers, spaces are not accepted.
-	 * @return boolean representing if the input inside the TextField is within it's allowed limits. Not larger than 100 or
-	 * less than 1, only digits are allowed.
-	 */
-
-	public static boolean validateInputInteger(TextField tf) {
-		if ((tf.getLength() <= 2) && (tf.getLength() > 0)) {	
-			for (int index = 0; index < tf.getLength(); index++)	{
-				if (!Character.isDigit(tf.getText().charAt(index))) {		// "Not a digit" was encountered
-					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-					return false;											// Loop is broken, a character that is not numerical was found.
-				} else {}
-			}
-			tf.setStyle("-fx-box-border: teal;");
-			return true;
-		} else {
-			tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-			return false;
-		}
-	}
-
-	/**
-	 * Not currently in use as you may want to add a long text including characters such as !, ?, / and so on, including numbers.
-	 * Does check for description length as the DB has a limit of 255 characters.
-	 * 
-	 * @param TextArea
-	 * @return boolean representing if the input inside the TextArea is within it's allowed limits. No more than 255 or less
-	 * than zero characters, any input is accepted.
-	 */
-
-	public static boolean validateInputTextArea(TextArea ta) {
-		if ((ta.getLength() <= 255) && (ta.getLength() > 0)) {
-			ta.setStyle("-fx-box-border: teal;");
-			return true;
-		} else {
-			ta.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
-			return false;
-		}
+	private static void setFilechooser(FileChooser inputFilechooser) {
+		filechooser = inputFilechooser;
 	}
 
 	/**
 	 * Method for finalizing and inputing values into the database, based on what has been entered into the input page GUI.
 	 * Values entered into TextFields and ChoiceBoxes are first validated before submitted with an INSERT.
-	 * 
-	 * TODO Add agency.getID() instead of a static "1" when Madisen has finished the login function.
 	 */
 
 	private static void inputAdValues() {
@@ -683,18 +550,18 @@ public class InputPage {
 		gender = (String) cbGenders.getValue();
 		description = taDescription.getText().trim();	// Trimming TAs with possibility of spaces
 
-		if (validateChoiceBox(cbSpecies)) {				// If gets executed when the default value of CB is NOT chosen
+		if (InputValidation.validateChoiceBox(cbSpecies)) {	// If gets executed when the default value of CB is NOT chosen
 			species = (String) cbSpecies.getValue();
 		} else {
 			species = tfNewSpecies.getText().trim();
 		}
 
-		if (validateChoiceBox(cbType)) {
+		if (InputValidation.validateChoiceBox(cbType)) {
 			type = (String) cbType.getValue();
 		} else {
 			type = tfNewType.getText().trim();
 		}
-		
+
 
 		String insert = "INSERT INTO Ads (Name, Species, Type, Gender, Age, Description, AgencyID) ";
 		String values = "VALUES ('" + name + "', '" + species + "', '" + type + "', '" + gender + "', " + age
@@ -702,5 +569,152 @@ public class InputPage {
 		System.out.println(">> " + insert + "\n" + ">> " + values);
 
 		db.executeUpdate(insert + values);
+	}
+	
+	/**
+	 * Method for finalizing and inputing values into the database, based on what has been entered into the agency input 
+	 * page GUI.
+	 */
+	
+	public static void inputAgencyValues(TextField tfName, TextField tfEmail, TextField tfPhone, PasswordField pfPassword, 
+										  TextField tfStreet, TextField tfZip, TextField tfCity)  {
+		String name, phone, email, password, street, zip, city;
+		
+		/*
+		 * Creating Agency
+		 */
+		
+		name = tfName.getText().trim();
+		email = tfEmail.getText();
+		phone = tfPhone.getText();
+		password = pfPassword.getText();
+		
+		String insertInfo = "INSERT INTO Agencies (Name, Phone, Email, Password)";
+		String valuesInfo = " VALUES ('" + name  + "', '"+ phone + "', '" + email + "', '" + password + "');";
+		System.out.println(">> " + insertInfo + valuesInfo);
+		
+		db.executeUpdate(insertInfo + valuesInfo);
+		
+		/*
+		 * Adding address.
+		 */
+		
+		int agencyID = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC;")).get(0).get(0));
+		db.closeConnection();
+		
+		street = tfStreet.getText().trim();
+		zip = tfZip.getText();
+		city = tfCity.getText().trim();
+		
+		String insertAddress = "INSERT INTO Addresses (Street, ZIP, City, AgencyID)";
+		String valuesAddress = " VALUES ('" + street + "', '" + zip + "', '" + city + "', " + agencyID + ");";
+		System.out.println(">> " + insertAddress + valuesAddress);
+		
+		db.executeUpdate(insertAddress + valuesAddress); 
+	}
+	
+	/**
+	 * Updates the input Ad with the information in the filled out fields. If CHB re-activate has been checked, the ad will
+	 * set its start date to todays date and its end date to 90 days in the future. Updates the ad table when done.
+	 * 
+	 * @param Ad
+	 */
+	
+	public static void updateMemberAd(Ad ad, TextField name, TextField age, ChoiceBox<Object> gender, 
+									ChoiceBox<Object> cbSpecies, ChoiceBox<Object> cbType, TextField tfSpecies, 
+									TextField tfType, TextArea description, CheckBox reActivate) {
+		String updateAd, values, where;
+		updateAd = "UPDATE Ads SET ";
+		values = "";
+		where = " WHERE ID = " + ad.getID() + ";";
+		
+		
+		values += "Name = '" + name.getText().trim() + "', ";					// Trimming TFs with possibility of spaces
+		values += "Age = " + age.getText() + ", ";
+		values += "Gender = '" + (String) gender.getValue() + "', ";
+		values += "Description = '" + description.getText().trim() + "', ";	 	// Trimming TAs with possibility of spaces
+			
+		if (InputValidation.validateChoiceBox(cbSpecies)) {				 				// If gets executed when the default value of CB is NOT chosen
+			values += "Species = '" + (String) cbSpecies.getValue() + "', ";
+		} else {values += "Species = '" + tfSpecies.getText().trim() + "', ";}
+
+		if (InputValidation.validateChoiceBox(cbType)) {
+			values += "Type = '" + (String) cbType.getValue() + "'";
+		} else {values += "Type = '" + tfType.getText().trim() + "'";}
+		
+		if (reActivate.isSelected()) {
+			values += ", StartDate = date('NOW'), EndDate = date('NOW', '+90 days')";
+		}
+		
+		updateAd += values + where;
+
+		System.out.println(">> Here comes an Ad update:");
+		System.out.println(">> " + updateAd);
+		
+		db.executeUpdate(updateAd);
+	}
+	
+	/**
+	 * This method updates new input information from the TextFields after the "Save" button has been pressed, assuming
+	 * any new, valid information has been entered.
+	 * 
+	 */
+
+	public static void updateMemberInfo(AgencyExt inputAgency, TextField name, TextField phone, TextField email, 
+										TextField street, TextField zip, TextField city) {
+		String updateInfo, updateAddress, valuesInfo, valuesAddress, whereInfo, whereAddress;
+		updateInfo = "UPDATE Agencies SET ";
+		updateAddress = "UPDATE Addresses SET ";
+		valuesInfo = "";
+		valuesAddress = "";
+		whereInfo = " WHERE ID = " + inputAgency.getID() + ";";
+		whereAddress = " WHERE Addresses.AgencyID = " + inputAgency.getID() + ";";
+	
+		/*
+		 * Updating agency table
+		 */
+		
+		valuesInfo += "Name = '" + name.getText() + "', ";
+		valuesInfo += "Phone = '" + phone.getText() + "', ";
+		valuesInfo += "Email = '" + email.getText() + "'";
+		updateInfo += valuesInfo + whereInfo;
+		
+		System.out.println(">> Here comes an info update:");
+		System.out.println(">> " + updateInfo);
+		
+		db.executeUpdate(updateInfo);
+		
+		/*
+		 * Updating address table
+		 */
+	
+		valuesAddress += "Street = '" + street.getText().trim() + "', ";
+		valuesAddress += "ZIP = '" + zip.getText() + "', ";
+		valuesAddress += "City = '" + city.getText().trim() + "'";
+		updateAddress += valuesAddress + whereAddress;
+		
+		System.out.println(">> Here comes an address update:");
+		System.out.println(">> " + updateAddress);
+		
+		db.executeUpdate(updateAddress);
+	}
+	
+	/**
+	 * This method updates the users password information from the TextFields after the "Save" button has been pressed, assuming
+	 * any new, valid information has been entered.
+	 */
+	
+	public static void updateMemberPassword(AgencyExt inputAgency, PasswordField password) {
+		String updatePassword, value, where;
+		updatePassword = "UPDATE Agencies SET ";
+		value = "Password = '" + password.getText() + "'";
+		where = " WHERE ID = " + inputAgency.getID() + ";";
+		
+		updatePassword += value + where;
+		
+		System.out.println(">> Here comes a password update:");
+		System.out.println(">> " + updatePassword);
+		
+		db.executeUpdate(updatePassword);
 	}
 }

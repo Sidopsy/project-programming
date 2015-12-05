@@ -16,7 +16,6 @@ import javafx.stage.Stage;
  */
 
 public class CreateAccount {
-
 	private static Stage window;
 
 	private static TextField tfName, tfCity, tfStreet, tfZip, tfPhone, tfEmail;
@@ -56,7 +55,7 @@ public class CreateAccount {
 	 * @return GridPane containing the labels neccessary for showing information about agency input fields.
 	 */
 	
-	public static GridPane addAgencyLabels(GridPane inputGridPane) {
+	private static GridPane addAgencyLabels(GridPane inputGridPane) {
 		GridPane gridPane = inputGridPane;
 		Label lblName, lblAddress, lblCity, lblStreet, lblZip, 
 				lblPhone, lblEmail, lblPassword, lblUploadPicture;
@@ -95,50 +94,50 @@ public class CreateAccount {
 	 * @return GridPane containing the TextFields neccessary for inputing agency information.
 	 */
 	
-	public static GridPane addAgencyTextFields(GridPane inputGridPane) {
+	private static GridPane addAgencyTextFields(GridPane inputGridPane) {
 		GridPane gridPane = inputGridPane;
 		
 		
 		tfName = new TextField();
 		tfName.setPromptText("Personal or Business Name");
 		tfName.setOnKeyReleased(e -> {
-			MemberPage.validateInputName(tfName);
+			InputValidation.validateInputName(tfName);
 		});
 		
 		tfPhone = new TextField();
 		tfPhone.setPromptText("Phone Number");
 		tfPhone.setOnKeyReleased(e -> {
-			MemberPage.validateInputPhone(tfPhone);
+			InputValidation.validateInputPhone(tfPhone);
 		});
 		
 		tfEmail = new TextField();
 		tfEmail.setPromptText("Email: Also Your Username");
 		tfEmail.setOnKeyReleased(e -> {
-			MemberPage.validateInputEmail(tfEmail);
+			InputValidation.validateInputEmail(tfEmail);
 		});
 		
 		tfStreet = new TextField();
 		tfStreet.setPromptText("Street Name");
 		tfStreet.setOnKeyReleased(e -> {
-			MemberPage.validateInputStreet(tfStreet);
+			InputValidation.validateInputStreet(tfStreet);
 		});
 		
 		tfZip = new TextField();
 		tfZip.setPromptText("Zip");
 		tfZip.setOnKeyReleased(e -> {
-			MemberPage.validateInputZip(tfZip);
+			InputValidation.validateInputZip(tfZip);
 		});
 		
 		tfCity = new TextField();
 		tfCity.setPromptText("City");
 		tfCity.setOnKeyReleased(e -> {
-			MemberPage.validateInputCity(tfCity);
+			InputValidation.validateInputCity(tfCity);
 		});
 		
 		pfPassword = new PasswordField();
 		pfPassword.setPromptText("Choose a Password");
 		pfPassword.setOnKeyReleased(e -> {
-			MemberPage.validateInputPassword(pfPassword);
+			InputValidation.validateInputPassword(pfPassword);
 		});
 
 		gridPane.getChildren().addAll(tfName, tfCity, tfZip, tfPhone, tfEmail, pfPassword);
@@ -161,7 +160,7 @@ public class CreateAccount {
 	 * @return GridPane containing the labels neccessary for saving and inputing member information.
 	 */
 	
-	public static GridPane addAgencyButtons(GridPane inputGridPane) {
+	private static GridPane addAgencyButtons(GridPane inputGridPane) {
 		GridPane gridPane = inputGridPane;
 		Button btnSave, btnUploadLogo;
 		Alert alert;
@@ -171,11 +170,10 @@ public class CreateAccount {
 		
 		btnSave = new Button("Save");
 		btnSave.setOnAction(e -> {
-			if (MemberPage.validateMemberInfo(tfName, tfPhone, tfEmail, 
-											tfStreet, tfZip, tfCity) &&
-				MemberPage.validateInputPassword(pfPassword)) {
+			if (InputValidation.validateMemberInfo(tfName, tfPhone, tfEmail, tfStreet, tfZip, tfCity) &&
+				InputValidation.validateInputPassword(pfPassword)) {
 				
-				inputAgencyValues();	
+				InputPage.inputAgencyValues(tfName, tfPhone, tfEmail, pfPassword, tfStreet, tfZip, tfCity);	
 				
 				alert.setAlertType(AlertType.INFORMATION);
 				alert.setTitle("Success");
@@ -200,45 +198,5 @@ public class CreateAccount {
 		
 		
 		return gridPane;
-	}
-
-	/**
-	 * 
-	 */
-
-	private static void inputAgencyValues()  {
-		String name, email, phone, password, street, zip, city;
-		
-		/*
-		 * Creating Agency
-		 */
-		
-		name = tfName.getText().trim();
-		email = tfEmail.getText();
-		phone = tfPhone.getText();
-		password = pfPassword.getText();
-		
-		String insertInfo = "INSERT INTO Agencies (Name, Phone, Email, Password)";
-		String valuesInfo = " VALUES ('" + name  + "', '"+ phone + "', '" + email + "', '" + password + "');";
-		System.out.println(">> " + insertInfo + valuesInfo);
-		
-		db.executeUpdate(insertInfo + valuesInfo);
-		
-		/*
-		 * Adding address.
-		 */
-		
-		int agencyID = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC;")).get(0).get(0));
-		db.closeConnection();
-		
-		street = tfStreet.getText().trim();
-		zip = tfZip.getText();
-		city = tfCity.getText().trim();
-		
-		String insertAddress = "INSERT INTO Addresses (Street, ZIP, City, AgencyID)";
-		String valuesAddress = " VALUES ('" + street + "', '" + zip + "', '" + city + "', " + agencyID + ");";
-		System.out.println(">> " + insertAddress + valuesAddress);
-		
-		db.executeUpdate(insertAddress + valuesAddress); 
 	}
 }
