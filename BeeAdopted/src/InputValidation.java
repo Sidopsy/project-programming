@@ -12,11 +12,11 @@ import javafx.scene.control.TextField;
  * application reference this class to ensure that values entered are within their accepted limits. Graphical changes to fields
  * that are not filled out correctly are also carries out in this class.
  * 
+ * @since 2015-12-05
  * @author Måns Thörnvik
  */
 
 public class InputValidation {
-	private static DBobject db = new DBobject();
 	
 	/**
 	 * Used to validate all input fields at once. This only checks that allowed valued have been entered into CBs and TFs.

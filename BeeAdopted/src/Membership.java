@@ -3,6 +3,7 @@
  * This class verifies the integrity of the input email and password. It makes sure that the information corresponds to a user
  * in the database.
  * 
+ * @since 2015-12-03
  * @author Madisen Whitfield
  */
 

@@ -10,7 +10,9 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 /**
+ * This class creates a new window in which the user can input information to add a new agency.
  * 
+ * @since 2015-12-03
  * @author Madisen Whitfield
  * @refactor Måns Thörnvik: Re-styled the save function to be done with one button click instead of two.
  */
@@ -140,14 +142,14 @@ public class CreateAccount {
 			InputValidation.validateInputPassword(pfPassword);
 		});
 
-		gridPane.getChildren().addAll(tfName, tfCity, tfZip, tfPhone, tfEmail, pfPassword);
+		gridPane.getChildren().addAll(tfName, tfPhone, tfEmail, pfPassword, tfStreet, tfZip, tfCity); 
 		GridPane.setConstraints(tfName, 0, 1);
-		GridPane.setConstraints(tfCity, 3, 1);
-		GridPane.setConstraints(tfStreet, 3, 3);
-		GridPane.setConstraints(tfZip, 3, 5);
 		GridPane.setConstraints(tfPhone, 1, 1);
 		GridPane.setConstraints(tfEmail, 1, 3);
 		GridPane.setConstraints(pfPassword, 1, 5);
+		GridPane.setConstraints(tfStreet, 3, 3);
+		GridPane.setConstraints(tfZip, 3, 5);
+		GridPane.setConstraints(tfCity, 3, 1);
 
 		
 		return gridPane;
@@ -180,11 +182,12 @@ public class CreateAccount {
 				alert.setHeaderText("Account has been created");
 				alert.setContentText("You are now able to log in and add advertisements to the application.");
 				alert.showAndWait();
+				window.close();
 			} else {
 				alert.setAlertType(AlertType.ERROR);
 				alert.setTitle("Failiure");
 				alert.setHeaderText("Account could not be created");
-				alert.setContentText("One or more inputs have not been entered correctly.");
+				alert.setContentText("One or more fields have not been filled out correctly.");
 				alert.showAndWait();
 			}
 		});

@@ -476,7 +476,7 @@ public class InputPage {
 					myImageView.setImage(image);
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(InputPage.class.getName()).log(Level.SEVERE, null, ex);
+				System.err.println(">> No image was chosen or another error was encountered...");
 			}
 
 		}
@@ -576,8 +576,8 @@ public class InputPage {
 	 * page GUI.
 	 */
 	
-	public static void inputAgencyValues(TextField tfName, TextField tfEmail, TextField tfPhone, PasswordField pfPassword, 
-										  TextField tfStreet, TextField tfZip, TextField tfCity)  {
+	public static void inputAgencyValues(TextField tfName, TextField tfPhone, TextField tfEmail, PasswordField pfPassword, 
+										 TextField tfStreet, TextField tfZip, TextField tfCity)  {
 		String name, phone, email, password, street, zip, city;
 		
 		/*
@@ -599,7 +599,9 @@ public class InputPage {
 		 * Adding address.
 		 */
 		
-		int agencyID = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC;")).get(0).get(0));
+		int agencyID = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM "
+																	 + "Agencies ORDER BY "
+																	 + "ID DESC;")).get(0).get(0));
 		db.closeConnection();
 		
 		street = tfStreet.getText().trim();

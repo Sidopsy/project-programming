@@ -32,6 +32,7 @@ import javafx.stage.Stage;
  * Page for showing member information and allowing for updates of both the specific member's personal information as well
  * as advertisements submitted by him/her.
  * 
+ * @since 2015-11-25
  * @author Måns Thörnvik for functionality & Madisen Whitfield for partial design.
  */
 
@@ -382,7 +383,6 @@ public class MemberPage {
 		btnInputPage = new Button("New ad");
 		btnInputPage.setOnAction(e -> {
 			InputPage.display(loggedInAgency);
-			layoutMP.setBottom(viewMemberAds());
 		});
 		
 		
@@ -748,7 +748,6 @@ public class MemberPage {
 									  		+ "Type;")));
 				db.closeConnection();
 
-				
 				cbAdType.setItems(obsListType);		// Add the updated list to the CB with types
 				cbAdType.setValue("Type");			// Setting default value of Type CB to "Type"
 				cbAdType.setDisable(false);			// Enabling type CB
@@ -827,25 +826,21 @@ public class MemberPage {
 			if (InputValidation.validateAdInfo(tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
 										tfAdNewSpecies, tfAdNewType, taAdDescription)) {
 				System.out.println(">> Update values OK");
-				
 				InputPage.updateMemberAd(ad, tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
 										tfAdNewSpecies, tfAdNewType, taAdDescription, chbReActivate);
-				
-				layoutMP.setBottom(viewMemberAds());
-				
 				alert.setAlertType(AlertType.INFORMATION);		// Needed to set alert back to info after an error.
 				alert.setTitle("Success");
 				alert.setHeaderText("Advertisement has been updated");
 				alert.setContentText("Your advertisement has been successfully updated.");
-				
 				if (chbReActivate.isSelected()) {
 					alert.setContentText(reActivateMessage);
 				}
 				alert.showAndWait();
+				
+				layoutMP.setBottom(viewMemberAds());	// update the ads in the table.
 				window.setScene(sceneMP);
 			} else {
 				System.out.println(">> Update values incorrect");
-				
 				alert.setAlertType(AlertType.ERROR);
 				alert.setTitle("Failiure");
 				alert.setHeaderText("Changes could not be saved");
