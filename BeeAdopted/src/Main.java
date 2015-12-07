@@ -215,16 +215,10 @@ public class Main extends Application {
 			String password = pfPassword.getText();
 			if (Membership.verify(email, password)) {
 				System.out.println(">> Entered login correct");
-				AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
-																		+ "Agencies, Addresses, Ratings WHERE "
+				AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
 																		+ "Email = '" + tfEmail.getText() + "';")).get(0);
 				db.closeConnection();
 				
-				alert.setAlertType(AlertType.INFORMATION);		// Needed to set alert back to info after an error.
-				alert.setTitle("Success");
-				alert.setHeaderText("Login successful");
-				alert.setContentText("Click OK to proceed to your member page.");
-				alert.showAndWait();
 				MemberPage.display(agencyInfo);
 			} else {
 				System.out.println(">> Entered login incorrect");
