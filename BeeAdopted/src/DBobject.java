@@ -13,13 +13,13 @@ import javafx.scene.control.Separator;
  * generic result handling.
  * 
  * @since 2015-11-16
- * @author MTs
+ * @author Måns Thörnvik
  */
 
 public class DBobject {
-	public static Connection connect = null;
-	public PreparedStatement stmt = null;
-	public ResultSet resultSet = null;
+	private static Connection connect = null;
+	private PreparedStatement stmt = null;
+	private ResultSet resultSet = null;
 	private final String dbType;
 	private final String dbName;
 	private final String dbDriver;

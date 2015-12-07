@@ -13,6 +13,8 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -189,40 +191,48 @@ public class ViewMaster extends Application {
 		return firstPage;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	
 	private static HBox loginBox(){
 		HBox hbox = new HBox();
-		//hbox.getStyleClass().add("hbox");
-		//hbox.setPadding(new Insets(20));
-		hbox.setSpacing(100);
-		hbox.setAlignment(Pos.CENTER);
 		Button btnShow = new Button("Go to agency pages");
 		TextField tfEmail = new TextField();
 		PasswordField pfPassword = new PasswordField();
+		Button btnLogin = new Button("Login");
+		Alert alert = new Alert(AlertType.INFORMATION);
+		
+		hbox.setSpacing(10);
+		hbox.setAlignment(Pos.CENTER);
 
 		tfEmail.setPromptText("Enter your email");
 		pfPassword.setPromptText("Enter your password");
-		Button btnLogin = new Button("Login");
+
 		btnLogin.setOnAction(e -> {
 			String email = tfEmail.getText();
 			String password = pfPassword.getText();
-			if(Membership.verify(email, password)) {
-				System.out.println("Ayaaaayy!");
-				String query = "SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
-						+ "Agencies, Addresses, Ratings WHERE "
-						+ "Email = '" + tfEmail.getText() + "'";
-				//String enteredName = nameInput.getText();
-				//AgencyExt result = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
-
-
-				try{ 
-					Membership.result.equals(db.fetchResult(db.executeQuery(query)).get(0).get(0));
-					db.closeConnection();
-				}catch(Exception e1){
-					System.err.println(e.getClass().getName() + ": " + e1.getMessage());
-				};
-
-				MemberPage.display();
-
+			if (Membership.verify(email, password)) {
+				System.out.println(">> Entered login correct");
+				AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
+																		+ "Agencies, Addresses, Ratings WHERE "
+																		+ "Email = '" + tfEmail.getText() + "';")).get(0);
+				db.closeConnection();
+				
+				alert.setAlertType(AlertType.INFORMATION);		// Needed to set alert back to info after an error.
+				alert.setTitle("Success");
+				alert.setHeaderText("Login successful");
+				alert.setContentText("Click OK to proceed to your member page.");
+				alert.showAndWait();
+				MemberPage.display(agencyInfo);
+			} else {
+				System.out.println(">> Entered login incorrect");
+				alert.setAlertType(AlertType.ERROR);
+				alert.setTitle("Failiure");
+				alert.setHeaderText("Login failed");
+				alert.setContentText("Information entered was incorrect, please try again.");
+				alert.showAndWait();
 			}
 		});
 
