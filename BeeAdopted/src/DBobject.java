@@ -13,7 +13,7 @@ import javafx.scene.control.Separator;
  * generic result handling.
  * 
  * @since 2015-11-16
- * @author Måns Thörnvik
+ * @author M��ns Th��rnvik
  */
 
 public class DBobject {
@@ -304,6 +304,12 @@ public class DBobject {
 		return resultList;
 	}
 	
+	/**
+	 * Method for fetching information about ads for displaying in the application.
+	 * 
+	 * @param input
+	 * @return ArrayLisy<AgencyExtended>
+	 */
 	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
 		
@@ -333,6 +339,12 @@ public class DBobject {
 	    return result;
 	}
 	
+	/**
+	 * Method for fetching information about agencies for displaying in the application.
+	 * 
+	 * @param input
+	 * @return ArrayLisy<AgencyExtended>
+	 */
 	public ArrayList<Agency> fetchAgency(ResultSet input) {
 		ArrayList<Agency> result = new ArrayList<>();
 	    try {    	
@@ -357,7 +369,6 @@ public class DBobject {
 	 * @param input
 	 * @return ArrayLisy<AgencyExtended>
 	 */
-	
 	protected ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
 		ArrayList<AgencyExt> result = new ArrayList<>();
 	    try {	
@@ -381,13 +392,12 @@ public class DBobject {
 	}
 	
 	/**
-	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 2D array-
+	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 3D array-
 	 * list from a query.
 	 * 
 	 * @param ArrayList<ArrayList<String>>
 	 * @returns ObservableList<Object>
 	 */
-	
 	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
 		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator(), "Select all" , new Separator());
 		
@@ -400,6 +410,13 @@ public class DBobject {
 		return resultList;
 	}
 
+	/**
+	 * Method for creating observable lists using ArrayList<Ad>, ordinarily after obtaining the resulting array-
+	 * list from a query.
+	 * 
+	 * @param ArrayList<Ad>
+	 * @returns ObservableList<Object>
+	 */
 	public ObservableList<Ad> createObservableList(ArrayList<Ad> input) {
 		return FXCollections.observableArrayList(input);
 	}

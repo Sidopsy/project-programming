@@ -122,7 +122,7 @@ public class Main extends Application {
 		back = new Label("<");
 		back.setId("backbutton");
 		back.getStyleClass().add("backbutton");
-		//back.setOnMouseClicked(e -> backToStart());
+		back.setOnMouseClicked(e -> backToStart());
 
 		name = new Label("BeeAdopted");
 		name.setId("beeadopted");
@@ -165,7 +165,7 @@ public class Main extends Application {
 		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
 
 		cbLocation.setOnAction(e -> {
-			if(!cbLocation.getValue().equals("Table")){
+			if(!cbLocation.getValue().equals("City")){
 				if(!cbLocation.getValue().equals("Select all")){
 					city = " and City == '" + cbLocation.getValue() + "'";		// What location was input?
 				} else {
@@ -215,16 +215,10 @@ public class Main extends Application {
 			String password = pfPassword.getText();
 			if (Membership.verify(email, password)) {
 				System.out.println(">> Entered login correct");
-				AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
-																		+ "Agencies, Addresses, Ratings WHERE "
+				AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
 																		+ "Email = '" + tfEmail.getText() + "';")).get(0);
 				db.closeConnection();
 				
-				alert.setAlertType(AlertType.INFORMATION);		// Needed to set alert back to info after an error.
-				alert.setTitle("Success");
-				alert.setHeaderText("Login successful");
-				alert.setContentText("Click OK to proceed to your member page.");
-				alert.showAndWait();
 				MemberPage.display(agencyInfo);
 			} else {
 				System.out.println(">> Entered login incorrect");
@@ -268,6 +262,7 @@ public class Main extends Application {
 		filters.setAlignment(Pos.CENTER);
 
 		HBox primaryFilters = new HBox();
+		primaryFilters.setAlignment(Pos.CENTER);
 		primaryFilters.getStyleClass().add("hbox");
 		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		primaryFilters.setSpacing(75);
@@ -344,6 +339,7 @@ public class Main extends Application {
 
 
 		HBox secondaryFilters = new HBox();
+		secondaryFilters.setAlignment(Pos.CENTER);
 		secondaryFilters.getStyleClass().add("hbox");
 		secondaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		secondaryFilters.setSpacing(75);
@@ -370,7 +366,7 @@ public class Main extends Application {
 			bpLayout2.setTop(header());
 			bpLayout2.setCenter(mainCenterView());
 			tvAd.refresh();
-			scene2 = new Scene(bpLayout2,800,600);
+			scene2 = new Scene(bpLayout2);
 			scene2.getStylesheets().add("table.css");
 			window.setScene(scene2);
 		});
@@ -489,9 +485,6 @@ public class Main extends Application {
 	 */
 
 	public TableView<Ad> searchResults(){
-		//		VBox vbox = new VBox();
-		//		vbox.setPadding(new Insets(10,10,10,10));
-		//		vbox.setSpacing(2);
 
 		tvAd = new TableView<Ad>();
 		tvAd.setEditable(true);

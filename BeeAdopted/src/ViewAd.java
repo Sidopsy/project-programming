@@ -62,6 +62,7 @@ public class ViewAd {
 		bpLayoutAdopt.setTop(header());						// Show the iAdopt image.
 		bpLayoutAdopt.setCenter(viewAdopt);					// Center of the BorderPane will show the Adopted layout.
 		sceneAdopt = new Scene(bpLayoutAdopt,600,550);
+		sceneAdopt.getStylesheets().add("table.css");
 
 		// Ad scene will be shown first and the App awaits instructions.
 		window.setScene(sceneAd);
@@ -74,18 +75,27 @@ public class ViewAd {
 	 * @return header as stackpane
 	 */
 
-	private static StackPane header() {
+	private static BorderPane header(){
 
-		// StackPane to be returned.
-		StackPane head = new StackPane();
+		// The StackPane to be returned and used as a header.
+		BorderPane header = new BorderPane();
+		header.getStyleClass().add("header");
 
-		// Adding the image to the StackPane.
-		Image image = new Image("BeeAdoptedSmall.png");
-		ImageView header = new ImageView();
-		header.setImage(image);
-		head.getChildren().add(header);
+		Label back = new Label("X");
+		back.setId("backbutton");
+		back.getStyleClass().add("backbutton");
+		back.setOnMouseClicked(e -> window.close());
 
-		return head;
+		Label name = new Label("BeeAdopted");
+		name.setId("beeadopted");
+		name.getStyleClass().add("beeadopted");
+
+
+		
+		header.setLeft(back);
+		header.setCenter(name);
+
+		return header;
 	}
 
 	/**
@@ -121,7 +131,7 @@ public class ViewAd {
 
 		// GridPane to be returned.
 		VBox vbox = new VBox();
-		vbox.getStyleClass().add("hbox");
+		vbox.getStyleClass().add("vbox");
 		vbox.setPrefSize(350, 400);
 		vbox.setSpacing(10);										// Vertical gaps between columns.
 		vbox.setPadding(new Insets(2,2,2,2));				// Setting the padding around the content.
@@ -199,7 +209,7 @@ public class ViewAd {
 
 		// The Vbox to be returned.
 		VBox vbox = new VBox();
-		vbox.getStyleClass().add("hbox");
+		vbox.getStyleClass().add("vbox");
 		vbox.setPrefSize(250, 400);
 		vbox.setPadding(new Insets(10));
 		vbox.setSpacing(10);
