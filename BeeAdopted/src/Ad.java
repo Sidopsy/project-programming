@@ -4,6 +4,7 @@ import java.sql.Blob;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.CheckBox;
 
 /**
  * Object for ads, appropriate variables for displaying in the application.
@@ -84,6 +85,7 @@ public class Ad {
 	public String getRating(){
 		return rating.get();
 	}
+	
 	
 	public String toString() {
 		return picture + " " + name + " " + gender + " " + species + " " + 

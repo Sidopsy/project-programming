@@ -13,7 +13,7 @@ import javafx.scene.control.Separator;
  * generic result handling.
  * 
  * @since 2015-11-16
- * @author Måns Thörnvik
+ * @author M��ns Th��rnvik
  */
 
 public class DBobject {
@@ -140,93 +140,6 @@ public class DBobject {
 	}
 	
 	/**
-	 * Adds update to batch to be executed at a later point.
-	 * 
-	 * NOT IN WORKING CONDITION!
-	 * 
-	 * @throws SQLException
-	 */
-	
-	public void addBatch(String update) {
-		setConnection();
-		System.out.println(">> Adding update to batch");
-		try {
-			stmt = connect.prepareStatement(update);
-			stmt.addBatch();
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		}
-		
-	}
-	
-	/**
-	 * Executes updates to the database that are batched into the prepared statement.
-	 * 
-	 * NOT IN WORKING CONDITION!
-	 * 
-	 * @throws Exception
-	 */
-
-	public void executeBatch() throws SQLException {
-		System.out.println(">> Executing batch update(s)");
-		try {
-			stmt.executeBatch();
-			stmt.clearBatch();
-		
-			connect.commit();
-			closeConnection();
-		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		}
-	}
-
-	/**
-	 * Commits current transaction if updates have been made (?). Not sure if this method is neccessary yet.
-	 * 
-	 * @throws SQLException
-	 */
-	
-	public void commit() throws SQLException {
-		connect.commit();
-	}
-	
-	/**
-	 * Closing connection to currently connected database, if one is connected at all. Otherwise, do nothing.
-	 * You should always close a connection after you've retrieved information/updated.
-	 * 
-	 * @throws SQLException
-	 */
-
-	public void closeConnection() {
-		System.out.println(">> Closing...");
-		try {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-			else {
-				System.out.println(">> Nothing in ResultSet, cannot close");
-			}
-		
-		if (stmt != null) {
-			stmt.close();
-		} 
-		else {
-			System.out.println(">> No statement established, cannot close");
-		}
-
-		if (connect != null) {
-			connect.close();
-		} 
-		else {
-			System.out.println(">> No database connected, cannot close");
-		}
-		}catch (SQLException e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		}
-		System.out.println(">> Closed!");
-	}
-	
-	/**
 	 * Returns an integer representing the number of columns in the ResultSet. If an error occurs, -1 is returned.
 	 * 
 	 * @param ResultSet input
@@ -304,6 +217,12 @@ public class DBobject {
 		return resultList;
 	}
 	
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
+	
 	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
 		
@@ -332,6 +251,12 @@ public class DBobject {
 	    
 	    return result;
 	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @return
+	 */
 	
 	public ArrayList<Agency> fetchAgency(ResultSet input) {
 		ArrayList<Agency> result = new ArrayList<>();
@@ -381,7 +306,7 @@ public class DBobject {
 	}
 	
 	/**
-	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 2D array-
+	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 3D array-
 	 * list from a query.
 	 * 
 	 * @param ArrayList<ArrayList<String>>
@@ -400,8 +325,50 @@ public class DBobject {
 		return resultList;
 	}
 
+	/**
+	 * Method for creating observable lists using ArrayList<Ad>, ordinarily after obtaining the resulting array-
+	 * list from a query.
+	 * 
+	 * @param ArrayList<Ad>
+	 * @returns ObservableList<Object>
+	 */
 	public ObservableList<Ad> createObservableList(ArrayList<Ad> input) {
 		return FXCollections.observableArrayList(input);
 	}
 
+	/**
+	 * Closing connection to currently connected database, if one is connected at all. Otherwise, do nothing.
+	 * You should always close a connection after you've retrieved information/updated.
+	 * 
+	 * @throws SQLException
+	 */
+
+	public void closeConnection() {
+		System.out.println(">> Closing...");
+		try {
+			if (resultSet != null) {
+				resultSet.close();
+			}
+			else {
+				System.out.println(">> Nothing in ResultSet, cannot close");
+			}
+		
+		if (stmt != null) {
+			stmt.close();
+		} 
+		else {
+			System.out.println(">> No statement established, cannot close");
+		}
+
+		if (connect != null) {
+			connect.close();
+		} 
+		else {
+			System.out.println(">> No database connected, cannot close");
+		}
+		}catch (SQLException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
+		System.out.println(">> Closed!");
+	}
 }
