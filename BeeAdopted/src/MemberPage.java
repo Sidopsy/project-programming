@@ -49,6 +49,7 @@ public class MemberPage {
 	private static TextArea taAdDescription;
 	private static CheckBox chbNewSpecies, chbNewType, chbReActivate;
 	
+	private static TableView<Ad> table;
 	private static AgencyExt loggedInAgency;
 	
 	private static ObservableList<Object> obsListType;
@@ -301,37 +302,20 @@ public class MemberPage {
 				InputPage.updateMemberInfo(loggedInAgency, tfName, tfPhone, tfEmail, 
 											tfStreet, tfZip, tfCity);
 				
-				resetMemberTextFields();
-				
 				loggedInAgency = db.fetchAgencyExt(
-						db.executeQuery("SELECT Agencies.ID, Logo, Name, AVG(Rating), Email, Phone, Street, ZIP, City FROM "
-										+ "Agencies, Addresses, Ratings WHERE "
-										+ "Agencies.ID = '" + loggedInAgency.getID() + "';")).get(0);
+						db.executeQuery("SELECT * FROM AgencyExtended WHERE "
+										+ "ID = '" + loggedInAgency.getID() + "';")).get(0);
 				db.closeConnection();
 				
-				tfName.setText(loggedInAgency.getName());
-				tfName.setEditable(false);
-				
-				tfPhone.setText(loggedInAgency.getPhone());
-				tfPhone.setEditable(false);
-			
-				tfEmail.setText(loggedInAgency.getEmail());
-				tfEmail.setEditable(false);
-			
-				tfStreet.setText(loggedInAgency.getStreet());
-				tfStreet.setEditable(false);
-			
-				tfZip.setText(loggedInAgency.getZip());
-				tfZip.setEditable(false);
-			
-				tfCity.setText(loggedInAgency.getCity());
-				tfCity.setEditable(false);
+				resetColorMemberFields();
+				resetInfoMemberFields();
 			} else {
 				alert.setHeaderText("Changes could not be saved");
 				alert.setContentText("Input changes are not valid and cannot be saved.");
 				alert.showAndWait();
 			}
 		});
+		
 		
 		btnCancelEdit.setMinWidth(70);
 		btnCancelEdit.setMaxWidth(70);
@@ -341,25 +325,8 @@ public class MemberPage {
 			btnCancelEdit.setVisible(false);
 			btnEditInfo.setVisible(true);
 			
-			resetMemberTextFields();
-			
-			tfName.setText(loggedInAgency.getName());
-			tfName.setEditable(false);
-			
-			tfPhone.setText(loggedInAgency.getPhone());
-			tfPhone.setEditable(false);
-		
-			tfEmail.setText(loggedInAgency.getEmail());
-			tfEmail.setEditable(false);
-		
-			tfStreet.setText(loggedInAgency.getStreet());
-			tfStreet.setEditable(false);
-		
-			tfZip.setText(loggedInAgency.getZip());
-			tfZip.setEditable(false);
-		
-			tfCity.setText(loggedInAgency.getCity());
-			tfCity.setEditable(false);
+			resetColorMemberFields();
+			resetInfoMemberFields();
 		});
 		
 
@@ -412,7 +379,7 @@ public class MemberPage {
 	@SuppressWarnings("unchecked")
 	private static HBox viewMemberAds() {
 		HBox hbTable = new HBox();
-		TableView<Ad> table = new TableView<Ad>();		
+		table = new TableView<Ad>();		
 		TableColumn<Ad, String> tcName 		=	new TableColumn<>("Name");
 		TableColumn<Ad, String> tcGender 	=	new TableColumn<>("Gender");
 		TableColumn<Ad, String> tcSpecies 	= 	new TableColumn<>("Species");
@@ -486,6 +453,15 @@ public class MemberPage {
 		
 		
 		return hbTable;
+	}
+	
+	/**
+	 * This method is used to refresh the table when an insert has been made.
+	 */
+	
+	public static void refreshTable() {
+		layoutMP.setBottom(viewMemberAds());
+		table.refresh();
 	}
 	
 	/**
@@ -824,7 +800,7 @@ public class MemberPage {
 		btnSaveAd.setMaxWidth(110);
 		btnSaveAd.setOnAction(e -> {
 			if (InputValidation.validateAdInfo(tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
-										tfAdNewSpecies, tfAdNewType, taAdDescription)) {
+												tfAdNewSpecies, tfAdNewType, taAdDescription)) {
 				System.out.println(">> Update values OK");
 				InputPage.updateMemberAd(ad, tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
 										tfAdNewSpecies, tfAdNewType, taAdDescription, chbReActivate);
@@ -837,7 +813,8 @@ public class MemberPage {
 				}
 				alert.showAndWait();
 				
-				layoutMP.setBottom(viewMemberAds());	// update the ads in the table.
+				refreshTable();
+				
 				window.setScene(sceneMP);
 			} else {
 				System.out.println(">> Update values incorrect");
@@ -852,6 +829,9 @@ public class MemberPage {
 		
 		btnBack = new Button("Back");
 		btnBack.setOnAction(e -> {
+			
+			refreshTable();
+			
 			window.setScene(sceneMP);
 		});
 		
@@ -865,11 +845,31 @@ public class MemberPage {
 		return gridPane;
 	}
 	
+	public static void resetInfoMemberFields() {
+		tfName.setText(loggedInAgency.getName());
+		tfName.setEditable(false);
+		
+		tfPhone.setText(loggedInAgency.getPhone());
+		tfPhone.setEditable(false);
+	
+		tfEmail.setText(loggedInAgency.getEmail());
+		tfEmail.setEditable(false);
+	
+		tfStreet.setText(loggedInAgency.getStreet());
+		tfStreet.setEditable(false);
+	
+		tfZip.setText(loggedInAgency.getZip());
+		tfZip.setEditable(false);
+	
+		tfCity.setText(loggedInAgency.getCity());
+		tfCity.setEditable(false);
+	}
+	
 	/**
 	 * Resets to remove error colors from member info text fields.
 	 */
 	
-	private static void resetMemberTextFields() {
+	private static void resetColorMemberFields() {
 		tfName.setStyle("-fx-box-border: teal;");
 		tfPhone.setStyle("-fx-box-border: teal;");
 		tfEmail.setStyle("-fx-box-border: teal;");

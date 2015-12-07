@@ -429,6 +429,9 @@ public class InputPage {
 				alert.setHeaderText("Advertisement has been submitted");
 				alert.setContentText("Your advertisement is now visible to all system users for 90 days.");
 				alert.showAndWait();
+				
+				MemberPage.refreshTable();
+				
 				window.close();
 			} else {
 				System.out.println(">> Input values incorrect");
@@ -442,6 +445,9 @@ public class InputPage {
 
 		btnClose = new Button("Close");
 		btnClose.setOnAction(e -> {
+			
+			MemberPage.refreshTable();
+			
 			window.close();
 		});
 
