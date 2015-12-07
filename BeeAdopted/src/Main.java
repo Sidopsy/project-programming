@@ -46,7 +46,7 @@ import javafx.stage.Stage;
  * @author ML
  */
 
-public class ViewMaster extends Application {
+public class Main extends Application {
 
 	private static Stage window;
 	private static Scene scene1, scene2, scene3;
@@ -367,10 +367,8 @@ public class ViewMaster extends Application {
 			tvAd.getChildrenUnmodifiable().removeAll(theSearch);
 			search();
 			bpLayout2 = new BorderPane();
-			bpLayout2.setTop(Header.largeHeader());
+			bpLayout2.setTop(header());
 			bpLayout2.setCenter(mainCenterView());
-			Header.toggleBackButton();
-			Header.toggleBackButton();
 			tvAd.refresh();
 			scene2 = new Scene(bpLayout2,800,600);
 			scene2.getStylesheets().add("table.css");
