@@ -258,6 +258,12 @@ public class DBobject {
 	 * @return
 	 */
 	
+	/**
+	 * Method for fetching information about agencies for displaying in the application.
+	 * 
+	 * @param input
+	 * @return ArrayLisy<AgencyExtended>
+	 */
 	public ArrayList<Agency> fetchAgency(ResultSet input) {
 		ArrayList<Agency> result = new ArrayList<>();
 	    try {    	
@@ -282,7 +288,6 @@ public class DBobject {
 	 * @param input
 	 * @return ArrayLisy<AgencyExtended>
 	 */
-	
 	protected ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
 		ArrayList<AgencyExt> result = new ArrayList<>();
 	    try {	
@@ -312,7 +317,6 @@ public class DBobject {
 	 * @param ArrayList<ArrayList<String>>
 	 * @returns ObservableList<Object>
 	 */
-	
 	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
 		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator(), "Select all" , new Separator());
 		
