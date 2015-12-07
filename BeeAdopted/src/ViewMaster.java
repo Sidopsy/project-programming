@@ -444,7 +444,7 @@ public class ViewMaster extends Application {
 			firstSearch = false;
 		} else {
 			System.out.println("Bob0: " + searchSpecies + searchType + searchAge + searchGender);
-			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + " GROUP BY Agencies.ID) as Rating FROM "
+			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,AVG(Rating) as Rating FROM "
 					+ "Ads,Agencies,Ratings,Addresses WHERE "
 					+ "Agencies.ID == Addresses.AgencyID and "
 					+ "Agencies.ID == Ads.AgencyID and "
@@ -457,7 +457,9 @@ public class ViewMaster extends Application {
 					+ searchAge 
 					+ searchGender 
 					+ searchAgency 
-					+ searchDescription + ";";
+					+ searchDescription 
+					+ " GROUP BY Agencies.ID"
+					+ " ORDER BY Ads.ID;";
 
 		}
 
