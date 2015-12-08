@@ -1,6 +1,5 @@
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -8,7 +7,6 @@ import org.sqlite.SQLiteConfig;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 
@@ -144,6 +142,32 @@ public class DBobject {
 	}
 	
 	/**
+	 * 
+	 */
+	
+	public int updatePicture(String update, byte[] parameters, int agencyID) {
+		int result = 0;
+		setConnection();
+		System.out.println(">> Inserting picture");
+		
+		try {
+			stmt = connect.prepareStatement(update);
+			stmt.setBytes(1, parameters);
+			stmt.setInt(2, agencyID);
+			result = stmt.executeUpdate();
+			
+			connect.commit();
+			closeConnection();
+			
+			return result;
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Returns an integer representing the number of columns in the ResultSet. If an error occurs, -1 is returned.
 	 * 
 	 * @param ResultSet input
@@ -231,12 +255,11 @@ public class DBobject {
 	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
 		Image picture;
-		InputStream inp = null;
 		
 		try {
 	        while (input.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
 	        	int id = input.getInt("Id");
-	        //	picture = SwingFXUtils.toFXImage(javax.imageio.ImageIO.read(input.getBinaryStream("Picture")), null);
+//	        	picture = SwingFXUtils.toFXImage(javax.imageio.ImageIO.read(input.getBinaryStream("Picture")), null);
 	        	picture = new Image("PlaceholderSmall.png");
 	        	String name = input.getString("Name");
 	        	String gender = input.getString("Gender");

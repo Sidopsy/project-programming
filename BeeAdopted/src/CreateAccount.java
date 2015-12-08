@@ -1,12 +1,24 @@
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -22,8 +34,9 @@ public class CreateAccount {
 
 	private static TextField tfName, tfCity, tfStreet, tfZip, tfPhone, tfEmail;
 	private static PasswordField pfPassword;
-
-	private static DBobject db = new DBobject();
+	private static ImageView myImageView;
+	
+	private static File file;
 
 	/**
 	 * Displays a window in which the user can enter information for a *NEW* agency.
@@ -77,9 +90,9 @@ public class CreateAccount {
 									lblPhone, lblEmail, lblPassword, lblUploadPicture);
 		GridPane.setConstraints(lblName, 0, 0);
 		GridPane.setConstraints(lblAddress, 2, 0);
-		GridPane.setConstraints(lblCity, 3, 0);
-		GridPane.setConstraints(lblStreet, 3, 2);
-		GridPane.setConstraints(lblZip, 3, 4);
+		GridPane.setConstraints(lblStreet, 3, 0);
+		GridPane.setConstraints(lblZip, 3, 2);
+		GridPane.setConstraints(lblCity, 3, 4);
 		GridPane.setConstraints(lblPhone, 1, 0);
 		GridPane.setConstraints(lblEmail, 1, 2);
 		GridPane.setConstraints(lblPassword, 1, 4);
@@ -147,9 +160,9 @@ public class CreateAccount {
 		GridPane.setConstraints(tfPhone, 1, 1);
 		GridPane.setConstraints(tfEmail, 1, 3);
 		GridPane.setConstraints(pfPassword, 1, 5);
-		GridPane.setConstraints(tfStreet, 3, 3);
-		GridPane.setConstraints(tfZip, 3, 5);
-		GridPane.setConstraints(tfCity, 3, 1);
+		GridPane.setConstraints(tfZip, 3, 3);
+		GridPane.setConstraints(tfCity, 3, 5);
+		GridPane.setConstraints(tfStreet, 3, 1);
 
 		
 		return gridPane;
@@ -168,14 +181,28 @@ public class CreateAccount {
 		Alert alert;
 		
 		
+		myImageView = new ImageView();
+		myImageView.setPreserveRatio(false);
+		myImageView.setFitWidth(50);
+		myImageView.setFitHeight(50);
+		
+		
 		alert = new Alert(AlertType.INFORMATION);
 		
 		btnSave = new Button("Save");
 		btnSave.setOnAction(e -> {
 			if (InputValidation.validateMemberInfo(tfName, tfPhone, tfEmail, tfStreet, tfZip, tfCity) &&
 				InputValidation.validateInputPassword(pfPassword)) {
-				
+				System.out.println(">> Input values OK");
 				InputPage.inputAgencyValues(tfName, tfPhone, tfEmail, pfPassword, tfStreet, tfZip, tfCity);	
+				if (file != null) {
+					try {
+						InputPage.inputUpdatePicture(0, file, false);
+					} catch (Exception e1) {
+						System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
+					}
+					file = null;
+				} else {}
 				
 				alert.setAlertType(AlertType.INFORMATION);
 				alert.setTitle("Success");
@@ -193,8 +220,10 @@ public class CreateAccount {
 		});
 
 		btnUploadLogo = new Button("Browse");
-		btnUploadLogo.setOnAction(InputPage.btnLoadEventListener);
+		btnUploadLogo.setOnAction(loadPicture);
 		
+		
+		gridPane.add(myImageView, 0, 5);
 		gridPane.getChildren().addAll(btnSave, btnUploadLogo);
 		GridPane.setConstraints(btnSave, 1, 7);
 		GridPane.setConstraints(btnUploadLogo, 3, 6);
@@ -202,4 +231,27 @@ public class CreateAccount {
 		
 		return gridPane;
 	}
+	
+	public static EventHandler<ActionEvent> loadPicture = new EventHandler<ActionEvent>() {
+
+		public void handle(ActionEvent t) {
+			FileChooser fileChooser = new FileChooser();
+			//Set extension filters
+			FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
+			fileChooser.getExtensionFilters().addAll(extFilterPNG);
+			//Show open file dialog
+			file = fileChooser.showOpenDialog(null);
+			
+			try {
+				BufferedImage bufferedImage = ImageIO.read(file);
+				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+
+				if (image != null) {
+					myImageView.setImage(image);
+				}
+			} catch (IOException ex) {
+				System.err.println(">> No image was chosen or another error was encountered...");
+			}
+		}
+	};
 }

@@ -1,6 +1,18 @@
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,6 +30,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -25,6 +39,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -48,9 +63,12 @@ public class MemberPage {
 	private static ChoiceBox<Object> cbAdGenders, cbAdSpecies, cbAdType;
 	private static TextArea taAdDescription;
 	private static CheckBox chbNewSpecies, chbNewType, chbReActivate;
+	private static ImageView myImageView;
 	
 	private static TableView<Ad> table;
 	private static AgencyExt loggedInAgency;
+	
+	private static File file;
 	
 	private static ObservableList<Object> obsListType;
 	
@@ -73,7 +91,7 @@ public class MemberPage {
 
 		layoutMP = new BorderPane();
 		
-		layoutMP.setTop(Header.smallHeader());
+		layoutMP.setTop(viewMemberLogo());
 		layoutMP.setCenter(viewMemberInfo());
 		layoutMP.setBottom(viewMemberAds());
 		
@@ -83,6 +101,38 @@ public class MemberPage {
 		window.showAndWait();
 	}
 
+	private static HBox viewMemberLogo() {
+		HBox hBox = new HBox();
+		ImageView agencyLogo = new ImageView();
+		
+		hBox.setAlignment(Pos.CENTER);
+		hBox.setMinHeight(150);
+		hBox.setMaxHeight(150);
+		hBox.setPadding(new Insets(5, 5, 5, 5));
+		
+		try{
+			BufferedImage image = null;
+			InputStream inputStream = null;
+
+			inputStream = db.executeQuery("SELECT Logo FROM Agencies WHERE ID = " + loggedInAgency.getID() + ";").getBinaryStream("Logo");
+			image = javax.imageio.ImageIO.read(inputStream);
+			
+			if(image != null){
+				Image newPic = SwingFXUtils.toFXImage(image, null);
+				agencyLogo.setImage(newPic);
+			} 
+		} catch (Exception e){
+			System.err.println(">> Error while loading image, or no image selected");
+		} finally {
+			db.closeConnection();
+		}
+		
+		hBox.getChildren().add(agencyLogo);
+		
+		
+		return hBox;
+	}
+	
 	/**
 	 * Creates a gridpane in which user/member information is shown.
 	 * 
@@ -777,6 +827,7 @@ public class MemberPage {
 	 * 
 	 * @param initialized GridPane to add buttons to.
 	 * @return GridPane containing the Buttons neccessary for updating Ad information.
+	 * @throws  
 	 */
 	
 	private static GridPane addAdButtons(GridPane inputGridPane, Ad ad) {
@@ -786,10 +837,33 @@ public class MemberPage {
 		String reActivateMessage = "Your advertisement has been successfully updated, and will be visible for the next 90 days.";
 		
 		
+		myImageView = new ImageView();
+		myImageView.setPreserveRatio(false);
+		myImageView.setFitWidth(100);
+		myImageView.setFitHeight(100);
+		
+		try{
+			BufferedImage image = null;
+			InputStream inputStream = null;
+
+			inputStream = db.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";").getBinaryStream("Picture");
+			image = javax.imageio.ImageIO.read(inputStream);
+			
+			if(image != null){
+				Image newPic = SwingFXUtils.toFXImage(image, null);
+				myImageView.setImage(newPic);
+			} 
+		} catch (Exception e){
+			System.err.println(">> Error while loading image, or no image selected");
+		} finally {
+			db.closeConnection();
+		}
+		
+		
 		btnAddPicture = new Button("Upload picture");
 		btnAddPicture.setMinSize(110, 50);
 		btnAddPicture.setMaxSize(110, 50);
-		btnAddPicture.setOnAction(InputPage.btnLoadEventListener);
+		btnAddPicture.setOnAction(loadPicture);
 		
 		
 		alert = new Alert(AlertType.INFORMATION);
@@ -802,8 +876,18 @@ public class MemberPage {
 			if (InputValidation.validateAdInfo(tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
 												tfAdNewSpecies, tfAdNewType, taAdDescription)) {
 				System.out.println(">> Update values OK");
+				
 				InputPage.updateMemberAd(ad, tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
 										tfAdNewSpecies, tfAdNewType, taAdDescription, chbReActivate);
+				if (file != null) {	
+					try {
+						InputPage.inputUpdatePicture(ad.getID(), file, true);
+					} catch (Exception e1) {
+						System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
+					}
+					file = null;
+				} else {}
+				
 				alert.setAlertType(AlertType.INFORMATION);		// Needed to set alert back to info after an error.
 				alert.setTitle("Success");
 				alert.setHeaderText("Advertisement has been updated");
@@ -812,9 +896,7 @@ public class MemberPage {
 					alert.setContentText(reActivateMessage);
 				}
 				alert.showAndWait();
-				
 				refreshTable();
-				
 				window.setScene(sceneMP);
 			} else {
 				System.out.println(">> Update values incorrect");
@@ -829,14 +911,13 @@ public class MemberPage {
 		
 		btnBack = new Button("Back");
 		btnBack.setOnAction(e -> {
-			
 			refreshTable();
-			
 			window.setScene(sceneMP);
 		});
 		
 		
 		gridPane.add(btnAddPicture, 0, 4);
+		gridPane.add(myImageView, 1, 4);
 		gridPane.add(btnSaveAd, 0, 5);
 		gridPane.add(btnBack, 0, 5);
 		GridPane.setMargin(btnBack, new Insets(0, 0, 0, 115));
@@ -844,6 +925,33 @@ public class MemberPage {
 		
 		return gridPane;
 	}
+	
+	/**
+	 * Upload a new picture to add to the ad
+	 */
+	
+	public static EventHandler<ActionEvent> loadPicture = new EventHandler<ActionEvent>() {
+
+		public void handle(ActionEvent t) {
+			FileChooser fileChooser = new FileChooser();
+			//Set extension filters
+			FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
+			fileChooser.getExtensionFilters().addAll(extFilterPNG);
+			//Show open file dialog
+			file = fileChooser.showOpenDialog(null);
+			
+			try {
+				BufferedImage bufferedImage = ImageIO.read(file);
+				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+
+				if (image != null) {
+					myImageView.setImage(image);
+				}
+			} catch (Exception ex) {
+				System.err.println(">> No image was chosen or another error was encountered...");
+			}
+		}
+	};
 	
 	public static void resetInfoMemberFields() {
 		tfName.setText(loggedInAgency.getName());
