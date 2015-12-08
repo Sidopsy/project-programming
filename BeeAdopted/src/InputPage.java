@@ -3,11 +3,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -61,7 +56,7 @@ public class InputPage {
 
 	private static File file = null;
 	private static ImageView myImageView;
-	private static FileChooser filechooser;
+	private static FileChooser fileChooser;
 	private static AgencyExt agency;
 
 	private static DBobject db = new DBobject();
@@ -396,13 +391,11 @@ public class InputPage {
 		myImageView.setPreserveRatio(false);
 		myImageView.setFitWidth(100);
 		myImageView.setFitHeight(100);
-		gridPane.add(myImageView, 1, 4);
 
 
 		btnAddPicture = new Button("Upload picture");
 		btnAddPicture.setMinSize(50, 50);
-		btnAddPicture.setOnAction(btnLoadEventListener);	// Button for adding pictures guides you to a new window
-		gridPane.add(btnAddPicture, 0, 4);
+		btnAddPicture.setOnAction(loadPicture);	// Button for adding pictures guides you to a new window
 
 
 		alert = new Alert(AlertType.INFORMATION);
@@ -417,13 +410,13 @@ public class InputPage {
 				inputAdValues();
 				if (file != null) {	
 					try {
-						inputPicture();
+						inputUpdatePicture(0, file, true);
 					} catch (Exception e1) {
-						e1.printStackTrace();
+						System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
 					}
-				} else {
-					
-				}
+					file = null;
+				} else {}
+				
 				alert.setAlertType(AlertType.INFORMATION);
 				alert.setTitle("Success");
 				alert.setHeaderText("Advertisement has been submitted");
@@ -452,6 +445,8 @@ public class InputPage {
 		});
 
 
+		gridPane.add(btnAddPicture, 0, 4);
+		gridPane.add(myImageView, 1, 4);
 		gridPane.add(btnSaveAd, 0, 5);
 		gridPane.add(btnClose, 0, 5);
 		GridPane.setMargin(btnClose, new Insets(0, 0, 0, 115));
@@ -464,16 +459,16 @@ public class InputPage {
 	 * Eventhandler for Image input into database.
 	 */
 
-	public static EventHandler<ActionEvent> btnLoadEventListener = new EventHandler<ActionEvent>() {
+	private static EventHandler<ActionEvent> loadPicture = new EventHandler<ActionEvent>() {
 
 		public void handle(ActionEvent t) {
-			FileChooser fileChooser = new FileChooser();
+			fileChooser = new FileChooser();
 			//Set extension filters
 			FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
 			fileChooser.getExtensionFilters().addAll(extFilterPNG);
 			//Show open file dialog
 			file = fileChooser.showOpenDialog(null);
-
+			
 			try {
 				BufferedImage bufferedImage = ImageIO.read(file);
 				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
@@ -484,24 +479,21 @@ public class InputPage {
 			} catch (IOException ex) {
 				System.err.println(">> No image was chosen or another error was encountered...");
 			}
-
 		}
 	};
-
+	
 	/**
-	 * Upload of picture when a new ad is input.
+	 * Upload of picture to a specific ad.
 	 * 
 	 * @throws Exception
 	 */
 
-	private static void inputPicture() {
-		byte[] animalImage = null;
+	public static void inputUpdatePicture(int inputID, File file, boolean inputAd) {
+		byte[] image = null;
 		int result = 0;
+		int id = 0;
 		
-		try {
-			int id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC;")).get(0).get(0));
-			db.closeConnection();
-		
+		try {				
 			FileInputStream inputStream = new FileInputStream(file);
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		
@@ -512,10 +504,23 @@ public class InputPage {
 				System.out.println(">> Read " + readNum + " bytes,");
 			}
 			
-			animalImage = outputStream.toByteArray();
+			image = outputStream.toByteArray();
 
-			result = db.updatePicture("UPDATE Ads SET Picture = ? WHERE ID == " + id + ";", animalImage);
-
+			if (inputAd) {
+				if (inputID == 0) {
+					id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC;")).get(0).get(0));
+					db.closeConnection();
+				} else {id = inputID;}
+				result = db.updatePicture("UPDATE Ads SET Picture = ? WHERE ID = ?;", image, id);
+			} else {
+				if (inputID == 0) {
+					id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC;")).get(0).get(0));
+					db.closeConnection();
+				} else {id = inputID;}
+				result = db.updatePicture("UPDATE Agencies SET Logo = ? WHERE ID = ?;", image, id);
+			}
+			
+			inputStream.close();
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
@@ -523,17 +528,6 @@ public class InputPage {
 		if (result > 0) {
 			System.out.println(">> Image Uploaded successfully");
 		}
-
-		file = null;
-	}
-
-
-	private static FileChooser getFilechooser() {
-		return filechooser;
-	}
-
-	private static void setFilechooser(FileChooser inputFilechooser) {
-		filechooser = inputFilechooser;
 	}
 
 	/**
@@ -616,6 +610,12 @@ public class InputPage {
 		System.out.println(">> " + insertAddress + valuesAddress);
 		
 		db.executeUpdate(insertAddress + valuesAddress); 
+		
+		/*
+		 * Hard coded default rating for new agencies, ensures log in upon account creation.
+		 */
+		
+		db.executeUpdate("INSERT INTO Ratings (Rating, Comment, AgencyID) VALUES (0, 'N/A', " + agencyID + ");");
 	}
 	
 	/**

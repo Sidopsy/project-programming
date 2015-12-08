@@ -217,20 +217,24 @@ public class Main extends Application {
 		btnLogin.setOnAction(e -> {
 			String email = tfEmail.getText();
 			String password = pfPassword.getText();
-			if (Membership.verify(email, password)) {
-				System.out.println(">> Entered login correct");
-				AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
-																		+ "Email = '" + tfEmail.getText() + "';")).get(0);
-				db.closeConnection();
-				
-				MemberPage.display(agencyInfo);
-			} else {
-				System.out.println(">> Entered login incorrect");
-				alert.setAlertType(AlertType.ERROR);
-				alert.setTitle("Failiure");
-				alert.setHeaderText("Login failed");
-				alert.setContentText("Information entered was incorrect, please try again.");
-				alert.showAndWait();
+			try {
+				if (Membership.verify(email, password)) {
+					System.out.println(">> Entered login correct");
+					AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
+																			+ "Email = '" + tfEmail.getText() + "';")).get(0);
+					db.closeConnection();
+					
+					MemberPage.display(agencyInfo);
+				} else {
+					System.out.println(">> Entered login incorrect");
+					alert.setAlertType(AlertType.ERROR);
+					alert.setTitle("Failiure");
+					alert.setHeaderText("Login failed");
+					alert.setContentText("Information entered was incorrect, please try again.");
+					alert.showAndWait();
+				}
+			} catch (Exception e1) {
+				System.err.println(">> There is most likely a problem with missing ratings, user cannot log in.");
 			}
 		});
 
