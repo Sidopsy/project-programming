@@ -2,9 +2,12 @@
 import java.sql.Blob;
 
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,9 +24,10 @@ public class Ad {
 	private final SimpleIntegerProperty id, age, agencyID;
 	private final ImageView picture;
 	private final RatingObject rating;
+	private final SimpleBooleanProperty check;
 	
 	public Ad(int id, Image picture, String name, String gender, String species, String type, 
-				int age, String description, String start, String end, int agencyID, String agencyName, double rating) {
+				int age, String description, String start, String end, int agencyID, String agencyName, double rating, boolean check) {
 		this.id = new SimpleIntegerProperty(id);
 		this.picture = new ImageView(picture);
 		this.name = new SimpleStringProperty(name);
@@ -37,9 +41,23 @@ public class Ad {
 		this.agencyID = new SimpleIntegerProperty(agencyID);
 		this.agencyName = new SimpleStringProperty(agencyName);
 		this.rating = new RatingObject(agencyID, rating);
+
 		this.rating.setDisable(true);
 		this.rating.setScaleX(0.5);
 		this.rating.setScaleY(0.5);
+		this.check = new SimpleBooleanProperty(check);
+		 
+        
+		 
+        this.check.addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				// TODO Auto-generated method stub
+				
+			}
+
+        });          
+
 	}
 	
 	public int getID(){

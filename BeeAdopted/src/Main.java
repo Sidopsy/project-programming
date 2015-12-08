@@ -5,6 +5,8 @@ import java.util.Observable;
 
 import org.controlsfx.control.RangeSlider;
 
+import com.sun.xml.internal.fastinfoset.vocab.SerializerVocabulary;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -502,7 +504,7 @@ public class Main extends Application {
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
 		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
-		TableColumn<Ad, String> checkCol = new TableColumn<>("Compare");
+		TableColumn<Ad, Boolean> checkCol = new TableColumn<>("Compare");
 		
 		ObservableList<Ad> adList = db.createObservableList(theSearch);
 
@@ -511,8 +513,7 @@ public class Main extends Application {
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
-		checkCol.setCellFactory(tc -> new CheckBoxTableCell<>());
-		// checkCol.setCellFactory(e -> new CheckBoxTableCell<>());
+		checkCol.setCellFactory(new PropertyValueFactory<>("check");
 		
 
 		tvAd.setRowFactory( tv -> {
