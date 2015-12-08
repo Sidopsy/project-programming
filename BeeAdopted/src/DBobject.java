@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -255,6 +256,8 @@ public class DBobject {
 	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
 		Image picture;
+		InputStream inp = null;
+		
 		try {
 	        while (input.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
 	        	int id = input.getInt("Id");
