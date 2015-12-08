@@ -612,7 +612,7 @@ public class InputPage {
 		db.executeUpdate(insertAddress + valuesAddress); 
 		
 		/*
-		 * Hard coded default rating for new agencies, ensures log in upon account creation.
+		 * Hard coded default rating for new agencies, ensures log in possible upon account creation.
 		 */
 		
 		db.executeUpdate("INSERT INTO Ratings (Rating, Comment, AgencyID) VALUES (0, 'N/A', " + agencyID + ");");

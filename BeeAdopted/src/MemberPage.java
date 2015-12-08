@@ -1,6 +1,9 @@
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -88,7 +91,7 @@ public class MemberPage {
 
 		layoutMP = new BorderPane();
 		
-		layoutMP.setTop(Header.smallHeader());
+		layoutMP.setTop(viewMemberLogo());
 		layoutMP.setCenter(viewMemberInfo());
 		layoutMP.setBottom(viewMemberAds());
 		
@@ -98,6 +101,38 @@ public class MemberPage {
 		window.showAndWait();
 	}
 
+	private static HBox viewMemberLogo() {
+		HBox hBox = new HBox();
+		ImageView agencyLogo = new ImageView();
+		
+		hBox.setAlignment(Pos.CENTER);
+		hBox.setMinHeight(150);
+		hBox.setMaxHeight(150);
+		hBox.setPadding(new Insets(5, 5, 5, 5));
+		
+		try{
+			BufferedImage image = null;
+			InputStream inputStream = null;
+
+			inputStream = db.executeQuery("SELECT Logo FROM Agencies WHERE ID = " + loggedInAgency.getID() + ";").getBinaryStream("Logo");
+			image = javax.imageio.ImageIO.read(inputStream);
+			
+			if(image != null){
+				Image newPic = SwingFXUtils.toFXImage(image, null);
+				agencyLogo.setImage(newPic);
+			} 
+		} catch (Exception e){
+			System.err.println(">> Error while loading image, or no image selected");
+		} finally {
+			db.closeConnection();
+		}
+		
+		hBox.getChildren().add(agencyLogo);
+		
+		
+		return hBox;
+	}
+	
 	/**
 	 * Creates a gridpane in which user/member information is shown.
 	 * 
@@ -806,7 +841,24 @@ public class MemberPage {
 		myImageView.setPreserveRatio(false);
 		myImageView.setFitWidth(100);
 		myImageView.setFitHeight(100);
+		
+		try{
+			BufferedImage image = null;
+			InputStream inputStream = null;
 
+			inputStream = db.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";").getBinaryStream("Picture");
+			image = javax.imageio.ImageIO.read(inputStream);
+			
+			if(image != null){
+				Image newPic = SwingFXUtils.toFXImage(image, null);
+				myImageView.setImage(newPic);
+			} 
+		} catch (Exception e){
+			System.err.println(">> Error while loading image, or no image selected");
+		} finally {
+			db.closeConnection();
+		}
+		
 		
 		btnAddPicture = new Button("Upload picture");
 		btnAddPicture.setMinSize(110, 50);
@@ -829,7 +881,7 @@ public class MemberPage {
 										tfAdNewSpecies, tfAdNewType, taAdDescription, chbReActivate);
 				if (file != null) {	
 					try {
-						InputPage.inputUpdatePicture(0, file, false);
+						InputPage.inputUpdatePicture(ad.getID(), file, true);
 					} catch (Exception e1) {
 						System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
 					}
@@ -844,9 +896,7 @@ public class MemberPage {
 					alert.setContentText(reActivateMessage);
 				}
 				alert.showAndWait();
-				
 				refreshTable();
-				
 				window.setScene(sceneMP);
 			} else {
 				System.out.println(">> Update values incorrect");
@@ -861,9 +911,7 @@ public class MemberPage {
 		
 		btnBack = new Button("Back");
 		btnBack.setOnAction(e -> {
-			
 			refreshTable();
-			
 			window.setScene(sceneMP);
 		});
 		
@@ -899,7 +947,7 @@ public class MemberPage {
 				if (image != null) {
 					myImageView.setImage(image);
 				}
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				System.err.println(">> No image was chosen or another error was encountered...");
 			}
 		}
