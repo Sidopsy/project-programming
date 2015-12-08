@@ -27,7 +27,7 @@ public class Ad {
 	private final SimpleBooleanProperty check;
 	
 	public Ad(int id, Image picture, String name, String gender, String species, String type, 
-				int age, String description, String start, String end, int agencyID, String agencyName, double rating, boolean check) {
+				int age, String description, String start, String end, int agencyID, String agencyName, double rating) {
 		this.id = new SimpleIntegerProperty(id);
 		this.picture = new ImageView(picture);
 		this.name = new SimpleStringProperty(name);
@@ -45,7 +45,7 @@ public class Ad {
 		this.rating.setDisable(true);
 		this.rating.setScaleX(0.5);
 		this.rating.setScaleY(0.5);
-		this.check = new SimpleBooleanProperty(check);
+		this.check = new SimpleBooleanProperty(false);
 		 
         
 		 
@@ -112,13 +112,17 @@ public class Ad {
 		return rating;
 	}
 	
+	public boolean getCheck() {
+		return check.get();
+	}
+	
 	
 	public String toString() {
 		return picture + " " + name + " " + gender + " " + species + " " + 
 				type + " " + age + " " + description + " " + startDate + " " + endDate;
 	}
 
-	public CheckBox getCheck() {
+	public CheckBox getCheckBox() {
 		// TODO Auto-generated method stub
 		return new CheckBox();
 	}

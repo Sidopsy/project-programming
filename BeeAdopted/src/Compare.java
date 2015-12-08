@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -60,9 +61,19 @@ public class Compare {
 	
 	private static GridPane compareAds(ObservableList<Ad> adList) {
 		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(5, 5, 5, 5));
 		
 		for(int i = 0; i < adList.size() ; i++ ){
-			grid.add(new Label(adList.get(i).toString()),i,0);
+			Label species = new Label(adList.get(i).getSpecies());
+			Label type = new Label(adList.get(i).getType());
+			Label age = new Label("" + adList.get(i).getAge());
+			
+			grid.add(species,i,0);
+			grid.add(type, i, 1);
+			grid.add(age, i, 2);
+			grid.setGridLinesVisible(true);
 		}
 		
 		return grid;

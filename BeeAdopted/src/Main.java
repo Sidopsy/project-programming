@@ -8,6 +8,11 @@ import org.controlsfx.control.RangeSlider;
 import com.sun.xml.internal.fastinfoset.vocab.SerializerVocabulary;
 
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -26,6 +31,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -41,6 +47,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 /**
  * Class for starting the application.
@@ -201,7 +208,7 @@ public class Main extends Application {
 	 * 
 	 * @return
 	 */
-	
+
 	private static HBox loginBox(){
 		HBox hbox = new HBox();
 		Button btnShow = new Button("Go to agency pages");
@@ -209,7 +216,7 @@ public class Main extends Application {
 		PasswordField pfPassword = new PasswordField();
 		Button btnLogin = new Button("Login");
 		Alert alert = new Alert(AlertType.INFORMATION);
-		
+
 		hbox.setSpacing(10);
 		hbox.setAlignment(Pos.CENTER);
 
@@ -222,9 +229,9 @@ public class Main extends Application {
 			if (Membership.verify(email, password)) {
 				System.out.println(">> Entered login correct");
 				AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
-																		+ "Email = '" + tfEmail.getText() + "';")).get(0);
+						+ "Email = '" + tfEmail.getText() + "';")).get(0);
 				db.closeConnection();
-				
+
 				MemberPage.display(agencyInfo);
 			} else {
 				System.out.println(">> Entered login incorrect");
@@ -236,12 +243,12 @@ public class Main extends Application {
 			}
 		});
 
-		
+
 		Button btnCreateAccount = new Button("Create account");
 		btnCreateAccount.setOnAction(e -> {
 			CreateAccount.display();
 		});
-		
+
 
 		btnShow.setOnAction(e -> {
 			hbox.getChildren().removeAll(hbox.getChildren());
@@ -292,12 +299,6 @@ public class Main extends Application {
 				cbType.setItems(obsListType);
 				cbType.setValue("Type");
 			}
-			//			
-			//			} else {
-			//				obsListType = database.createObservableList("Type",database.fetchResult(database.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
-			//				cbType.setItems(obsListType);
-			//				cbType.setValue("Type");
-			//			}
 		});
 
 		cbType = new ChoiceBox<>(obsListType);
@@ -485,7 +486,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method 
+	 * This method returns a table with properties and specific variables from the Ad object.
 	 * 
 	 * @return TableView<Ad>
 	 */
@@ -493,7 +494,7 @@ public class Main extends Application {
 	public VBox searchResults(){
 		VBox vbox = new VBox();
 		vbox.setAlignment(Pos.CENTER);
-		
+
 		tvAd = new TableView<Ad>();
 		tvAd.setEditable(true);
 		//tvAd.setMinWidth(0);
@@ -505,7 +506,7 @@ public class Main extends Application {
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
 		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
 		TableColumn<Ad, Boolean> checkCol = new TableColumn<>("Compare");
-		
+
 		ObservableList<Ad> adList = db.createObservableList(theSearch);
 
 		pictureCol.setCellValueFactory(new PropertyValueFactory<>("picture"));
@@ -513,11 +514,87 @@ public class Main extends Application {
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
-		checkCol.setCellFactory(new PropertyValueFactory<>("check");
-		
+		//		checkCol.setCellValueFactory(tc -> new TableColumn.CellDataFeature<Ad,Boolean>(){
+		//			 @Override 
+		//			 public void updateItem(Ad item, boolean empty) {
+		//		            super.updateItem(item, empty);
+		//		            if (empty) {
+		//		                setText(null);
+		//		                setGraphic(null);
+		//		            } else {
+		//		                setGraphic(checkBox);
+		//		                if (ov instanceof BooleanProperty) {
+		//		                    checkBox.selectedProperty().unbindBidirectional((BooleanProperty) ov);
+		//		                }
+		//		                ov = getTableColumn().getCellObservableValue(getIndex());
+		//		                if (ov instanceof BooleanProperty) {
+		//		                    checkBox.selectedProperty().bindBidirectional((BooleanProperty) ov);
+		//		                }
+		//		            }
+		//		        }
+		//			
+		//		});
+
+		//		final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
+		//		ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
+		//		    @Override
+		//		    public ObservableValue<Boolean> call(Integer index) {
+		//		        return table.getItems().get(index).selectedProperty();
+		//		    }
+		//		});
+
+		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
+			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
+				final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
+				final BooleanProperty selected = new SimpleBooleanProperty();
+				ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
+
+					@Override
+					public ObservableValue<Boolean> call(Integer index) {
+						return selected;
+					}
+
+				});
+				selected.addListener(new ChangeListener<Boolean>() {
+
+					@Override
+					public void changed(ObservableValue<? extends Boolean> obs, Boolean wasSelected, Boolean isSelected) {
+						compareAds.add(tvAd.getItems().get(ctCell.getIndex()));
+						System.out.println(isSelected);
+						
+
+					}
+
+				});
+				return ctCell;
+			}
+
+		});
+
+
+		//		checkCol.setCellFactory(tc -> new CheckBoxTableCell<>());
+		//		checkCol.cellValueFactoryProperty().addListener(e -> new ChangeListener<Boolean>() {
+		//
+		//			@Override
+		//			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		//				// TODO Auto-generated method stub
+		//				
+		//			}
+		//		
+		//			
+		//		});
+
+		//				Callback<TableColumn.CellDataFeature<Ad,Boolean>, ObservableValue<Boolean>>() {
+		//			    
+		//			 public ObservableValue<Boolean> call(CellDataFeatures<Person, String> p) {
+		//				         // p.getValue() returns the Person instance for a particular TableView row
+		//				         return p.getValue().firstNameProperty();
+		//				     }
+		//			  });
 
 		tvAd.setRowFactory( tv -> {
 			TableRow<Ad> row = new TableRow<>();
+
 			row.setOnMouseClicked(event -> {
 
 				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
@@ -531,17 +608,25 @@ public class Main extends Application {
 			});
 			return row ;
 		});
-		
+
 
 		tvAd.setItems(adList);
 
 		tvAd.getColumns().addAll(pictureCol, nameCol, speciesCol, typeCol, ratingCol,checkCol);
 		//vbox.getChildren().add(tvAd);
 		tvAd.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		
+
 		Button btnCompare = new Button("Compare Ads");
-		btnCompare.setOnAction(e -> Compare.display(compareAds));
-		
+		btnCompare.setOnAction(e -> {
+//			for(int i = 0; i < tvAd.getItems().size(); i++){
+//				if(tvAd.getItems().get(i).getCheck()){
+//					compareAds.add(tvAd.getItems().get(i));
+//				}
+//			}
+			Compare.display(compareAds);
+			
+		});
+
 		vbox.getChildren().addAll(tvAd, btnCompare);
 		return vbox;
 	}
