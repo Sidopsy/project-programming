@@ -494,40 +494,37 @@ public class InputPage {
 	 * @throws Exception
 	 */
 
-	private static void inputPicture() throws Exception {
-		byte[] animal_image = null;
-		int s = 0;
-		FileInputStream fis = new FileInputStream(file);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		byte[] buf = new byte[1024];
-
+	private static void inputPicture() {
+		byte[] animalImage = null;
+		int result = 0;
+		
 		try {
-			for (int readNum; (readNum = fis.read(buf)) != -1;) {
-				bos.write(buf, 0, readNum);
-				System.out.println("read " + readNum + " bytes,");
+			int id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC;")).get(0).get(0));
+			db.closeConnection();
+		
+			FileInputStream inputStream = new FileInputStream(file);
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		
+			byte[] buffer = new byte[1024];
+		
+			for (int readNum; (readNum = inputStream.read(buffer)) != -1;) {
+				outputStream.write(buffer, 0, readNum);
+				System.out.println(">> Read " + readNum + " bytes,");
 			}
-		} catch (IOException ex) {
-			System.err.println(ex.getMessage());
+			
+			animalImage = outputStream.toByteArray();
+
+			result = db.updatePicture("UPDATE Ads SET Picture = ? WHERE ID == " + id + ";", animalImage);
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-		animal_image = bos.toByteArray();
-
-		Class.forName("org.sqlite.JDBC");
-		Connection conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");
-
-		PreparedStatement ps = conn.prepareStatement("UPDATE Ads SET Picture = ? WHERE ID == " + 
-		db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC")).get(0).get(0));
-		db.closeConnection();
-		ps.setBytes(1, animal_image);
-		s = ps.executeUpdate();
-
-		if (s > 0) {
-			System.out.print("Image Uploaded");
+		
+		if (result > 0) {
+			System.out.println(">> Image Uploaded successfully");
 		}
 
 		file = null;
-		
-		ps.close();
-		conn.close();
 	}
 
 
