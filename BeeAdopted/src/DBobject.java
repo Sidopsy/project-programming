@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -230,14 +231,13 @@ public class DBobject {
 	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
 		Image picture;
+		InputStream inp = null;
+		
 		try {
 	        while (input.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
 	        	int id = input.getInt("Id");
-	        	if(javax.imageio.ImageIO.read(input.getBinaryStream("Picture")) != null){
-	        		picture = SwingFXUtils.toFXImage(javax.imageio.ImageIO.read(input.getBinaryStream("Picture")), null);
-	        	} else {
-	        		picture = new Image("PlaceholderSmall.png");
-	        	}
+	        //	picture = SwingFXUtils.toFXImage(javax.imageio.ImageIO.read(input.getBinaryStream("Picture")), null);
+	        	picture = new Image("PlaceholderSmall.png");
 	        	String name = input.getString("Name");
 	        	String gender = input.getString("Gender");
 	        	String species = input.getString("Species");
@@ -253,7 +253,7 @@ public class DBobject {
 	        	Ad ad = new Ad(id,picture,name,gender,species,type,age,description,startDate,endDate,agencyId,agencyName,rating);
 	        	result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
-		} catch (SQLException | IOException e) {
+		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
 	    

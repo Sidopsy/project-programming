@@ -38,6 +38,8 @@ public class Ad {
 		this.agencyName = new SimpleStringProperty(agencyName);
 		this.rating = new RatingObject(agencyID, rating);
 		this.rating.setDisable(true);
+		this.rating.setScaleX(0.5);
+		this.rating.setScaleY(0.5);
 	}
 	
 	public int getID(){

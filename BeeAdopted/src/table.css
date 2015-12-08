@@ -124,11 +124,15 @@
 }
 
 .table-view .column-header .label {
-	-fx-font-size: 16pt;
+	-fx-font-size: 11pt;
 	-fx-font-family: "Helvetica";
 	-fx-text-fill: black;
 	-fx-alignment: center;
 	-fx-opacity: 1;
+}
+
+.table-view .table-column {
+	-fx-alignment: center;
 }
 
 .header {
