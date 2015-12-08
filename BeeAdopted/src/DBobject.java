@@ -1,4 +1,5 @@
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -6,7 +7,9 @@ import org.sqlite.SQLiteConfig;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Separator;
+import javafx.scene.image.Image;
 
 /**
  * This is an object that will handle the Database communication. There are also static methods to handle ResultSet metaData for
@@ -221,15 +224,20 @@ public class DBobject {
 	 * 
 	 * @param input
 	 * @return
+	 * @throws IOException 
 	 */
 	
 	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
-		
+		Image picture;
 		try {
 	        while (input.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
 	        	int id = input.getInt("Id");
-	        	String picture = input.getString("Picture");
+	        	if(javax.imageio.ImageIO.read(input.getBinaryStream("Picture")) != null){
+	        		picture = SwingFXUtils.toFXImage(javax.imageio.ImageIO.read(input.getBinaryStream("Picture")), null);
+	        	} else {
+	        		picture = new Image("PlaceholderSmall.png");
+	        	}
 	        	String name = input.getString("Name");
 	        	String gender = input.getString("Gender");
 	        	String species = input.getString("Species");
@@ -240,12 +248,12 @@ public class DBobject {
 	        	String endDate = input.getString("EndDate");
 	        	int agencyId = input.getInt("AgencyID");
 	        	String agencyName = input.getString("Agency");
-	        	String rating = input.getString("Rating");
+	        	double rating = Double.parseDouble(input.getString("Rating"));
 	        	
 	        	Ad ad = new Ad(id,picture,name,gender,species,type,age,description,startDate,endDate,agencyId,agencyName,rating);
 	        	result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
 	        }
-		} catch (SQLException e) {
+		} catch (SQLException | IOException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
 	    

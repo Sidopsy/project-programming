@@ -22,11 +22,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -54,6 +56,7 @@ public class Main extends Application {
 	private static TableView<Ad> tvAd;
 	private static ArrayList<Ad> theSearch = null;
 	private static ObservableList<Object> obsListSpecies, obsListType, obsListGender, obsListAgencies;
+	private static ObservableList<Ad> compareAds = FXCollections.observableArrayList();
 	private static ChoiceBox<Object> cbLocation, cbSpecies, cbType, cbGender, cbAgencies;
 	private static RangeSlider slAge;
 	private static TextField tfDescription;
@@ -168,6 +171,7 @@ public class Main extends Application {
 			if(!cbLocation.getValue().equals("City")){
 				if(!cbLocation.getValue().equals("Select all")){
 					city = " and City == '" + cbLocation.getValue() + "'";		// What location was input?
+					System.out.println(city);
 				} else {
 					city = "";
 				}
@@ -306,7 +310,7 @@ public class Main extends Application {
 		String maxAgeStatement;
 		ageBox.setPadding(new Insets(0));
 		ageBox.setSpacing(2);
-		if(city != "Select all"){
+		if(city != "Select all" && city != "City"){
 			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
 			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
 		} else {
@@ -484,47 +488,22 @@ public class Main extends Application {
 	 * @return TableView<Ad>
 	 */
 
-	public TableView<Ad> searchResults(){
-
+	public VBox searchResults(){
+		VBox vbox = new VBox();
+		vbox.setAlignment(Pos.CENTER);
+		
 		tvAd = new TableView<Ad>();
 		tvAd.setEditable(true);
 		//tvAd.setMinWidth(0);
 
 		// Columns to be added to the TableView.
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
-		//		pictureCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-		//		pictureCol.maxWidthProperty().bind(pictureCol.prefWidthProperty());
-		//		pictureCol.setResizable(false);
-		//		
 		TableColumn<Ad, String> nameCol = new TableColumn<>("Name");
-		//		nameCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-		//		nameCol.maxWidthProperty().bind(nameCol.prefWidthProperty());
-		//		pictureCol.setResizable(false);
-		//		
 		TableColumn<Ad, String> speciesCol = new TableColumn<>("Species");
-		//		speciesCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-		//		speciesCol.maxWidthProperty().bind(speciesCol.prefWidthProperty());
-		//		speciesCol.setResizable(false);
-		//		
 		TableColumn<Ad, String> typeCol = new TableColumn<>("Type");
-		//		typeCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-		//		typeCol.maxWidthProperty().bind(typeCol.prefWidthProperty());
-		//		typeCol.setResizable(false);
-		//		
 		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
-		//		ratingCol.prefWidthProperty().bind(window.widthProperty().divide(5).subtract(2.1/3));
-		//		ratingCol.maxWidthProperty().bind(ratingCol.prefWidthProperty());
-		//		ratingCol.setResizable(false);
-		//		
-
-		//		pictureCol.setPrefWidth(110);
-		//		speciesCol.setPrefWidth(110);
-		//		typeCol.setPrefWidth(110);
-		//		genderCol.setPrefWidth(110);
-		//		endCol.setPrefWidth(110);
-		//		agencyCol.setPrefWidth(110);
-		//		ratingCol.setPrefWidth(110);
-
+		TableColumn<Ad, String> checkCol = new TableColumn<>("Compare");
+		
 		ObservableList<Ad> adList = db.createObservableList(theSearch);
 
 		pictureCol.setCellValueFactory(new PropertyValueFactory<>("picture"));
@@ -532,6 +511,9 @@ public class Main extends Application {
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
+		checkCol.setCellFactory(tc -> new CheckBoxTableCell<>());
+		// checkCol.setCellFactory(e -> new CheckBoxTableCell<>());
+		
 
 		tvAd.setRowFactory( tv -> {
 			TableRow<Ad> row = new TableRow<>();
@@ -548,13 +530,19 @@ public class Main extends Application {
 			});
 			return row ;
 		});
+		
 
 		tvAd.setItems(adList);
 
-		tvAd.getColumns().addAll(pictureCol, nameCol, speciesCol, typeCol, ratingCol);
+		tvAd.getColumns().addAll(pictureCol, nameCol, speciesCol, typeCol, ratingCol,checkCol);
 		//vbox.getChildren().add(tvAd);
 		tvAd.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		return tvAd;
+		
+		Button btnCompare = new Button("Compare Ads");
+		btnCompare.setOnAction(e -> Compare.display(compareAds));
+		
+		vbox.getChildren().addAll(tvAd, btnCompare);
+		return vbox;
 	}
 
 	public VBox mainCenterView(){

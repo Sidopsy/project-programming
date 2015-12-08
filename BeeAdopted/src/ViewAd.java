@@ -9,12 +9,15 @@ import java.sql.Statement;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.controlsfx.control.Rating;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -263,12 +266,22 @@ public class ViewAd {
 		grid.setPadding(new Insets(0,10,0,10));						// Setting the padding around the content.
 
 		// Label containing information to the shown to the user when pressing Adopt.
-		Label label = new Label("CONGRATULATIONS!");				// Friendly message shown when Adopt is pressed.
+		Label label = new Label("Please rate the agency!");				// Friendly message shown when Adopt is pressed.
 		grid.add(label, 0, 0);
+		
+		Rating rating = new Rating();
+		grid.add(rating, 0, 1);
+		
+		TextArea textArea = new TextArea();
+		grid.add(textArea, 0, 2);
+		
+		Button rateButton = new Button("Rate agency");
+		grid.add(rateButton, 0, 3);
+		
 
 		// Same function as in other scene. Closes the window.
 		Button closeButton = new Button("Close the window");
-		grid.add(closeButton, 4, 4);
+		grid.add(closeButton, 1, 3);
 		closeButton.setOnAction(e -> window.close());				// Closes the window.
 
 		return grid;		

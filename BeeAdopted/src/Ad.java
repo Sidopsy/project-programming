@@ -2,9 +2,12 @@
 import java.sql.Blob;
 
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.CheckBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * Object for ads, appropriate variables for displaying in the application.
@@ -14,13 +17,15 @@ import javafx.scene.control.CheckBox;
  */
 
 public class Ad {
-	private final SimpleStringProperty picture, name, gender, species, type, description, startDate, endDate, agencyName, rating;
+	private final SimpleStringProperty name, gender, species, type, description, startDate, endDate, agencyName;
 	private final SimpleIntegerProperty id, age, agencyID;
+	private final ImageView picture;
+	private final RatingObject rating;
 	
-	public Ad(int id, String picture, String name, String gender, String species, String type, 
-				int age, String description, String start, String end, int agencyID, String agencyName, String rating) {
+	public Ad(int id, Image picture, String name, String gender, String species, String type, 
+				int age, String description, String start, String end, int agencyID, String agencyName, double rating) {
 		this.id = new SimpleIntegerProperty(id);
-		this.picture = new SimpleStringProperty(picture);
+		this.picture = new ImageView(picture);
 		this.name = new SimpleStringProperty(name);
 		this.gender = new SimpleStringProperty(gender);
 		this.species = new SimpleStringProperty(species);
@@ -31,15 +36,16 @@ public class Ad {
 		this.endDate = new SimpleStringProperty(end);
 		this.agencyID = new SimpleIntegerProperty(agencyID);
 		this.agencyName = new SimpleStringProperty(agencyName);
-		this.rating = new SimpleStringProperty(rating);
+		this.rating = new RatingObject(agencyID, rating);
+		this.rating.setDisable(true);
 	}
 	
 	public int getID(){
 		return id.get();
 	}
 	
-	public String getPicture(){
-		return picture.get();
+	public ImageView getPicture(){
+		return picture;
 	}
 	
 	public String getName(){
@@ -82,13 +88,22 @@ public class Ad {
 		return agencyName.get();
 	}
 	
-	public String getRating(){
-		return rating.get();
+	public RatingObject getRating(){
+		return rating;
 	}
 	
 	
 	public String toString() {
 		return picture + " " + name + " " + gender + " " + species + " " + 
 				type + " " + age + " " + description + " " + startDate + " " + endDate;
+	}
+
+	public CheckBox getCheck() {
+		// TODO Auto-generated method stub
+		return new CheckBox();
+	}
+	
+	public Ad getAd(){
+		return this;
 	}
 }
