@@ -1,3 +1,10 @@
+.root {
+	-fx-font-size: 11pt;
+	-fx-font-family: "Helvetica";
+	-fx-base: white;
+	-fx-background: white;	
+}
+
 .background {
 	-fx-background-color: white;
 }
@@ -16,12 +23,14 @@
 	-fx-text-fill: black;
 }
 
-.hbox .button {
-	-fx-text-fill: white;
-	-fx-font-family: "Arial Narrow";
-	-fx-font-weight: bold;
-	-fx-background-color: linear-gradient(#61a2b1, #2A5058);
-	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+.button {
+	-fx-background-radius: 0;
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+}
+
+.button:hover {
+	-fx-background-color: #A7EBBF;
 }
 
 
@@ -136,7 +145,7 @@
 }
 
 .header {
-	-fx-background-color: teal;
+	-fx-background-color: #A7EBBF;
 	-fx-alignment: center-left;
 }
 

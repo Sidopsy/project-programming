@@ -110,7 +110,7 @@ public class Main extends Application {
 		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
 		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
 		back.setVisible(false);
-		scene1 = new Scene(bpLayout1);
+		scene1 = new Scene(bpLayout1,800,600);
 		scene1.getStylesheets().add("table.css");
 
 
@@ -190,7 +190,7 @@ public class Main extends Application {
 				bpLayout2 = new BorderPane();				// Preparing for a new scene.
 				bpLayout2.setTop(header());		// Setting the header as before.
 				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
-				scene2 = new Scene(bpLayout2);
+				scene2 = new Scene(bpLayout2,800,600);
 				scene2.getStylesheets().add("table.css");
 				window.setScene(scene2);
 			}
@@ -377,7 +377,7 @@ public class Main extends Application {
 			bpLayout2.setTop(header());
 			bpLayout2.setCenter(mainCenterView());
 			tvAd.refresh();
-			scene2 = new Scene(bpLayout2);
+			scene2 = new Scene(bpLayout2,800,600);
 			scene2.getStylesheets().add("table.css");
 			window.setScene(scene2);
 		});

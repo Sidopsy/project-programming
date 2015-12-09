@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 
 import java.sql.Blob;
 
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-=======
->>>>>>> branch 'master' of https://github.com/Sidopsy/project-programming.git
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
