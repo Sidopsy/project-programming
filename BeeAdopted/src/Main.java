@@ -1,4 +1,5 @@
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -222,8 +223,6 @@ public class Main extends Application {
 					System.out.println(">> Entered login correct");
 					AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
 																			+ "Email = '" + tfEmail.getText() + "';")).get(0);
-					db.closeConnection();
-					
 					MemberPage.display(agencyInfo);
 				} else {
 					System.out.println(">> Entered login incorrect");
@@ -235,6 +234,14 @@ public class Main extends Application {
 				}
 			} catch (Exception e1) {
 				System.err.println(">> There is most likely a problem with missing ratings, user cannot log in.");
+			} finally {
+				try {
+					if (!db.getConnection().isClosed()) {
+						db.closeConnection();
+					}
+				} catch (SQLException e1) {
+					System.err.println(">> Error when closing connection");
+				}
 			}
 		});
 
