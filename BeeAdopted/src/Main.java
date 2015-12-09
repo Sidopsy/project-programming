@@ -227,7 +227,7 @@ public class Main extends Application {
 				if (Membership.verify(email, password)) {
 					System.out.println(">> Entered login correct");
 					AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
-																			+ "Email = '" + tfEmail.getText() + "';")).get(0);
+																			+ "Email = '" + email + "';")).get(0);
 					db.closeConnection();
 					
 					MemberPage.display(agencyInfo);
