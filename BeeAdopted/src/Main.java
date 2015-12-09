@@ -159,10 +159,7 @@ public class Main extends Application {
 
 		// The Vbox to be returned.
 		VBox firstPage = new VBox();
-		firstPage.getStyleClass().add("vbox");
-
-		firstPage.setPadding(new Insets(0));
-		firstPage.setSpacing(75);
+		firstPage.getStyleClass().add("start-pane");
 
 		// Displayed above the choicebox for cities to let the user know what to do.
 		Label lblLocation = new Label("Where are you?");
@@ -518,6 +515,7 @@ public class Main extends Application {
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
+
 		//		checkCol.setCellValueFactory(tc -> new TableColumn.CellDataFeature<Ad,Boolean>(){
 		//			 @Override 
 		//			 public void updateItem(Ad item, boolean empty) {

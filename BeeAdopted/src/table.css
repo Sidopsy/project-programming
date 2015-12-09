@@ -9,6 +9,10 @@
 	-fx-background-color: white;
 }
 
+.start-pane {
+	-fx-spacing: 75;
+}
+
 /* HBox class */
 .hbox {
 	-fx-background-color: white;
@@ -31,6 +35,10 @@
 
 .button:hover {
 	-fx-background-color: #A7EBBF;
+}
+
+.choice-box {
+	-fx-background-color: white;
 }
 
 

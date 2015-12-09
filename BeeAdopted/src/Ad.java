@@ -41,10 +41,10 @@ public class Ad {
 		this.agencyID = new SimpleIntegerProperty(agencyID);
 		this.agencyName = new SimpleStringProperty(agencyName);
 		this.rating = new RatingObject(agencyID, rating);
-
 		this.rating.setDisable(true);
 		this.rating.setScaleX(0.5);
 		this.rating.setScaleY(0.5);
+		
 		this.check = new SimpleBooleanProperty(false);
 		 
         
