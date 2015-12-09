@@ -100,14 +100,26 @@ public class MemberPage {
 		sceneMP.getStylesheets().add("table.css");
 
 		window.setScene(sceneMP);
+		window.setOnCloseRequest(e -> {
+			window.close();
+		});
 		window.showAndWait();
 	}
+	
+	/**
+	 * Insert logo for agency
+	 * @return
+	 */
 
 	private static HBox viewMemberLogo() {
 		HBox hBox = new HBox();
 		Button btnUpdateLogo, btnSaveLogo;
-		myImageView = new ImageView();
 		
+		
+		myImageView = new ImageView();
+		myImageView.setPreserveRatio(false);
+		myImageView.setFitWidth(100);
+		myImageView.setFitHeight(100);
 		
 		hBox.setAlignment(Pos.CENTER);
 		hBox.setMinHeight(150);
@@ -126,6 +138,7 @@ public class MemberPage {
 				Image newPic = SwingFXUtils.toFXImage(image, null);
 				myImageView.setImage(newPic);
 			} 
+
 			inputStream.close();
 		} catch (Exception e){
 			System.err.println(">> Error while loading image, or no image selected");
@@ -139,11 +152,9 @@ public class MemberPage {
 			}
 		}
 		
-		
 		btnUpdateLogo = new Button("Change logo");
 		btnUpdateLogo.setAlignment(Pos.CENTER_RIGHT);
 		btnUpdateLogo.setOnAction(loadPicture);
-		
 		
 		btnSaveLogo = new Button("Save logo");
 		btnSaveLogo.setAlignment(Pos.CENTER_RIGHT);
@@ -159,8 +170,7 @@ public class MemberPage {
 				file = null;
 			} else {}
 		});
-		
-		
+			
 		hBox.getChildren().addAll(myImageView, btnUpdateLogo, btnSaveLogo);
 		
 		
@@ -244,7 +254,6 @@ public class MemberPage {
 	private static GridPane addMemberTextFields(GridPane inputGridPane) {
 		GridPane gridPane = inputGridPane;
 		
-		
 		tfName = new TextField();
 		tfName.setEditable(false);			// Cannot edit Agency name?
 		tfName.setText(loggedInAgency.getName());
@@ -253,7 +262,6 @@ public class MemberPage {
 		tfName.setOnKeyReleased(e -> {
 			InputValidation.validateInputName(tfName);
 		});
-		
 		
 		tfPhone = new TextField();
 		tfPhone.setEditable(false);
@@ -265,7 +273,6 @@ public class MemberPage {
 			InputValidation.validateInputPhone(tfPhone);
 		});
 		
-		
 		tfEmail = new TextField();
 		tfEmail.setEditable(false);
 		tfEmail.setText(loggedInAgency.getEmail());
@@ -275,7 +282,6 @@ public class MemberPage {
 		tfEmail.setOnKeyReleased(e -> {
 			InputValidation.validateInputEmail(tfEmail);
 		});
-		
 		
 		tfStreet = new TextField();
 		tfStreet.setEditable(false);
@@ -287,7 +293,6 @@ public class MemberPage {
 			InputValidation.validateInputStreet(tfStreet);
 		});
 		
-		
 		tfZip = new TextField();
 		tfZip.setEditable(false);
 		tfZip.setText(loggedInAgency.getZip());
@@ -297,7 +302,6 @@ public class MemberPage {
 		tfZip.setOnKeyReleased(e -> {
 			InputValidation.validateInputZip(tfZip);
 		});
-		
 		
 		tfCity = new TextField();
 		tfCity.setEditable(false);
@@ -316,12 +320,10 @@ public class MemberPage {
 		gridPane.add(tfZip, 1, 1);
 		gridPane.add(tfCity, 1, 2);
 		
-		
 		pfPassword = new PasswordField();
 		pfPassword.setPromptText("Password...");
 		pfPassword.setMinWidth(100);
 		pfPassword.setMaxWidth(100);
-		
 		
 		pfConfirmPassword = new PasswordField();
 		pfConfirmPassword.setPromptText("Confirm...");
@@ -487,11 +489,9 @@ public class MemberPage {
 		db.closeConnection();
 		ObservableList<Ad> olAgencyAds = db.createObservableList((alAgencyAds));
 		
-		
 		hbTable.setPadding(new Insets(5, 5, 5, 5));
 		hbTable.setMinSize(590, 350);
 		hbTable.setMaxSize(500, 350);
-		
 		
 		table.setEditable(true);
 		table.setMinSize(590, 340);
@@ -513,7 +513,6 @@ public class MemberPage {
 			});
 			return tableRow ;
 		});
-		
 
 		tcName.setCellValueFactory(		new PropertyValueFactory<>("Name"));
 		tcGender.setCellValueFactory(	new PropertyValueFactory<>("Gender"));
@@ -529,10 +528,8 @@ public class MemberPage {
 		tcStartDate.setPrefWidth(80);
 		tcEndDate.setPrefWidth(80);
 		
-		
 		table.setItems(olAgencyAds);
 		table.getColumns().addAll(tcName, tcGender, tcSpecies, tcType, tcStartDate, tcEndDate);
-		
 		
 		hbTable.getChildren().add(table);
 		
@@ -545,8 +542,25 @@ public class MemberPage {
 	 */
 	
 	public static void refreshTable() {
-		layoutMP.setBottom(viewMemberAds());
+		String sql = "SELECT Distinct Ads.ID, Picture, Ads.Name, Species, Type, Gender, Age, Description, "
+				   + "StartDate, EndDate, Ads.AgencyID, Agencies.Name as Agency, "
+				   + "(SELECT AVG(Rating) "
+				   + "FROM Agencies, Ratings "
+				   + "WHERE Agencies.ID = Ratings.AgencyID and "
+				   + "Agencies.ID = " + loggedInAgency.getID() + ") as Rating "
+				   + "FROM Ads, Agencies, Addresses, Ratings "
+				   + "WHERE Agencies.ID = Addresses.AgencyID and "
+				   + "Agencies.ID = Ratings.AgencyID and "
+				   + "Agencies.ID = Ads.AgencyID and "
+				   + "Agencies.ID = " + loggedInAgency.getID() + " "
+				   + "ORDER BY StartDate DESC;";
+		ArrayList<Ad> alAgencyAds = db.fetchAd(db.executeQuery(sql));
+		db.closeConnection();
+		ObservableList<Ad> olAgencyAds = db.createObservableList((alAgencyAds));
+		
+		table.setItems(olAgencyAds);
 		table.refresh();
+		table.sort();
 	}
 	
 	/**
@@ -560,13 +574,11 @@ public class MemberPage {
 	private static GridPane viewUpdateMemberAd(Ad ad) {
 		GridPane gridPane = new GridPane();
 		
-		
 		gridPane.setHgap(7);
 		gridPane.setVgap(7);
 		gridPane.setPadding(new Insets(5, 5, 5, 5));
 		gridPane.getColumnConstraints().setAll(new ColumnConstraints(250, 250, 250));
 		gridPane.setAlignment(Pos.CENTER);
-		
 		
 		addAdLabels(gridPane, ad);
 		addAdTextFields(gridPane, ad);
@@ -595,8 +607,8 @@ public class MemberPage {
 		lblActiveInfo = new Label("This ad has been removed from the site");
 		lblActiveInfo.setVisible(false);
 		
-		if (InputValidation.checkEndAfterToday(ad)) {		// Comparing today's date with that of the ad, sets label and CHB visible depending
-			lblActiveInfo.setVisible(true);	// on the result.
+		if (InputValidation.checkEndAfterToday(ad)) {// Comparing today's date with that of the ad, sets label and CHB visible depending
+			lblActiveInfo.setVisible(true);			// on the result.
 		} else {}
 		
 		gridPane.add(lblName, 0, 0);
@@ -884,17 +896,23 @@ public class MemberPage {
 			inputStream = db.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";").getBinaryStream("Picture");
 			db.closeConnection();
 			image = javax.imageio.ImageIO.read(inputStream);
+			inputStream.close();
 			
 			if(image != null) {
 				Image newPic = SwingFXUtils.toFXImage(image, null);
 				myImageView.setImage(newPic);
 			}
 			
-			inputStream.close();
 		} catch (Exception e){
 			System.err.println(">> Error while loading image, or no image selected");
 		} finally {
-			db.closeConnection();
+			try {
+				if (!db.getConnection().isClosed()) {
+					db.closeConnection();
+				}
+			} catch (SQLException e) {
+				System.err.println(">> Error when closing connection");
+			}
 		}
 		
 		
@@ -930,9 +948,7 @@ public class MemberPage {
 				alert.setTitle("Success");
 				alert.setHeaderText("Advertisement has been updated");
 				alert.setContentText("Your advertisement has been successfully updated.");
-				if (chbReActivate.isSelected()) {
-					alert.setContentText(reActivateMessage);
-				}
+				if (chbReActivate.isSelected()) {alert.setContentText(reActivateMessage);}
 				alert.showAndWait();
 				refreshTable();
 				window.setScene(sceneMP);
@@ -946,28 +962,25 @@ public class MemberPage {
 			}
 		});
 		
-		
 		btnBack = new Button("Back");
 		btnBack.setOnAction(e -> {
 			refreshTable();
 			window.setScene(sceneMP);
 		});
 		
-		
 		btnDelete = new Button("Delete");
 		btnDelete.setOnAction(e -> {
 			alert.setAlertType(AlertType.CONFIRMATION);
-			alert.setTitle("Confirm");
+			alert.setTitle("Confirm deletion");
 			alert.setHeaderText("Delete?");
 			alert.setContentText("Are you sure you want to delete this ad? This action is non-reversible.");
 			alert.showAndWait();
 			if (alert.getResult().equals(ButtonType.OK)) {	
 				InputPage.deleteMemberAd(ad);
-			}
-			refreshTable();
-			window.setScene(sceneMP);
+				refreshTable();
+				window.setScene(sceneMP);
+			} else {}
 		});
-		
 		
 		gridPane.add(btnAddPicture, 0, 4);
 		gridPane.add(myImageView, 1, 4);
@@ -989,24 +1002,22 @@ public class MemberPage {
 
 		public void handle(ActionEvent t) {
 			FileChooser fileChooser = new FileChooser();
-			//Set extension filters
 			FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
 			fileChooser.getExtensionFilters().addAll(extFilterPNG);
-			//Show open file dialog
 			file = fileChooser.showOpenDialog(null);
-			
 			try {
 				BufferedImage bufferedImage = ImageIO.read(file);
 				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
-
-				if (image != null) {
-					myImageView.setImage(image);
-				}
+				if (image != null) {myImageView.setImage(image);}
 			} catch (Exception ex) {
 				System.err.println(">> No image was chosen or another error was encountered...");
 			}
 		}
 	};
+	
+	/**
+	 * get info into member text fields.
+	 */
 	
 	public static void resetInfoMemberFields() {
 		tfName.setText(loggedInAgency.getName());

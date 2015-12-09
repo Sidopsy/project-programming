@@ -342,14 +342,10 @@ public class InputValidation {
 		String endDate = ad.getEndDate();
 		GregorianCalendar todaysDate = new GregorianCalendar();
 		todaysDate.setTimeZone(TimeZone.getTimeZone("CET"));
-		
 		try {
 			int year = Integer.parseInt(endDate.substring(0, 4));
-			int month = Integer.parseInt(endDate.substring(5, 7)) - 1;
-			int day = Integer.parseInt(endDate.substring(8));
-			
-			System.out.println(year + " " + month + " " + day);
-			
+			int month = Integer.parseInt(endDate.substring(5, 7)) - 1; // month read by: January = 0
+			int day = Integer.parseInt(endDate.substring(8));			
 			return todaysDate.after(new GregorianCalendar(year, month, day));
 		} catch (Exception e) {
 			System.err.println(">> Date not readable");

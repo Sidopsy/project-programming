@@ -49,7 +49,7 @@ public class DBobject {
 	 */
 	
 	public void setConnection() {
-		System.out.println(">> Connecting to database");
+		System.out.println(">> Setting connection to DB");
 		try {
 			SQLiteConfig dbProperties = new SQLiteConfig();
 			dbProperties.enforceForeignKeys(true);
@@ -128,7 +128,7 @@ public class DBobject {
 	
 	public void executeUpdate(String update){
 		setConnection();
-		System.out.println(">> Executing update");
+		System.out.println(">> " + update.substring(0, 10));
 		
 		try {
 			stmt = connect.prepareStatement(update);
@@ -148,17 +148,14 @@ public class DBobject {
 	public int updatePicture(String update, byte[] parameters, int agencyID) {
 		int result = 0;
 		setConnection();
-		System.out.println(">> Inserting picture");
-		
+		System.out.println(">> Picture update " + update.substring(7, 10) + ": " + agencyID);
 		try {
 			stmt = connect.prepareStatement(update);
 			stmt.setBytes(1, parameters);
 			stmt.setInt(2, agencyID);
 			result = stmt.executeUpdate();
-			
 			connect.commit();
 			closeConnection();
-			
 			return result;
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -257,9 +254,8 @@ public class DBobject {
 		Image picture;
 		
 		try {
-	        while (input.next()) {											// This while-loop adds the results to the arrayList. All column names must be matched.
+	        while (input.next()) {
 	        	int id = input.getInt("Id");
-//	        	picture = SwingFXUtils.toFXImage(javax.imageio.ImageIO.read(input.getBinaryStream("Picture")), null);
 	        	picture = new Image("PlaceholderSmall.png");
 	        	String name = input.getString("Name");
 	        	String gender = input.getString("Gender");
@@ -284,17 +280,12 @@ public class DBobject {
 	}
 	
 	/**
-	 * 
-	 * @param input
-	 * @return
-	 */
-	
-	/**
 	 * Method for fetching information about agencies for displaying in the application.
 	 * 
 	 * @param input
 	 * @return ArrayLisy<AgencyExtended>
 	 */
+	
 	public ArrayList<Agency> fetchAgency(ResultSet input) {
 		ArrayList<Agency> result = new ArrayList<>();
 	    try {    	
@@ -319,6 +310,7 @@ public class DBobject {
 	 * @param input
 	 * @return ArrayLisy<AgencyExtended>
 	 */
+	
 	public ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
 		ArrayList<AgencyExt> result = new ArrayList<>();
 	    try {	
@@ -348,6 +340,7 @@ public class DBobject {
 	 * @param ArrayList<ArrayList<String>>
 	 * @returns ObservableList<Object>
 	 */
+	
 	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
 		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator(), "Select all" , new Separator());
 		
@@ -367,6 +360,7 @@ public class DBobject {
 	 * @param ArrayList<Ad>
 	 * @returns ObservableList<Object>
 	 */
+	
 	public ObservableList<Ad> createObservableList(ArrayList<Ad> input) {
 		return FXCollections.observableArrayList(input);
 	}
@@ -380,30 +374,16 @@ public class DBobject {
 
 	public void closeConnection() {
 		try {
-			if (resultSet.isClosed()) {
-				System.out.println(">> Nothing in ResultSet, cannot close");
-			}
-			else {
-				resultSet.close();
-			}
-		
-			if (stmt.isClosed()) {
-				System.out.println(">> No statement established, cannot close");
-			} 
-			else {
-				stmt.close();
-			}
-	
-			if (connect.isClosed()) {
-				System.out.println(">> No database connected, cannot close");
-			} 
-			else {
-				connect.close();
-			}
+			if (resultSet.isClosed()) {}
+			else {resultSet.close();}
+			if (stmt.isClosed()) {} 
+			else {stmt.close();}
+			if (connect.isClosed()) {} 
+			else {connect.close();}
 		}catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-		System.out.println(">> Closed!");
+		System.out.println(">> Closed DB connection");
 	}
 	
 	public Connection getConnection() {
