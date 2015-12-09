@@ -17,7 +17,7 @@ public class RatingObject extends Rating{
 	private final SimpleDoubleProperty rating;
 	
 	public RatingObject(int agencyId, double rating) {
-		super(5);
+		super();
 		this.setPartialRating(true);
 		this.setRating(rating);
 		this.agency = new SimpleIntegerProperty(agencyId);
@@ -26,7 +26,7 @@ public class RatingObject extends Rating{
 	}
 	
 	public RatingObject(int agencyId, double rating, String comment) {
-		super(5);
+		super();
 		this.setPartialRating(true);
 		this.setRating(rating);
 		this.agency = new SimpleIntegerProperty(agencyId);

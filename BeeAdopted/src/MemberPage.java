@@ -49,7 +49,7 @@ import javafx.stage.Stage;
  * as advertisements submitted by him/her.
  * 
  * @since 2015-11-25
- * @author Måns Thörnvik for functionality & Madisen Whitfield for partial design.
+ * @author M��ns Th��rnvik for functionality & Madisen Whitfield for partial design.
  */
 
 public class MemberPage {
