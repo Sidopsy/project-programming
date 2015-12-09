@@ -338,7 +338,6 @@ public class InputValidation {
 	 * @return true if todays date is later than the compared ad's date.
 	 */
 	
-	@SuppressWarnings("finally")
 	public static boolean checkEndAfterToday(Ad ad) {
 		String endDate = ad.getEndDate();
 		GregorianCalendar todaysDate = new GregorianCalendar();
@@ -346,14 +345,15 @@ public class InputValidation {
 		
 		try {
 			int year = Integer.parseInt(endDate.substring(0, 4));
-			int month = Integer.parseInt(endDate.substring(5, 7));
-			int day = Integer.parseInt(endDate.substring(7));
+			int month = Integer.parseInt(endDate.substring(5, 7)) - 1;
+			int day = Integer.parseInt(endDate.substring(8));
+			
+			System.out.println(year + " " + month + " " + day);
 			
 			return todaysDate.after(new GregorianCalendar(year, month, day));
 		} catch (Exception e) {
 			System.err.println(">> Date not readable");
-		} finally {
-			return true;
 		}
+		return true;
 	}
 }

@@ -379,7 +379,6 @@ public class DBobject {
 	 */
 
 	public void closeConnection() {
-		System.out.println(">> Closing...");
 		try {
 			if (resultSet.isClosed()) {
 				System.out.println(">> Nothing in ResultSet, cannot close");
@@ -388,19 +387,19 @@ public class DBobject {
 				resultSet.close();
 			}
 		
-		if (stmt.isClosed()) {
-			System.out.println(">> No statement established, cannot close");
-		} 
-		else {
-			stmt.close();
-		}
-
-		if (connect.isClosed()) {
-			System.out.println(">> No database connected, cannot close");
-		} 
-		else {
-			connect.close();
-		}
+			if (stmt.isClosed()) {
+				System.out.println(">> No statement established, cannot close");
+			} 
+			else {
+				stmt.close();
+			}
+	
+			if (connect.isClosed()) {
+				System.out.println(">> No database connected, cannot close");
+			} 
+			else {
+				connect.close();
+			}
 		}catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}

@@ -477,7 +477,7 @@ public class InputPage {
 				if (image != null) {
 					myImageView.setImage(image);
 				}
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				System.err.println(">> No image was chosen or another error was encountered...");
 			}
 		}
@@ -493,13 +493,7 @@ public class InputPage {
 		byte[] image = null;
 		int result = 0;
 		int id = 0;
-		
-		try {
-			System.out.println(db.getConnection().isClosed());
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
 		
 		try {				
 			FileInputStream inputStream = new FileInputStream(file);
@@ -516,12 +510,14 @@ public class InputPage {
 
 			if (inputAd) {
 				if (inputID == 0) {
+					System.out.println(">> Getting ad ID for picture update...");
 					id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC;")).get(0).get(0));
 					db.closeConnection();
 				} else {id = inputID;}
 				result = db.updatePicture("UPDATE Ads SET Picture = ? WHERE ID = ?;", image, id);
 			} else {
 				if (inputID == 0) {
+					System.out.println(">> Getting agency ID for picture update...");
 					id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC;")).get(0).get(0));
 					db.closeConnection();
 				} else {id = inputID;}
@@ -529,6 +525,7 @@ public class InputPage {
 			}
 			
 			inputStream.close();
+			outputStream.close();
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		} finally {
@@ -737,5 +734,13 @@ public class InputPage {
 		System.out.println(">> " + updatePassword);
 		
 		db.executeUpdate(updatePassword);
+	}
+	
+	/**
+	 * 
+	 */
+	
+	public static void deleteMemberAd(Ad ad) {
+		db.executeUpdate("DELETE FROM Ads WHERE ID = " + ad.getID() + ";");		
 	}
 }

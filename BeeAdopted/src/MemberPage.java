@@ -20,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -147,7 +148,16 @@ public class MemberPage {
 		btnSaveLogo = new Button("Save logo");
 		btnSaveLogo.setAlignment(Pos.CENTER_RIGHT);
 		btnSaveLogo.setOnAction(e -> {
-			InputPage.inputUpdatePicture(loggedInAgency.getID(), file, false);
+			if (file != null) {	
+				try {
+					InputPage.inputUpdatePicture(loggedInAgency.getID(), file, false);
+				} catch (Exception e1) {
+					System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
+				} finally {
+					layoutMP.setTop(viewMemberLogo());
+				}
+				file = null;
+			} else {}
 		});
 		
 		
@@ -839,7 +849,7 @@ public class MemberPage {
 		gridPane.add(chbNewType, 1, 2);
 		gridPane.add(chbReActivate, 1, 4);
 		GridPane.setMargin(cbAdGenders, 	new Insets(0, 0, 0, 143));
-		GridPane.setMargin(cbAdType, 			new Insets(0, 0, 0, -97));
+		GridPane.setMargin(cbAdType, 		new Insets(0, 0, 0, -97));
 		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
 		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 8));
 		
@@ -857,7 +867,7 @@ public class MemberPage {
 	
 	private static GridPane addAdButtons(GridPane inputGridPane, Ad ad) {
 		GridPane gridPane = inputGridPane;
-		Button btnAddPicture, btnSaveAd, btnBack;
+		Button btnAddPicture, btnSaveAd, btnBack, btnDelete;
 		Alert alert;
 		String reActivateMessage = "Your advertisement has been successfully updated, and will be visible for the next 90 days.";
 		
@@ -875,7 +885,7 @@ public class MemberPage {
 			db.closeConnection();
 			image = javax.imageio.ImageIO.read(inputStream);
 			
-			if(image != null){
+			if(image != null) {
 				Image newPic = SwingFXUtils.toFXImage(image, null);
 				myImageView.setImage(newPic);
 			}
@@ -944,11 +954,27 @@ public class MemberPage {
 		});
 		
 		
+		btnDelete = new Button("Delete");
+		btnDelete.setOnAction(e -> {
+			alert.setAlertType(AlertType.CONFIRMATION);
+			alert.setTitle("Confirm");
+			alert.setHeaderText("Delete?");
+			alert.setContentText("Are you sure you want to delete this ad? This action is non-reversible.");
+			alert.showAndWait();
+			if (alert.getResult().equals(ButtonType.OK)) {	
+				InputPage.deleteMemberAd(ad);
+			}
+			refreshTable();
+			window.setScene(sceneMP);
+		});
+		
+		
 		gridPane.add(btnAddPicture, 0, 4);
 		gridPane.add(myImageView, 1, 4);
 		gridPane.add(btnSaveAd, 0, 5);
 		gridPane.add(btnBack, 0, 5);
-		GridPane.setMargin(btnBack, new Insets(0, 0, 0, 115));
+		gridPane.add(btnDelete, 1, 5);
+		GridPane.setMargin(btnBack, 	new Insets(0, 0, 0, 115));
 		GridPane.setMargin(myImageView, new Insets(0, 0, 0, -135));
 		
 		
