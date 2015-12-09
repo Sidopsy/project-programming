@@ -3,6 +3,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
 
@@ -493,6 +494,13 @@ public class InputPage {
 		int result = 0;
 		int id = 0;
 		
+		try {
+			System.out.println(db.getConnection().isClosed());
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		try {				
 			FileInputStream inputStream = new FileInputStream(file);
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -523,6 +531,14 @@ public class InputPage {
 			inputStream.close();
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		} finally {
+			try {
+				if (!db.getConnection().isClosed()) {
+					db.closeConnection();
+				}
+			} catch (SQLException e) {
+				System.err.println(">> Error when closing connection");
+			}
 		}
 		
 		if (result > 0) {

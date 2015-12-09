@@ -26,10 +26,11 @@ public class Membership {
 		try {
 			resultEmail = db.fetchResult(db.executeQuery(sql)).get(0).get(0);	// First arrayList, first item
 			resultPassword = db.fetchResult(db.executeQuery(sql)).get(0).get(1);// First arrayList, second item
-			db.closeConnection();
 		} catch (Exception e) {
 			System.err.println(">> ArrayList<AgencyExt> returned nothing...");
-		}		
+		} finally {
+			db.closeConnection();
+		}
 		
 		return((resultEmail.length() > 0) && (resultEmail.equals(a)) && 
 			  (resultPassword.length() > 0) && (resultPassword.equals(b)));

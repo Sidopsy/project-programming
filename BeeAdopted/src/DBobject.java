@@ -20,8 +20,8 @@ import javafx.scene.image.Image;
 
 public class DBobject {
 	private static Connection connect = null;
-	private PreparedStatement stmt = null;
-	private ResultSet resultSet = null;
+	private static PreparedStatement stmt = null;
+	private static ResultSet resultSet = null;
 	private final String dbType;
 	private final String dbName;
 	private final String dbDriver;
@@ -319,7 +319,7 @@ public class DBobject {
 	 * @param input
 	 * @return ArrayLisy<AgencyExtended>
 	 */
-	protected ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
+	public ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
 		ArrayList<AgencyExt> result = new ArrayList<>();
 	    try {	
 			while (input.next()) {											// This while-loop adds the results to the arrayList.
@@ -381,29 +381,33 @@ public class DBobject {
 	public void closeConnection() {
 		System.out.println(">> Closing...");
 		try {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-			else {
+			if (resultSet.isClosed()) {
 				System.out.println(">> Nothing in ResultSet, cannot close");
 			}
+			else {
+				resultSet.close();
+			}
 		
-		if (stmt != null) {
-			stmt.close();
+		if (stmt.isClosed()) {
+			System.out.println(">> No statement established, cannot close");
 		} 
 		else {
-			System.out.println(">> No statement established, cannot close");
+			stmt.close();
 		}
 
-		if (connect != null) {
-			connect.close();
+		if (connect.isClosed()) {
+			System.out.println(">> No database connected, cannot close");
 		} 
 		else {
-			System.out.println(">> No database connected, cannot close");
+			connect.close();
 		}
 		}catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
 		System.out.println(">> Closed!");
+	}
+	
+	public Connection getConnection() {
+		return connect;
 	}
 }

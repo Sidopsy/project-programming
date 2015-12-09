@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -103,7 +104,9 @@ public class MemberPage {
 
 	private static HBox viewMemberLogo() {
 		HBox hBox = new HBox();
-		ImageView agencyLogo = new ImageView();
+		Button btnUpdateLogo, btnSaveLogo;
+		myImageView = new ImageView();
+		
 		
 		hBox.setAlignment(Pos.CENTER);
 		hBox.setMinHeight(150);
@@ -115,19 +118,40 @@ public class MemberPage {
 			InputStream inputStream = null;
 
 			inputStream = db.executeQuery("SELECT Logo FROM Agencies WHERE ID = " + loggedInAgency.getID() + ";").getBinaryStream("Logo");
+			db.closeConnection();
 			image = javax.imageio.ImageIO.read(inputStream);
 			
 			if(image != null){
 				Image newPic = SwingFXUtils.toFXImage(image, null);
-				agencyLogo.setImage(newPic);
+				myImageView.setImage(newPic);
 			} 
+			inputStream.close();
 		} catch (Exception e){
 			System.err.println(">> Error while loading image, or no image selected");
 		} finally {
-			db.closeConnection();
+			try {
+				if (!db.getConnection().isClosed()) {
+					db.closeConnection();
+				}
+			} catch (SQLException e) {
+				System.err.println(">> Error when closing connection");
+			}
 		}
 		
-		hBox.getChildren().add(agencyLogo);
+		
+		btnUpdateLogo = new Button("Change logo");
+		btnUpdateLogo.setAlignment(Pos.CENTER_RIGHT);
+		btnUpdateLogo.setOnAction(loadPicture);
+		
+		
+		btnSaveLogo = new Button("Save logo");
+		btnSaveLogo.setAlignment(Pos.CENTER_RIGHT);
+		btnSaveLogo.setOnAction(e -> {
+			InputPage.inputUpdatePicture(loggedInAgency.getID(), file, false);
+		});
+		
+		
+		hBox.getChildren().addAll(myImageView, btnUpdateLogo, btnSaveLogo);
 		
 		
 		return hBox;
@@ -148,7 +172,7 @@ public class MemberPage {
 		
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
-		gridPane.setAlignment(Pos.BOTTOM_CENTER);
+		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(5, 5, 5, 5));
 		
 		
@@ -187,6 +211,7 @@ public class MemberPage {
 		
 		lblAdInfo = new Label("Click an item below to edit");
 		lblAdInfo.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 13));
+		lblAdInfo.setAlignment(Pos.BOTTOM_CENTER);
 		
 		gridPane.add(lblAgencyInfo, 0, 0);
 		gridPane.add(lblPassword, 2, 0);
@@ -847,12 +872,15 @@ public class MemberPage {
 			InputStream inputStream = null;
 
 			inputStream = db.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";").getBinaryStream("Picture");
+			db.closeConnection();
 			image = javax.imageio.ImageIO.read(inputStream);
 			
 			if(image != null){
 				Image newPic = SwingFXUtils.toFXImage(image, null);
 				myImageView.setImage(newPic);
-			} 
+			}
+			
+			inputStream.close();
 		} catch (Exception e){
 			System.err.println(">> Error while loading image, or no image selected");
 		} finally {
@@ -921,6 +949,7 @@ public class MemberPage {
 		gridPane.add(btnSaveAd, 0, 5);
 		gridPane.add(btnBack, 0, 5);
 		GridPane.setMargin(btnBack, new Insets(0, 0, 0, 115));
+		GridPane.setMargin(myImageView, new Insets(0, 0, 0, -135));
 		
 		
 		return gridPane;
