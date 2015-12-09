@@ -439,9 +439,7 @@ public class InputPage {
 
 		btnClose = new Button("Close");
 		btnClose.setOnAction(e -> {
-			
 			MemberPage.refreshTable();
-			
 			window.close();
 		});
 
@@ -464,20 +462,15 @@ public class InputPage {
 
 		public void handle(ActionEvent t) {
 			fileChooser = new FileChooser();
-			//Set extension filters
 			FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
 			fileChooser.getExtensionFilters().addAll(extFilterPNG);
-			//Show open file dialog
 			file = fileChooser.showOpenDialog(null);
-			
 			try {
 				BufferedImage bufferedImage = ImageIO.read(file);
 				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
 
-				if (image != null) {
-					myImageView.setImage(image);
-				}
-			} catch (IOException ex) {
+				if (image != null) {myImageView.setImage(image);}
+			} catch (Exception ex) {
 				System.err.println(">> No image was chosen or another error was encountered...");
 			}
 		}
@@ -493,27 +486,19 @@ public class InputPage {
 		byte[] image = null;
 		int result = 0;
 		int id = 0;
-		
-		try {
-			System.out.println(db.getConnection().isClosed());
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
+
 		try {				
 			FileInputStream inputStream = new FileInputStream(file);
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		
 			byte[] buffer = new byte[1024];
 		
 			for (int readNum; (readNum = inputStream.read(buffer)) != -1;) {
 				outputStream.write(buffer, 0, readNum);
 				System.out.println(">> Read " + readNum + " bytes,");
 			}
-			
 			image = outputStream.toByteArray();
-
+			inputStream.close();
+			outputStream.close();
 			if (inputAd) {
 				if (inputID == 0) {
 					id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC;")).get(0).get(0));
@@ -527,23 +512,16 @@ public class InputPage {
 				} else {id = inputID;}
 				result = db.updatePicture("UPDATE Agencies SET Logo = ? WHERE ID = ?;", image, id);
 			}
-			
-			inputStream.close();
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		} finally {
 			try {
-				if (!db.getConnection().isClosed()) {
-					db.closeConnection();
-				}
+				if (!db.getConnection().isClosed()) {db.closeConnection();}
 			} catch (SQLException e) {
-				System.err.println(">> Error when closing connection");
+				System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			}
 		}
-		
-		if (result > 0) {
-			System.out.println(">> Image Uploaded successfully");
-		}
+		if (result > 0) {System.out.println(">> Image Uploaded successfully");}
 	}
 
 	/**
@@ -554,33 +532,21 @@ public class InputPage {
 	private static void inputAdValues() {
 		String name, age, gender, description, species, type;
 
-
 		name = tfName.getText().trim();					// Trimming TFs with possibility of spaces
 		age = tfAge.getText();
-		if (age.length() > 1 && age.charAt(0) == '0') {
-			age = age.substring(1);
-		}
+		if (age.length() > 1 && age.charAt(0) == '0') {age = age.substring(1);}
 		gender = (String) cbGenders.getValue();
 		description = taDescription.getText().trim();	// Trimming TAs with possibility of spaces
-
 		if (InputValidation.validateChoiceBox(cbSpecies)) {	// If gets executed when the default value of CB is NOT chosen
 			species = (String) cbSpecies.getValue();
-		} else {
-			species = tfNewSpecies.getText().trim();
-		}
-
+		} else {species = tfNewSpecies.getText().trim();}
 		if (InputValidation.validateChoiceBox(cbType)) {
 			type = (String) cbType.getValue();
-		} else {
-			type = tfNewType.getText().trim();
-		}
-
-
+		} else {type = tfNewType.getText().trim();}
 		String insert = "INSERT INTO Ads (Name, Species, Type, Gender, Age, Description, AgencyID) ";
 		String values = "VALUES ('" + name + "', '" + species + "', '" + type + "', '" + gender + "', " + age
 				+ ", '" + description + "', " + agency.getID() + ");";		// Exchange 1 with the agencies ID.
 		System.out.println(">> " + insert + "\n" + ">> " + values);
-
 		db.executeUpdate(insert + values);
 	}
 	
@@ -593,44 +559,27 @@ public class InputPage {
 										 TextField tfStreet, TextField tfZip, TextField tfCity)  {
 		String name, phone, email, password, street, zip, city;
 		
-		/*
-		 * Creating Agency
-		 */
-		
 		name = tfName.getText().trim();
 		email = tfEmail.getText();
 		phone = tfPhone.getText();
 		password = pfPassword.getText();
-		
 		String insertInfo = "INSERT INTO Agencies (Name, Phone, Email, Password)";
 		String valuesInfo = " VALUES ('" + name  + "', '"+ phone + "', '" + email + "', '" + password + "');";
 		System.out.println(">> " + insertInfo + valuesInfo);
-		
 		db.executeUpdate(insertInfo + valuesInfo);
-		
-		/*
-		 * Adding address.
-		 */
 		
 		int agencyID = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM "
 																	 + "Agencies ORDER BY "
 																	 + "ID DESC;")).get(0).get(0));
 		db.closeConnection();
-		
 		street = tfStreet.getText().trim();
 		zip = tfZip.getText();
 		city = tfCity.getText().trim();
-		
 		String insertAddress = "INSERT INTO Addresses (Street, ZIP, City, AgencyID)";
 		String valuesAddress = " VALUES ('" + street + "', '" + zip + "', '" + city + "', " + agencyID + ");";
 		System.out.println(">> " + insertAddress + valuesAddress);
-		
 		db.executeUpdate(insertAddress + valuesAddress); 
-		
-		/*
-		 * Hard coded default rating for new agencies, ensures log in possible upon account creation.
-		 */
-		
+		// Default rating inserted so that agencies can log in upon account creation.
 		db.executeUpdate("INSERT INTO Ratings (Rating, Comment, AgencyID) VALUES (0, 'N/A', " + agencyID + ");");
 	}
 	
@@ -649,12 +598,10 @@ public class InputPage {
 		values = "";
 		where = " WHERE ID = " + ad.getID() + ";";
 		
-		
 		values += "Name = '" + name.getText().trim() + "', ";					// Trimming TFs with possibility of spaces
 		values += "Age = " + age.getText() + ", ";
 		values += "Gender = '" + (String) gender.getValue() + "', ";
 		values += "Description = '" + description.getText().trim() + "', ";	 	// Trimming TAs with possibility of spaces
-			
 		if (InputValidation.validateChoiceBox(cbSpecies)) {				 				// If gets executed when the default value of CB is NOT chosen
 			values += "Species = '" + (String) cbSpecies.getValue() + "', ";
 		} else {values += "Species = '" + tfSpecies.getText().trim() + "', ";}
@@ -662,16 +609,11 @@ public class InputPage {
 		if (InputValidation.validateChoiceBox(cbType)) {
 			values += "Type = '" + (String) cbType.getValue() + "'";
 		} else {values += "Type = '" + tfType.getText().trim() + "'";}
-		
 		if (reActivate.isSelected()) {
 			values += ", StartDate = date('NOW'), EndDate = date('NOW', '+90 days')";
 		}
-		
 		updateAd += values + where;
-
-		System.out.println(">> Here comes an Ad update:");
-		System.out.println(">> " + updateAd);
-		
+		System.out.println(">> " + updateAd.substring(0, 10) + ": " + ad.getID());
 		db.executeUpdate(updateAd);
 	}
 	
@@ -691,32 +633,18 @@ public class InputPage {
 		whereInfo = " WHERE ID = " + inputAgency.getID() + ";";
 		whereAddress = " WHERE Addresses.AgencyID = " + inputAgency.getID() + ";";
 	
-		/*
-		 * Updating agency table
-		 */
-		
 		valuesInfo += "Name = '" + name.getText() + "', ";
 		valuesInfo += "Phone = '" + phone.getText() + "', ";
 		valuesInfo += "Email = '" + email.getText() + "'";
 		updateInfo += valuesInfo + whereInfo;
-		
-		System.out.println(">> Here comes an info update:");
-		System.out.println(">> " + updateInfo);
-		
+		System.out.println(">> INFO " + updateInfo.substring(0, 10) + ": " + inputAgency.getID());
 		db.executeUpdate(updateInfo);
 		
-		/*
-		 * Updating address table
-		 */
-	
 		valuesAddress += "Street = '" + street.getText().trim() + "', ";
 		valuesAddress += "ZIP = '" + zip.getText() + "', ";
 		valuesAddress += "City = '" + city.getText().trim() + "'";
 		updateAddress += valuesAddress + whereAddress;
-		
-		System.out.println(">> Here comes an address update:");
-		System.out.println(">> " + updateAddress);
-		
+		System.out.println(">> ADDRESS " + updateAddress.substring(0, 10) + ": " + inputAgency.getID());
 		db.executeUpdate(updateAddress);
 	}
 	
@@ -732,10 +660,16 @@ public class InputPage {
 		where = " WHERE ID = " + inputAgency.getID() + ";";
 		
 		updatePassword += value + where;
-		
-		System.out.println(">> Here comes a password update:");
-		System.out.println(">> " + updatePassword);
-		
+		System.out.println(">> PASSWORD " + updatePassword.substring(0, 10) + ": " + inputAgency.getID());
 		db.executeUpdate(updatePassword);
+	}
+	
+	/**
+	 * Delete an ad.
+	 */
+	
+	public static void deleteMemberAd(Ad ad) {
+		System.out.println(">> DELETE FROM Ads: " + ad.getID());
+		db.executeUpdate("DELETE FROM Ads WHERE ID = " + ad.getID() + ";");		
 	}
 }
