@@ -95,8 +95,8 @@ public class MemberPage {
 		layoutMP.setTop(viewMemberLogo());
 		layoutMP.setCenter(viewMemberInfo());
 		layoutMP.setBottom(viewMemberAds());
-		
 		sceneMP = new Scene(layoutMP, 600, 750);
+		sceneMP.getStylesheets().add("table.css");
 
 		window.setScene(sceneMP);
 		window.showAndWait();
