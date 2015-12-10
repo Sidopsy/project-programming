@@ -1,5 +1,7 @@
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -7,6 +9,7 @@ import org.sqlite.SQLiteConfig;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 
@@ -34,7 +37,7 @@ public class DBobject {
 		this.dbType = "jdbc:sqlite:";
 		this.dbName = "BeeHive";
 		this.dbDriver = "org.sqlite.JDBC";
-		
+
 		System.out.println(">> Loading driver");
 		try {
 			Class.forName(dbDriver);
@@ -47,13 +50,13 @@ public class DBobject {
 	 * Setting the connection to the database based on the dbName and Type, foreign keys are also activated here using the SQLiteConfig.
 	 * 
 	 */
-	
+
 	public void setConnection() {
 		System.out.println(">> Setting connection to DB");
 		try {
 			SQLiteConfig dbProperties = new SQLiteConfig();
 			dbProperties.enforceForeignKeys(true);
-			
+
 			connect = DriverManager.getConnection(dbType + dbName, dbProperties.toProperties());
 			connect.setAutoCommit(false);
 
@@ -69,16 +72,16 @@ public class DBobject {
 	 * @return boolean
 	 * @throws SQLException
 	 */
-	
+
 	public boolean foreignKeysOn() {
 		setConnection();
 		System.out.println(">> Checking foreign keys...");
 		int foreignKeyStatus = 2;
-		
+
 		try {
 			stmt = connect.prepareStatement("PRAGMA foreign_keys;");
 			resultSet = stmt.executeQuery();
-		
+
 			while (resultSet.next()) {
 				foreignKeyStatus = resultSet.getInt("foreign_keys");
 			}
@@ -86,7 +89,7 @@ public class DBobject {
 		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-		
+
 		if (foreignKeyStatus == 1) {
 			System.out.println(">> Foreign keys activated!");
 			return true;
@@ -95,26 +98,26 @@ public class DBobject {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Execute queries to the database.
 	 * 
 	 * @throws SQLException
 	 */
-	
+
 	public ResultSet executeQuery(String query) {
 		setConnection();
 		System.out.println(">> Executing query");
-		
+
 		try {
 			stmt = connect.prepareStatement(query);
 			resultSet = stmt.executeQuery();
-		
+
 			connect.commit();
 		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-		
+
 		return resultSet;
 	}
 
@@ -125,26 +128,26 @@ public class DBobject {
 	 * @param String update
 	 * @throws SQLException
 	 */
-	
+
 	public void executeUpdate(String update){
 		setConnection();
 		System.out.println(">> " + update.substring(0, 10));
-		
+
 		try {
 			stmt = connect.prepareStatement(update);
 			stmt.executeUpdate();
-		
+
 			connect.commit();
-			closeConnection();
 		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
+		closeConnection();
 	}
-	
+
 	/**
 	 * 
 	 */
-	
+
 	public int updatePicture(String update, byte[] parameters, int agencyID) {
 		int result = 0;
 		setConnection();
@@ -155,30 +158,30 @@ public class DBobject {
 			stmt.setInt(2, agencyID);
 			result = stmt.executeUpdate();
 			connect.commit();
-			closeConnection();
-			return result;
+
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-		
+		closeConnection();
+
 		return result;
 	}
-	
+
 	/**
 	 * Returns an integer representing the number of columns in the ResultSet. If an error occurs, -1 is returned.
 	 * 
 	 * @param ResultSet input
 	 * @return Integer representing number of ResultSet columns
 	 */
-	
+
 	public int getColumnCount(ResultSet input) throws SQLException {
-	    int iOutput = 0;
-	   	ResultSetMetaData rsMetaData = input.getMetaData();
-	   	iOutput = rsMetaData.getColumnCount();
-	   	
-	    return iOutput;
+		int iOutput = 0;
+		ResultSetMetaData rsMetaData = input.getMetaData();
+		iOutput = rsMetaData.getColumnCount();
+
+		return iOutput;
 	}
-	
+
 	/**
 	 * Returns a string array with all column names in the input Result Set.
 	 * 
@@ -189,7 +192,7 @@ public class DBobject {
 	public String[] metaDataNames(ResultSet input) throws SQLException {
 		ResultSetMetaData rsMeta = input.getMetaData();				// Getting all metaData from ResultSet.
 		String[] nameArray = new String[getColumnCount(input)];		// Counting columns to determine size of the array, starts at 1 so no need for -1.
-		
+
 		for (int i = 1; i <= nameArray.length; i++) {				
 			nameArray[i - 1] = rsMeta.getColumnName(i);				// ResultSet metaData starts at 1 when counting columns, if 7 columns are present it is then not
 		}															// counted for 0 to 6 but 1 to 7.
@@ -203,15 +206,15 @@ public class DBobject {
 	 * @param ResultSet input
 	 * @return String[] with all column types
 	 */
-	
+
 	public String[] metaDataTypes(ResultSet input) throws SQLException {
 		ResultSetMetaData rsMeta = input.getMetaData();
 		String[] typeArray = new String[getColumnCount(input)];
-		
+
 		for (int i = 1; i <= typeArray.length; i++) {
 			typeArray[i - 1] = rsMeta.getColumnTypeName(i);
 		}
-		
+
 		return typeArray;
 	}
 
@@ -222,12 +225,12 @@ public class DBobject {
 	 * @return ArrayList<ArrayList<String>>
 	 * @throws SQLException
 	 */
-	
+
 	public ArrayList<ArrayList<String>> fetchResult(ResultSet input) {
 		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
 		try {	
 			int columnCount = getColumnCount(input);
-		
+
 			while (input.next()) {
 				ArrayList<String> result = new ArrayList<>();
 				for (int index = 1; index <= columnCount; index++) {
@@ -238,101 +241,110 @@ public class DBobject {
 		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-			
+
 		return resultList;
 	}
-	
+
 	/**
 	 * 
 	 * @param input
 	 * @return
 	 * @throws IOException 
 	 */
-	
+
 	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
-		Image picture;
-		
+
 		try {
-	        while (input.next()) {
-	        	int id = input.getInt("Id");
-	        	picture = new Image("PlaceholderSmall.png");
-	        	String name = input.getString("Name");
-	        	String gender = input.getString("Gender");
-	        	String species = input.getString("Species");
-	        	String type = input.getString("Type");
-	        	int age = input.getInt("Age");
-	        	String description = input.getString("Description");
-	        	String startDate = input.getString("StartDate");
-	        	String endDate = input.getString("EndDate");
-	        	int agencyId = input.getInt("AgencyID");
-	        	String agencyName = input.getString("Agency");
-	        	double rating = Double.parseDouble(input.getString("Rating"));
-	        	
-	        	Ad ad = new Ad(id,picture,name,gender,species,type,age,description,startDate,endDate,agencyId,agencyName,rating);
-	        	result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
-	        }
-		} catch (SQLException e) {
+			while (input.next()) {
+				BufferedImage bufferedImage = null;
+				InputStream fis = null;
+				Image picture;
+				int id = input.getInt("Id");
+				try {
+					fis = input.getBinaryStream("Picture");  //It happens that the 3rd column in my database is where the image is stored (a BLOB)
+					bufferedImage = javax.imageio.ImageIO.read(fis);  //create the BufferedImaged
+					picture = SwingFXUtils.toFXImage(bufferedImage, null);
+				} catch (NullPointerException e) {
+					System.err.println(">> No picture available for this advertisement");
+					picture = new Image("PlaceholderSmall.png");
+				}
+				String name = input.getString("Name");
+				String gender = input.getString("Gender");
+				String species = input.getString("Species");
+				String type = input.getString("Type");
+				int age = input.getInt("Age");
+				String description = input.getString("Description");
+				String startDate = input.getString("StartDate");
+				String endDate = input.getString("EndDate");
+				int agencyId = input.getInt("AgencyID");
+				String agencyName = input.getString("Agency");
+				double rating = Double.parseDouble(input.getString("Rating"));
+
+				Ad ad = new Ad(id,picture,name,gender,species,type,age,description,startDate,endDate,agencyId,agencyName,rating);
+				result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
+
+			}
+		} catch (SQLException | IOException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		}
-	    
-	    return result;
+		} 
+		return result;
 	}
-	
+
 	/**
 	 * Method for fetching information about agencies for displaying in the application.
 	 * 
 	 * @param input
 	 * @return ArrayLisy<AgencyExtended>
 	 */
-	
+
 	public ArrayList<Agency> fetchAgency(ResultSet input) {
 		ArrayList<Agency> result = new ArrayList<>();
-	    try {    	
+		try {    	
 			while (input.next()) {											// This while-loop adds the results to the arrayList.
-	        		int id = input.getInt("ID");
-	        		String name = input.getString("Name");
-	        		String rating = input.getString("AVG(Rating)");
-	        		String logo = input.getString("Logo");
-	        		Agency agency = new Agency(id, logo, name, rating);
-	        		result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
-	        	}
-	    } catch (SQLException e) {
+				int id = input.getInt("ID");
+				String name = input.getString("Name");
+				String rating = input.getString("AVG(Rating)");
+				String logo = input.getString("Logo");
+				Agency agency = new Agency(id, logo, name, rating);
+				result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
+			}
+		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-	    
-	    return result;
+
+		return result;
 	}
-	
+
 	/**
 	 * Method for fetching extended information about agencies for displaying in the application.
 	 * 
 	 * @param input
 	 * @return ArrayLisy<AgencyExtended>
 	 */
-	
+
 	public ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
 		ArrayList<AgencyExt> result = new ArrayList<>();
-	    try {	
+		try {	
 			while (input.next()) {											// This while-loop adds the results to the arrayList.
-	        		int id = input.getInt("ID");
-	        		String logo = input.getString("Logo");
-	        		String name = input.getString("Name");
-	        		String rating = input.getString("AVG(Rating)");
-	        		String email = input.getString("Email");
-	        		String phone = input.getString("Phone");
-	        		String street = input.getString("Street");
-	        		String zip = input.getString("Zip");
-	        		String city = input.getString("City");
-	        		AgencyExt agency = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
-	        		result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
-	        }
+				int id = input.getInt("ID");
+				String logo = input.getString("Logo");
+				String name = input.getString("Name");
+				String rating = input.getString("AVG(Rating)");
+				String email = input.getString("Email");
+				String phone = input.getString("Phone");
+				String street = input.getString("Street");
+				String zip = input.getString("Zip");
+				String city = input.getString("City");
+				AgencyExt agency = new AgencyExt(id, logo, name, rating, email, phone, street, zip, city);
+				result.add(agency);	// Each iteration of the loop an object is added to the ArrayList.
+			}
 		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
-	    return result;
+		return result;
 	}
-	
+
 	/**
 	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 3D array-
 	 * list from a query.
@@ -340,10 +352,10 @@ public class DBobject {
 	 * @param ArrayList<ArrayList<String>>
 	 * @returns ObservableList<Object>
 	 */
-	
+
 	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
 		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator(), "Select all" , new Separator());
-		
+
 		for (int i = 0; input.size() > i; i++) {
 			ArrayList<String> fetch = input.get(i);
 			for (int j = 0; fetch.size() > j; j++) {
@@ -360,7 +372,7 @@ public class DBobject {
 	 * @param ArrayList<Ad>
 	 * @returns ObservableList<Object>
 	 */
-	
+
 	public ObservableList<Ad> createObservableList(ArrayList<Ad> input) {
 		return FXCollections.observableArrayList(input);
 	}
@@ -385,7 +397,7 @@ public class DBobject {
 		}
 		System.out.println(">> Closed DB connection");
 	}
-	
+
 	public Connection getConnection() {
 		return connect;
 	}
