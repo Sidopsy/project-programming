@@ -881,7 +881,6 @@ public class MemberPage {
 		GridPane gridPane = inputGridPane;
 		Button btnAddPicture, btnSaveAd, btnBack, btnDelete;
 		Alert alert;
-		String reActivateMessage = "Your advertisement has been successfully updated, and will be visible for the next 90 days.";
 		
 		
 		myImageView = new ImageView();
@@ -921,10 +920,10 @@ public class MemberPage {
 		btnAddPicture.setMaxSize(110, 50);
 		btnAddPicture.setOnAction(loadPicture);
 		
-		
-		alert = new Alert(AlertType.INFORMATION);
-		
 
+		alert = new Alert(AlertType.ERROR);
+		
+		
 		btnSaveAd = new Button("Save ad");
 		btnSaveAd.setMinWidth(110);
 		btnSaveAd.setMaxWidth(110);
@@ -943,13 +942,6 @@ public class MemberPage {
 					}
 					file = null;
 				} else {}
-				
-				alert.setAlertType(AlertType.INFORMATION);		// Needed to set alert back to info after an error.
-				alert.setTitle("Success");
-				alert.setHeaderText("Advertisement has been updated");
-				alert.setContentText("Your advertisement has been successfully updated.");
-				if (chbReActivate.isSelected()) {alert.setContentText(reActivateMessage);}
-				alert.showAndWait();
 				refreshTable();
 				window.setScene(sceneMP);
 			} else {

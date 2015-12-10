@@ -1,5 +1,7 @@
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -157,11 +159,12 @@ public class DBobject {
 			stmt.setInt(2, agencyID);
 			result = stmt.executeUpdate();
 			connect.commit();
-			closeConnection();
-			return result;
+
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
+
+		closeConnection();
 
 		return result;
 	}
@@ -253,12 +256,21 @@ public class DBobject {
 
 	public ArrayList<Ad> fetchAd(ResultSet input) {
 		ArrayList<Ad> result = new ArrayList<>();
-		Image picture;
 
 		try {
 			while (input.next()) {
+				BufferedImage bufferedImage = null;
+				InputStream fis = null;
+				Image picture;
 				int id = input.getInt("Id");
-				picture = new Image("PlaceholderSmall.png");
+				try {
+					fis = input.getBinaryStream("Picture");  //It happens that the 3rd column in my database is where the image is stored (a BLOB)
+					bufferedImage = javax.imageio.ImageIO.read(fis);  //create the BufferedImaged
+					picture = SwingFXUtils.toFXImage(bufferedImage, null);
+				} catch (NullPointerException e) {
+					System.err.println(">> No picture available for this advertisement");
+					picture = new Image("PlaceholderSmall.png");
+				}
 				String name = input.getString("Name");
 				String gender = input.getString("Gender");
 				String species = input.getString("Species");
@@ -273,11 +285,11 @@ public class DBobject {
 
 				Ad ad = new Ad(id,picture,name,gender,species,type,age,description,startDate,endDate,agencyId,agencyName,rating);
 				result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
-			}
-		} catch (SQLException e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		}
 
+			}
+		} catch (SQLException | IOException e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+		} 
 		return result;
 	}
 
