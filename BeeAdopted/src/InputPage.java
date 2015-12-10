@@ -468,7 +468,6 @@ public class InputPage {
 			try {
 				BufferedImage bufferedImage = ImageIO.read(file);
 				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
-
 				if (image != null) {myImageView.setImage(image);}
 			} catch (Exception ex) {
 				System.err.println(">> No image was chosen or another error was encountered...");

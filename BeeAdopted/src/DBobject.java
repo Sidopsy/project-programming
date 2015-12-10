@@ -283,7 +283,6 @@ public class DBobject {
 
 				Ad ad = new Ad(id,picture,name,gender,species,type,age,description,startDate,endDate,agencyId,agencyName,rating);
 				result.add(ad);	// Each iteration of the loop an object is added to the ArrayList.
-
 			}
 		} catch (SQLException | IOException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
