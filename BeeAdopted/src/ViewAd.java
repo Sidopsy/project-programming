@@ -112,7 +112,6 @@ public class ViewAd {
 
 		// Creating the Hbox to be returned.
 		HBox hbox = new HBox();
-		hbox.getStyleClass().add("hbox");
 		hbox.setPadding(new Insets(10));
 		hbox.setSpacing(10);
 
@@ -134,7 +133,6 @@ public class ViewAd {
 
 		// GridPane to be returned.
 		VBox vbox = new VBox();
-		vbox.getStyleClass().add("vbox");
 		vbox.setPrefSize(350, 400);
 		vbox.setSpacing(10);										// Vertical gaps between columns.
 		vbox.setPadding(new Insets(2,2,2,2));				// Setting the padding around the content.
@@ -212,7 +210,6 @@ public class ViewAd {
 
 		// The Vbox to be returned.
 		VBox vbox = new VBox();
-		vbox.getStyleClass().add("vbox");
 		vbox.setPrefSize(250, 400);
 		vbox.setPadding(new Insets(10));
 		vbox.setSpacing(10);
@@ -277,6 +274,12 @@ public class ViewAd {
 		
 		Button rateButton = new Button("Rate agency");
 		grid.add(rateButton, 0, 3);
+		
+		rateButton.setOnAction(e -> {
+			int ratingValue = (int)rating.getRating();
+			String comment = textArea.getText();
+			db.executeUpdate("UPDATE Ratings ");
+		});
 		
 
 		// Same function as in other scene. Closes the window.
