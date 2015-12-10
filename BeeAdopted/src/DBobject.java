@@ -36,6 +36,7 @@ public class DBobject {
 	public DBobject() {
 		this.dbType = "jdbc:sqlite:";
 		this.dbName = "BeeHive";
+		//this.dbName = "//drive.google.com/file/d/0B8ZOX8oToxRGdnNsMi16ZDl2bVU/";
 		this.dbDriver = "org.sqlite.JDBC";
 
 		System.out.println(">> Loading driver");
@@ -162,6 +163,7 @@ public class DBobject {
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
+
 		closeConnection();
 
 		return result;
