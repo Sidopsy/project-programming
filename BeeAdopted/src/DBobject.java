@@ -135,10 +135,10 @@ public class DBobject {
 			stmt.executeUpdate();
 		
 			connect.commit();
-			closeConnection();
 		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		}
+		closeConnection();
 	}
 	
 	/**
