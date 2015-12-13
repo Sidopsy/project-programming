@@ -370,10 +370,6 @@ public class Main extends Application {
 		cbAgencies.setValue(cbAgencies.getItems().get(0));
 		cbAgencies.setOnAction(e -> agency = (String) cbAgencies.getValue());
 
-		tfDescription = new TextField();
-		tfDescription.setPrefWidth(150);
-		tfDescription.setPromptText("Description");
-
 		btnSearch = new Button("Search");
 		btnSearch.setOnAction(e -> {
 			tvAd.getChildrenUnmodifiable().removeAll(theSearch);
@@ -388,17 +384,9 @@ public class Main extends Application {
 		});
 
 
-		Button btnShowMoreFilters = new Button("Show more filters");
+		primaryFilters.getChildren().addAll(cbSpecies,cbType,slAge,cbGender,cbAgencies);
 
-		primaryFilters.getChildren().addAll(cbSpecies,cbType,slAge,btnSearch);
-		secondaryFilters.getChildren().addAll(cbGender,cbAgencies,tfDescription);
-		filters.getChildren().addAll(primaryFilters, btnShowMoreFilters);
-
-
-		btnShowMoreFilters.setOnAction(e -> {
-			filters.getChildren().removeAll(filters.getChildren());
-			filters.getChildren().addAll(primaryFilters, secondaryFilters);
-		});
+		filters.getChildren().addAll(primaryFilters, btnSearch);
 
 
 
@@ -456,7 +444,9 @@ public class Main extends Application {
 			if(city != "Select all"){
 				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + " GROUP BY Agencies.ID) as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Ads.ID;";
 			} else {
+
 				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, avg(Rating) as Rating FROM Ratings, Agencies,Ads where Ads.AgencyID == Agencies.ID and  Ratings.AgencyID == Agencies.ID and Ads.AgencyID == Agencies.ID Group by Ads.ID;";
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, AVG(Rating) as Rating FROM Ads,Agencies,Ratings WHERE Agencies.ID == Ratings.AgencyID and Agencies.ID == Ads.AgencyID and EndDate >= '" + today + "' Group BY Ads.ID;";
 			}
 			firstSearch = false;
 		} else {

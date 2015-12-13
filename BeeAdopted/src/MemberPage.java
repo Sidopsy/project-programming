@@ -83,7 +83,7 @@ public class MemberPage {
 	 */
 
 	public static void display(AgencyExt agencyInfo) {
-		loggedInAgency = agencyInfo;			// This is where the agency should come in.
+		loggedInAgency = agencyInfo;	// This is where the agency should come in.
 		
 		window = new Stage();
 
@@ -115,7 +115,6 @@ public class MemberPage {
 		HBox hBox = new HBox();
 		Button btnUpdateLogo, btnSaveLogo;
 		
-		
 		myImageView = new ImageView();
 		myImageView.setPreserveRatio(false);
 		myImageView.setFitWidth(100);
@@ -129,27 +128,19 @@ public class MemberPage {
 		try{
 			BufferedImage image = null;
 			InputStream inputStream = null;
-
 			inputStream = db.executeQuery("SELECT Logo FROM Agencies WHERE ID = " + loggedInAgency.getID() + ";").getBinaryStream("Logo");
 			db.closeConnection();
 			image = javax.imageio.ImageIO.read(inputStream);
-			
 			if(image != null){
 				Image newPic = SwingFXUtils.toFXImage(image, null);
 				myImageView.setImage(newPic);
 			} 
-
 			inputStream.close();
-		} catch (Exception e){
-			System.err.println(">> Error while loading image, or no image selected");
+		} catch (Exception e) {System.err.println(">> Error while loading image, or no image selected");
 		} finally {
 			try {
-				if (!db.getConnection().isClosed()) {
-					db.closeConnection();
-				}
-			} catch (SQLException e) {
-				System.err.println(">> Error when closing connection");
-			}
+				if (!db.getConnection().isClosed()) {db.closeConnection();}
+			} catch (SQLException e) {System.err.println(">> Error when closing connection");}
 		}
 		
 		btnUpdateLogo = new Button("Change logo");
@@ -173,7 +164,6 @@ public class MemberPage {
 			
 		hBox.getChildren().addAll(myImageView, btnUpdateLogo, btnSaveLogo);
 		
-		
 		return hBox;
 	}
 	
@@ -189,12 +179,10 @@ public class MemberPage {
 		ColumnConstraints col2 = new ColumnConstraints();
 		ColumnConstraints col3 = new ColumnConstraints();
 		
-		
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
 		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(5, 5, 5, 5));
-		
 		
 		col1.setHalignment(HPos.RIGHT);
 		col1.setPercentWidth(33);
@@ -204,11 +192,9 @@ public class MemberPage {
 		col3.setPercentWidth(33);
 		gridPane.getColumnConstraints().addAll(col1, col2, col3);
 		
-		
 		addMemberLabels(gridPane);				// Calls a method to add labels to the members view.
 		addMemberTextFields(gridPane);			// Calls a method to add text fields to the members view.
 		addMemberButtons(gridPane);				// Calls a method to add buttons to the members view.
-		
 		
 		return gridPane;
 	}
@@ -224,7 +210,6 @@ public class MemberPage {
 		GridPane gridPane = inputGridPane;
 		Label lblAgencyInfo, lblPassword, lblAdInfo;
 		
-		
 		lblAgencyInfo = new Label("Your information:");
 		
 		lblPassword = new Label("Change password:");
@@ -239,7 +224,6 @@ public class MemberPage {
 		GridPane.setMargin(lblAgencyInfo, new Insets(-45, 43, 0, 0));
 		GridPane.setMargin(lblPassword, new Insets(-45, 0, 0, 0));
 		GridPane.setMargin(lblAdInfo, new Insets(10, 0, 0, 0));	
-		
 		
 		return gridPane;
 	}
@@ -333,7 +317,6 @@ public class MemberPage {
 		gridPane.add(pfPassword, 2, 0);
 		gridPane.add(pfConfirmPassword, 2, 1);
 		
-		
 		return gridPane;
 	}
 	
@@ -389,9 +372,9 @@ public class MemberPage {
 				InputPage.updateMemberInfo(loggedInAgency, tfName, tfPhone, tfEmail, 
 											tfStreet, tfZip, tfCity);
 				
-				loggedInAgency = db.fetchAgencyExt(
-						db.executeQuery("SELECT * FROM AgencyExtended WHERE "
-										+ "ID = '" + loggedInAgency.getID() + "';")).get(0);
+				loggedInAgency = db.fetchAgencyExt(db.executeQuery(
+				"SELECT * FROM AgencyExtended "
+				+ "WHERE ID = '" + loggedInAgency.getID() + "';")).get(0);
 				db.closeConnection();
 				
 				resetColorMemberFields();
@@ -401,8 +384,7 @@ public class MemberPage {
 				alert.setContentText("Input changes are not valid and cannot be saved.");
 				alert.showAndWait();
 			}
-		});
-		
+		});	
 		
 		btnCancelEdit.setMinWidth(70);
 		btnCancelEdit.setMaxWidth(70);
@@ -416,7 +398,6 @@ public class MemberPage {
 			resetInfoMemberFields();
 		});
 		
-
 		btnSavePassword = new Button("Save");
 		btnSavePassword.setMinWidth(50);
 		btnSavePassword.setMaxWidth(50);
@@ -433,12 +414,10 @@ public class MemberPage {
 			}
 		});
 		
-		
 		btnInputPage = new Button("New ad");
 		btnInputPage.setOnAction(e -> {
 			InputPage.display(loggedInAgency);
 		});
-		
 		
 		gridPane.add(btnEditInfo, 0, 3);
 		gridPane.add(btnSaveInfo, 0, 3);
@@ -451,7 +430,6 @@ public class MemberPage {
 		GridPane.setMargin(btnSaveInfo, new Insets(0, 0, 0, 38));
 		GridPane.setHalignment(btnCancelEdit, HPos.LEFT);
 		GridPane.setMargin(btnCancelEdit, new Insets(0, 0, 0, 100));
-		
 		
 		return gridPane;
 	}
@@ -474,17 +452,17 @@ public class MemberPage {
 		TableColumn<Ad, String> tcStartDate = 	new TableColumn<>("Submitted");
 		TableColumn<Ad, String> tcEndDate 	= 	new TableColumn<>("Expires");
 		String sql = "SELECT Distinct Ads.ID, Picture, Ads.Name, Species, Type, Gender, Age, Description, "
-				   + "StartDate, EndDate, Ads.AgencyID, Agencies.Name as Agency, "
-				   + "(SELECT AVG(Rating) "
-				   + "FROM Agencies, Ratings "
-				   + "WHERE Agencies.ID = Ratings.AgencyID and "
-				   + "Agencies.ID = " + loggedInAgency.getID() + ") as Rating "
-				   + "FROM Ads, Agencies, Addresses, Ratings "
-				   + "WHERE Agencies.ID = Addresses.AgencyID and "
-				   + "Agencies.ID = Ratings.AgencyID and "
-				   + "Agencies.ID = Ads.AgencyID and "
-				   + "Agencies.ID = " + loggedInAgency.getID() + " "
-				   + "ORDER BY StartDate DESC;";
+		+ "StartDate, EndDate, Ads.AgencyID, Agencies.Name as Agency, "
+		+ "(SELECT AVG(Rating) "
+		+ "FROM Agencies, Ratings "
+		+ "WHERE Agencies.ID = Ratings.AgencyID "
+		+ "and Agencies.ID = " + loggedInAgency.getID() + ") as Rating "
+		+ "FROM Ads, Agencies, Addresses, Ratings "
+		+ "WHERE Agencies.ID = Addresses.AgencyID "
+		+ "and Agencies.ID = Ratings.AgencyID "
+		+ "and Agencies.ID = Ads.AgencyID "
+		+ "and Agencies.ID = " + loggedInAgency.getID() + " "
+		+ "ORDER BY StartDate DESC;";
 		ArrayList<Ad> alAgencyAds = db.fetchAd(db.executeQuery(sql));
 		db.closeConnection();
 		ObservableList<Ad> olAgencyAds = db.createObservableList((alAgencyAds));
@@ -533,7 +511,6 @@ public class MemberPage {
 		
 		hbTable.getChildren().add(table);
 		
-		
 		return hbTable;
 	}
 	
@@ -543,24 +520,23 @@ public class MemberPage {
 	
 	public static void refreshTable() {
 		String sql = "SELECT Distinct Ads.ID, Picture, Ads.Name, Species, Type, Gender, Age, Description, "
-				   + "StartDate, EndDate, Ads.AgencyID, Agencies.Name as Agency, "
-				   + "(SELECT AVG(Rating) "
-				   + "FROM Agencies, Ratings "
-				   + "WHERE Agencies.ID = Ratings.AgencyID and "
-				   + "Agencies.ID = " + loggedInAgency.getID() + ") as Rating "
-				   + "FROM Ads, Agencies, Addresses, Ratings "
-				   + "WHERE Agencies.ID = Addresses.AgencyID and "
-				   + "Agencies.ID = Ratings.AgencyID and "
-				   + "Agencies.ID = Ads.AgencyID and "
-				   + "Agencies.ID = " + loggedInAgency.getID() + " "
-				   + "ORDER BY StartDate DESC;";
+		+ "StartDate, EndDate, Ads.AgencyID, Agencies.Name as Agency, "
+		+ "(SELECT AVG(Rating) "
+		+ "FROM Agencies, Ratings "
+		+ "WHERE Agencies.ID = Ratings.AgencyID "
+		+ "and Agencies.ID = " + loggedInAgency.getID() + ") as Rating "
+		+ "FROM Ads, Agencies, Addresses, Ratings "
+		+ "WHERE Agencies.ID = Addresses.AgencyID "
+		+ "and Agencies.ID = Ratings.AgencyID "
+		+ "and Agencies.ID = Ads.AgencyID "
+		+ "and Agencies.ID = " + loggedInAgency.getID() + " "
+		+ "ORDER BY StartDate DESC;";
 		ArrayList<Ad> alAgencyAds = db.fetchAd(db.executeQuery(sql));
 		db.closeConnection();
 		ObservableList<Ad> olAgencyAds = db.createObservableList((alAgencyAds));
 		
 		table.setItems(olAgencyAds);
 		table.refresh();
-		table.sort();
 	}
 	
 	/**
@@ -585,7 +561,6 @@ public class MemberPage {
 		addAdBoxes(gridPane, ad);
 		addAdButtons(gridPane, ad);
 		
-	
 		return gridPane;
 	}
 	
@@ -600,16 +575,13 @@ public class MemberPage {
 		GridPane gridPane = inputGridPane;
 		Label lblName, lblAge, lblGender, lblActiveInfo;
 		
-		
 		lblName = new Label("Name");
 		lblAge = new Label("Age");
 		lblGender = new Label("Gender");
 		lblActiveInfo = new Label("This ad has been removed from the site");
 		lblActiveInfo.setVisible(false);
 		
-		if (InputValidation.checkEndAfterToday(ad)) {// Comparing today's date with that of the ad, sets label and CHB visible depending
-			lblActiveInfo.setVisible(true);			// on the result.
-		} else {}
+		if (InputValidation.checkEndAfterToday(ad)) {lblActiveInfo.setVisible(true);}
 		
 		gridPane.add(lblName, 0, 0);
 		gridPane.add(lblAge, 0, 0);
@@ -619,7 +591,6 @@ public class MemberPage {
 		GridPane.setMargin(lblAge, 		new Insets(-45, 0, 0, 160));
 		GridPane.setMargin(lblGender, 	new Insets(-45, 0, 0, 143));
 		GridPane.setMargin(lblActiveInfo, new Insets(-45, 0, 0, 0));
-		
 		
 		return gridPane;
 	}
@@ -634,7 +605,6 @@ public class MemberPage {
 	private static GridPane addAdTextFields(GridPane inputGridPane, Ad ad) {
 		GridPane gridPane = inputGridPane;
 		
-		
 		tfAdName = new TextField();
 		tfAdName.setText(ad.getName());
 		tfAdName.setMinWidth(150);
@@ -642,7 +612,6 @@ public class MemberPage {
 		tfAdName.setOnKeyReleased(e -> {
 			InputValidation.validateInputTextFieldString(tfAdName);
 		});
-		
 		
 		tfAdAge = new TextField();
 		tfAdAge.setText(ad.getAge() + ""); // need "" since its and integer
@@ -652,7 +621,6 @@ public class MemberPage {
 			InputValidation.validateInputAge(tfAdAge);
 		});
 		
-		
 		taAdDescription = new TextArea();
 		taAdDescription.setText(ad.getDescription());
 		taAdDescription.setMinSize(500, 150);
@@ -660,7 +628,6 @@ public class MemberPage {
 		taAdDescription.setOnKeyReleased(e -> {
 			InputValidation.validateInputTextArea(taAdDescription);
 		});
-		
 		
 		tfAdNewSpecies = new TextField();				// TF for new species
 		tfAdNewSpecies.setMinWidth(100);				// Setting size for TF
@@ -684,7 +651,6 @@ public class MemberPage {
 				chbNewType.setDisable(true);		// Disables option for new typ CHB
 			}
 		});
-
 		
 		tfAdNewType = new TextField();				// TF for new types
 		tfAdNewType.setMinWidth(100);
@@ -695,7 +661,6 @@ public class MemberPage {
 			InputValidation.validateInputTextFieldString(tfAdNewType);
 		});
 		
-		
 		gridPane.add(tfAdName, 0, 0);
 		gridPane.add(tfAdAge, 0, 0);
 		GridPane.setColumnSpan(taAdDescription, 2);
@@ -704,7 +669,6 @@ public class MemberPage {
 		gridPane.add(tfAdNewType, 1, 2);
 		GridPane.setMargin(tfAdAge, 			new Insets(0, 0, 0, 160));
 		GridPane.setMargin(tfAdNewType, 		new Insets(0, 0, 0, -97));
-		
 		
 		return gridPane;
 	}
@@ -718,9 +682,8 @@ public class MemberPage {
 	
 	private static GridPane addAdBoxes(GridPane inputGridPane, Ad ad) {
 		GridPane gridPane = inputGridPane;
-		
-		
 		ObservableList<Object> genders;
+		
 		cbAdGenders = new ChoiceBox<>(genders = FXCollections.observableArrayList("Male", new Separator()));
 		genders.add("Female");
 		cbAdGenders.setValue(ad.getGender());
@@ -733,19 +696,18 @@ public class MemberPage {
 		chbNewType = new CheckBox("New");			// Checkboxes for adding new species and types
 		chbNewSpecies = new CheckBox("New");
 		
-		
-		cbAdSpecies = new ChoiceBox<>(db.createObservableList("Species", db.fetchResult(
-				db.executeQuery("SELECT Distinct Species FROM "
-							  + "Ads ORDER BY "
-							  + "Species;"))));
+		cbAdSpecies = new ChoiceBox<>(db.createObservableList("Species", db.fetchResult(db.executeQuery(
+		"SELECT Distinct Species "
+		+ "FROM Ads "
+		+ "ORDER BY Species;"))));
 		db.closeConnection();
 		
-		cbAdType = new ChoiceBox<>(db.createObservableList("Type", db.fetchResult(
-				 db.executeQuery("SELECT Distinct Type FROM "
-							   + "Ads WHERE Species == '" + ad.getSpecies() + "' "
-							   + "ORDER BY Type;"))));
+		cbAdType = new ChoiceBox<>(db.createObservableList("Type", db.fetchResult(db.executeQuery(
+		"SELECT Distinct Type "
+		+ "FROM Ads "
+		+ "WHERE Species == '" + ad.getSpecies() + "' "
+		+ "ORDER BY Type;"))));
 		db.closeConnection();
-		
 		
 		chbNewSpecies.setOnAction(e -> {
 			if (chbNewSpecies.isSelected()) {
@@ -754,13 +716,11 @@ public class MemberPage {
 				
 				tfAdNewSpecies.setVisible(true);		// TextField appears
 				
-				// Loading all types into type CB when TF has been used
-				obsListType = db.createObservableList("Type", db.fetchResult(
-							  db.executeQuery("SELECT Distinct Type FROM "
-									  		+ "Ads ORDER BY "
-									  		+ "Type;")));
+				obsListType = db.createObservableList("Type", db.fetchResult(db.executeQuery(
+				"SELECT Distinct Type "
+				+ "FROM Ads "
+				+ "ORDER BY Type;")));
 				db.closeConnection();
-
 
 				cbAdType.setItems(obsListType);		// Loading type list into type CB
 				cbAdType.setValue("Type");			// Setting default value to "Type"
@@ -789,8 +749,7 @@ public class MemberPage {
 				chbNewType.setSelected(false);		// Setting type CHB unselected
 				chbNewType.setDisable(true);		// Disables new type until species chosen
 			}
-		});
-		
+		});	
 		
 		chbNewType.setDisable(false);				// Checkbox disables by default
 		chbNewType.setOnAction(e -> {
@@ -806,7 +765,6 @@ public class MemberPage {
 				cbAdType.setVisible(true);			// Setting CB visible again when unchecked
 			}
 		});
-
 		
 		cbAdSpecies.setValue(ad.getSpecies());			// Setting default value to "Species"
 		cbAdSpecies.setMinWidth(100);					// Setting size of the CB
@@ -814,11 +772,11 @@ public class MemberPage {
 		cbAdSpecies.setOnAction(e -> {				// On action (selection) it should...
 			InputValidation.validateChoiceBox(cbAdSpecies);
 			if ((String) cbAdSpecies.getValue() != "Species") {	// If it has changed from "Species", do:
-				obsListType = db.createObservableList("Type", db.fetchResult(
-							  db.executeQuery("SELECT Distinct Type FROM "
-									  	    + "Ads WHERE "
-									  		+ "Species == '" + (String) cbAdSpecies.getValue() + "' ORDER BY "
-									  		+ "Type;")));
+				obsListType = db.createObservableList("Type", db.fetchResult(db.executeQuery(
+				"SELECT Distinct Type "
+				+ "FROM Ads "
+				+ "WHERE Species == '" + (String) cbAdSpecies.getValue() + "' "
+				+ "ORDER BY Type;")));
 				db.closeConnection();
 
 				cbAdType.setItems(obsListType);		// Add the updated list to the CB with types
@@ -834,7 +792,6 @@ public class MemberPage {
 			}
 		});
 
-
 		cbAdType.setValue(ad.getType());			// Setting default value of type CB to "Type"
 		cbAdType.setMinWidth(100);					// Setting size of type CB
 		cbAdType.setMaxWidth(100);
@@ -845,14 +802,9 @@ public class MemberPage {
 			} catch (Exception error) {}
 		});
 		
-		
 		chbReActivate = new CheckBox("Re-activate?");
 		chbReActivate.setVisible(false);
-		
-		if (InputValidation.checkEndAfterToday(ad)) {
-			chbReActivate.setVisible(true);
-		} else {}
-		
+		if (InputValidation.checkEndAfterToday(ad)) {chbReActivate.setVisible(true);} 
 		
 		gridPane.add(cbAdGenders, 1, 0);
 		gridPane.add(cbAdSpecies, 0, 2);				// Adding CB for species to gridpane, column 0, row 3
@@ -863,8 +815,7 @@ public class MemberPage {
 		GridPane.setMargin(cbAdGenders, 	new Insets(0, 0, 0, 143));
 		GridPane.setMargin(cbAdType, 		new Insets(0, 0, 0, -97));
 		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
-		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 8));
-		
+		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 8));	
 		
 		return gridPane;
 	}
@@ -882,47 +833,35 @@ public class MemberPage {
 		Button btnAddPicture, btnSaveAd, btnBack, btnDelete;
 		Alert alert;
 		
-		
 		myImageView = new ImageView();
 		myImageView.setPreserveRatio(false);
 		myImageView.setFitWidth(100);
 		myImageView.setFitHeight(100);
-		
 		try{
 			BufferedImage image = null;
 			InputStream inputStream = null;
-
 			inputStream = db.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";").getBinaryStream("Picture");
 			db.closeConnection();
 			image = javax.imageio.ImageIO.read(inputStream);
 			inputStream.close();
-			
 			if(image != null) {
 				Image newPic = SwingFXUtils.toFXImage(image, null);
 				myImageView.setImage(newPic);
 			}
-			
 		} catch (Exception e){
 			System.err.println(">> Error while loading image, or no image selected");
 		} finally {
 			try {
-				if (!db.getConnection().isClosed()) {
-					db.closeConnection();
-				}
-			} catch (SQLException e) {
-				System.err.println(">> Error when closing connection");
-			}
+				if (!db.getConnection().isClosed()) {db.closeConnection();}
+			} catch (SQLException e) {System.err.println(">> Error when closing connection");}
 		}
-		
 		
 		btnAddPicture = new Button("Upload picture");
 		btnAddPicture.setMinSize(110, 50);
 		btnAddPicture.setMaxSize(110, 50);
 		btnAddPicture.setOnAction(loadPicture);
 		
-
 		alert = new Alert(AlertType.ERROR);
-		
 		
 		btnSaveAd = new Button("Save ad");
 		btnSaveAd.setMinWidth(110);
@@ -935,14 +874,13 @@ public class MemberPage {
 				InputPage.updateMemberAd(ad, tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
 										tfAdNewSpecies, tfAdNewType, taAdDescription, chbReActivate);
 				if (file != null) {	
-					try {
-						InputPage.inputUpdatePicture(ad.getID(), file, true);
-					} catch (Exception e1) {
+					try {InputPage.inputUpdatePicture(ad.getID(), file, true);} catch (Exception e1) {
 						System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
 					}
 					file = null;
 				} else {}
 				refreshTable();
+				layoutMP.setTop(viewMemberLogo());	// Refresh the logo ImageView that has been used in update ad page.
 				window.setScene(sceneMP);
 			} else {
 				System.out.println(">> Update values incorrect");
@@ -957,7 +895,8 @@ public class MemberPage {
 		btnBack = new Button("Back");
 		btnBack.setOnAction(e -> {
 			refreshTable();
-			window.setScene(sceneMP);
+			layoutMP.setTop(viewMemberLogo()); 	// Refreshes the ImageView at the top of the page that has been used in the update
+			window.setScene(sceneMP);			// ad page.
 		});
 		
 		btnDelete = new Button("Delete");
@@ -991,7 +930,7 @@ public class MemberPage {
 	 */
 	
 	public static EventHandler<ActionEvent> loadPicture = new EventHandler<ActionEvent>() {
-
+		
 		public void handle(ActionEvent t) {
 			FileChooser fileChooser = new FileChooser();
 			FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
@@ -1001,32 +940,25 @@ public class MemberPage {
 				BufferedImage bufferedImage = ImageIO.read(file);
 				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
 				if (image != null) {myImageView.setImage(image);}
-			} catch (Exception ex) {
-				System.err.println(">> No image was chosen or another error was encountered...");
-			}
+			} catch (Exception ex) {System.err.println(">> No image was chosen or another error was encountered...");}
 		}
 	};
 	
 	/**
-	 * get info into member text fields.
+	 * Get info into member text fields, extracted from logged in agency.
 	 */
 	
 	public static void resetInfoMemberFields() {
 		tfName.setText(loggedInAgency.getName());
 		tfName.setEditable(false);
-		
 		tfPhone.setText(loggedInAgency.getPhone());
 		tfPhone.setEditable(false);
-	
 		tfEmail.setText(loggedInAgency.getEmail());
 		tfEmail.setEditable(false);
-	
 		tfStreet.setText(loggedInAgency.getStreet());
 		tfStreet.setEditable(false);
-	
 		tfZip.setText(loggedInAgency.getZip());
 		tfZip.setEditable(false);
-	
 		tfCity.setText(loggedInAgency.getCity());
 		tfCity.setEditable(false);
 	}
