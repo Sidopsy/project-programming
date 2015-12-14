@@ -2,7 +2,8 @@
 	-fx-font-size: 11pt;
 	-fx-font-family: "Helvetica";
 	-fx-base: white;
-	-fx-background: white;	
+	-fx-background: white;
+	-fx-focus-color: transparent;
 }
 
 .background {
@@ -10,8 +11,38 @@
 }
 
 .start-pane {
+	-fx-background-image: url("CityChooser.png");
 	-fx-spacing: 75;
 }
+
+.start-pane .label {
+	-fx-font-size: 24pt;
+	-fx-text-fill: white;
+}
+
+.start-pane .choice-box {
+	-fx-background-radius: 5;
+	-fx-background-color: transparent;
+	-fx-border-width: 2;
+	-fx-border-radius: 5;	
+	-fx-border-color: #A7EBBF;
+}
+
+.start-pane .choice-box .label {
+	-fx-font-size: 14pt;
+	-fx-text-fill: white;
+}
+
+.start-pane .choice-box .context-menu {
+	-fx-background-radius: 5;
+	-fx-background: transparent;
+	-fx-background-color: transparent;
+	-fx-border-width: 2;
+	-fx-border-radius: 5;	
+	-fx-border-color: #A7EBBF;
+}
+
+
 
 /* HBox class */
 .hbox {
@@ -28,13 +59,18 @@
 }
 
 .button {
-	-fx-background-radius: 0;
+	-fx-text-fill: white;
+	-fx-background-radius: 5;
 	-fx-background-color: transparent;
-	-fx-border-color: transparent;
+	-fx-border-width: 2;
+	-fx-border-radius: 5;	
+	-fx-border-color: #A7EBBF;
 }
 
+
 .button:hover {
-	-fx-background-color: #A7EBBF;
+	-fx-border-radius: 5;
+	-fx-background-color: #A7EBBF;	
 }
 
 .choice-box {
@@ -153,18 +189,22 @@
 }
 
 .header {
-	-fx-background-color: #A7EBBF;
+	-fx-background-color: white;
 	-fx-alignment: center-left;
+	-fx-border-width: 0 0 3 0;
+	-fx-border-color: #A7EBBF;
 }
 
 
 .header .backbutton {
 	-fx-font-size: 100pt;
 	-fx-font-family: "Helvetica";
+	-fx-text-fill: #A7EBBF;
 }
 
 .header .beeadopted {
 	-fx-font-size: 50pt;
 	-fx-font-family: "Helvetica";
+	-fx-text-fill: #A7EBBF;
 }
 

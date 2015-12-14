@@ -271,7 +271,7 @@ public class AdView {
 			String comment = "";
 			int ratingValue = (int)rating.getRating();
 			if(InputValidation.validateInputTextArea(textArea)){
-				comment = ", " + textArea.getText();
+				comment = ", '" + textArea.getText() + "'";
 			} else {
 				comment = "";
 			}
