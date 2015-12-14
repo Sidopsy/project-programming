@@ -37,7 +37,7 @@ import javafx.stage.Stage;
  * @author ML
  */
 
-public class ViewAd {
+public class AdView {
 	static Stage window;
 	static Scene sceneAd, sceneAdopt;
 	static BorderPane bpLayoutAd, bpLayoutAdopt;
@@ -61,7 +61,7 @@ public class ViewAd {
 
 		// This is the view of the Ad once adopt is pressed.
 		bpLayoutAdopt = new BorderPane();
-		GridPane viewAdopt = adopted();
+		GridPane viewAdopt = adopted(ad.getAgencyID());
 		bpLayoutAdopt.setTop(header());						// Show the iAdopt image.
 		bpLayoutAdopt.setCenter(viewAdopt);					// Center of the BorderPane will show the Adopted layout.
 		sceneAdopt = new Scene(bpLayoutAdopt,600,550);
@@ -243,14 +243,16 @@ public class ViewAd {
 	 * @return GridPane
 	 */
 
-	private static GridPane adopted() {
+	private static GridPane adopted(int agencyID) {
 
 		// GridPane in which the Adopted view will be shown.
 		GridPane grid = new GridPane();
 		grid.setHgap(10);											// Horizontal gaps between columns.
 		grid.setVgap(10);											// Vertical gaps between columns.
-		grid.setPadding(new Insets(0,10,0,10));						// Setting the padding around the content.
+		grid.setPadding(new Insets(0,10,0,10));	// Setting the padding around the content.
 
+		
+		
 		// Label containing information to the shown to the user when pressing Adopt.
 		Label label = new Label("Please rate the agency!");				// Friendly message shown when Adopt is pressed.
 		grid.add(label, 0, 0);
@@ -265,9 +267,18 @@ public class ViewAd {
 		grid.add(rateButton, 0, 3);
 		
 		rateButton.setOnAction(e -> {
+			int agency = agencyID;
+			String comment = "";
 			int ratingValue = (int)rating.getRating();
-			String comment = textArea.getText();
-			db.executeUpdate("UPDATE Ratings ");
+			if(InputValidation.validateInputTextArea(textArea)){
+				comment = ", " + textArea.getText();
+			} else {
+				comment = "";
+			}
+			String insert = "INSERT INTO Ratings (AgencyID, Rating, Comment) ";
+			String values = "VALUES (" + agency + ", " + ratingValue + comment + " );";		// Exchange 1 with the agencies ID.
+			System.out.println(">> " + insert + "\n" + ">> " + values);
+			db.executeUpdate(insert + values);
 		});
 		
 

@@ -69,8 +69,6 @@ public class Main extends Application {
 	private static ObservableList<Ad> compareAds = FXCollections.observableArrayList();
 	private static ChoiceBox<Object> cbLocation, cbSpecies, cbType, cbGender, cbAgencies;
 	private static RangeSlider slAge;
-	private static TextField tfDescription;
-	private static Button btnSearch;
 	private static String city, species, type, age, gender, agency;
 	private static boolean firstSearch;
 	private static DBobject db = new DBobject();
@@ -86,11 +84,9 @@ public class Main extends Application {
 	 * 
 	 * @param args
 	 */
-
 	public static void main(String[] args){
 		launch(args);
 	}
-
 
 
 	/**
@@ -100,7 +96,6 @@ public class Main extends Application {
 	 * 
 	 * @param primaryStage
 	 */
-
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");	
@@ -124,7 +119,6 @@ public class Main extends Application {
 	 * 
 	 * @return Vbox header image and navigation buttons
 	 */
-
 	private BorderPane header(){
 
 		// The StackPane to be returned and used as a header.
@@ -154,7 +148,6 @@ public class Main extends Application {
 	 * 
 	 * @return Vbox location dropdown menu and input page button
 	 */
-
 	private VBox startLocation() {
 
 		// The Vbox to be returned.
@@ -195,7 +188,7 @@ public class Main extends Application {
 
 
 		// Vbox is populated with the label, the choicebox and the content from loginBox()
-		firstPage.getChildren().addAll(lblLocation, cbLocation,new Separator(), loginBox());
+		firstPage.getChildren().addAll(lblLocation, cbLocation,new Separator(), Membership.loginBox());
 		firstPage.setAlignment(Pos.CENTER);
 
 		return firstPage;
@@ -205,7 +198,6 @@ public class Main extends Application {
 	 * 
 	 * @return
 	 */
-
 	private static HBox loginBox(){
 		HBox hbox = new HBox();
 		Button btnShow = new Button("Go to agency pages");
@@ -370,7 +362,7 @@ public class Main extends Application {
 		cbAgencies.setValue(cbAgencies.getItems().get(0));
 		cbAgencies.setOnAction(e -> agency = (String) cbAgencies.getValue());
 
-		btnSearch = new Button("Search");
+		Button btnSearch = new Button("Search");
 		btnSearch.setOnAction(e -> {
 			tvAd.getChildrenUnmodifiable().removeAll(theSearch);
 			search();
@@ -400,7 +392,7 @@ public class Main extends Application {
 	public static void search(){
 
 		// Search string to be sent to DB along with small parts of the statement.
-		String searchStatement, searchSpecies, searchType, searchAge, searchGender, searchAgency, searchDescription;
+		String searchStatement, searchSpecies, searchType, searchAge, searchGender, searchAgency;
 
 		// Null values are ignored as well as if the user left the cbs in their original posistions.
 		if (species != null && species != "Species" && species != "Select all"){
@@ -434,12 +426,6 @@ public class Main extends Application {
 			searchAgency = "";
 		}
 
-		if (tfDescription != null && tfDescription.getLength() > 0) {
-			searchDescription = " and Description == '%" + tfDescription.getText() + "%'";
-		} else {
-			searchDescription = "";
-		}
-
 		if (firstSearch == true){	
 			if(city != "Select all"){
 				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + " GROUP BY Agencies.ID) as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Ads.ID;";
@@ -464,7 +450,6 @@ public class Main extends Application {
 					+ searchAge 
 					+ searchGender 
 					+ searchAgency 
-					+ searchDescription 
 					+ " GROUP BY Agencies.ID"
 					+ " ORDER BY Ads.ID;";
 
@@ -525,7 +510,11 @@ public class Main extends Application {
 
 					@Override
 					public void changed(ObservableValue<? extends Boolean> obs, Boolean wasSelected, Boolean isSelected) {
-						compareAds.add(tvAd.getItems().get(ctCell.getIndex()));
+						if (ctCell.selectedProperty().get() != true){
+							compareAds.add(tvAd.getItems().get(ctCell.getIndex()));							
+						} else {
+							compareAds.remove(compareAds.indexOf(tvAd.getItems().get(ctCell.getIndex())));
+						}
 						System.out.println(isSelected);
 						
 
@@ -545,7 +534,7 @@ public class Main extends Application {
 				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
 					Ad ad = (Ad) row.getItem();
 					try {
-						ViewAd.display(ad.getName(), ad);
+						AdView.display(ad.getName(), ad);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

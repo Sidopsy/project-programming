@@ -1,6 +1,7 @@
 
 import java.sql.Blob;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -24,7 +25,7 @@ public class Ad {
 	private final SimpleIntegerProperty id, age, agencyID;
 	private final ImageView picture;
 	private final RatingObject rating;
-	private final SimpleBooleanProperty check;
+	private final BooleanProperty check;
 	
 	public Ad(int id, Image picture, String name, String gender, String species, String type, 
 				int age, String description, String start, String end, int agencyID, String agencyName, double rating) {
@@ -125,10 +126,6 @@ public class Ad {
 				type + " " + age + " " + description + " " + startDate + " " + endDate;
 	}
 
-	public CheckBox getCheckBox() {
-		// TODO Auto-generated method stub
-		return new CheckBox();
-	}
 	
 	public Ad getAd(){
 		return this;
