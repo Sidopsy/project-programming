@@ -23,7 +23,6 @@ public class Membership {
 	 * 
 	 * @return
 	 */
-
 	public static HBox loginBox(){
 		HBox hbox = new HBox();
 		Button btnShow = new Button("Go to agency pages");
@@ -42,14 +41,18 @@ public class Membership {
 			String email = tfEmail.getText();
 			String password = pfPassword.getText();
 			try {
-				if (Membership.verify(email, password)) {
+				if ((email.equals("admin")) && (password.equals("admin"))){
+					AdminPage.start();
+				}
+				else if(Membership.verify(email, password)) {
 					System.out.println(">> Entered login correct");
 					AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
-																			+ "Email = '" + email + "';")).get(0);
-					db.closeConnection();
-					
+												+ "Email = '" + email + "';")).get(0);
+					db.closeConnection();	
 					MemberPage.display(agencyInfo);
+					
 				} else {
+				
 					System.out.println(">> Entered login incorrect");
 					alert.setAlertType(AlertType.ERROR);
 					alert.setTitle("Failiure");
@@ -58,6 +61,7 @@ public class Membership {
 					alert.showAndWait();
 				}
 			} catch (Exception e1) {
+				System.err.println(e1.getMessage());
 				System.err.println(">> There is most likely a problem with missing ratings, user cannot log in.");
 			} finally {
 				try {
