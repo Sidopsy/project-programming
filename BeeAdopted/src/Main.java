@@ -415,7 +415,6 @@ public class Main extends Application {
 	 * This method has two functions. When you select an agency in scene 2 this method gets all ads for that specific agency. After this, you can specify conditions
 	 * for which ads you want to view.
 	 */
-
 	public static void search(){
 
 		// Search string to be sent to DB along with small parts of the statement.
@@ -424,8 +423,6 @@ public class Main extends Application {
 		// Null values are ignored as well as if the user left the cbs in their original posistions.
 		if (species != null && species != "Species" && species != "Select all"){
 			searchSpecies = " and Species == '" + species + "'";
-
-
 		} else {
 			searchSpecies = "";
 		}
@@ -465,7 +462,7 @@ public class Main extends Application {
 			if(city != "Select all"){
 				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + " GROUP BY Agencies.ID) as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Ads.ID;";
 			} else {
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Agencies,Ratings WHERE Agencies.ID == Ratings.AgencyID GROUP BY Agencies.ID	) as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID and EndDate >= '" + today + "' ORDER BY Ads.ID;";
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, AVG(Rating) as Rating FROM Ads,Agencies,Ratings WHERE Agencies.ID == Ratings.AgencyID and Agencies.ID == Ads.AgencyID and EndDate >= '" + today + "' Group BY Ads.ID;";
 			}
 			firstSearch = false;
 		} else {
@@ -505,7 +502,6 @@ public class Main extends Application {
 	 * 
 	 * @return TableView<Ad>
 	 */
-
 	public VBox searchResults(){
 		VBox vbox = new VBox();
 		vbox.setAlignment(Pos.CENTER);
@@ -529,36 +525,6 @@ public class Main extends Application {
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
-
-		//		checkCol.setCellValueFactory(tc -> new TableColumn.CellDataFeature<Ad,Boolean>(){
-		//			 @Override 
-		//			 public void updateItem(Ad item, boolean empty) {
-		//		            super.updateItem(item, empty);
-		//		            if (empty) {
-		//		                setText(null);
-		//		                setGraphic(null);
-		//		            } else {
-		//		                setGraphic(checkBox);
-		//		                if (ov instanceof BooleanProperty) {
-		//		                    checkBox.selectedProperty().unbindBidirectional((BooleanProperty) ov);
-		//		                }
-		//		                ov = getTableColumn().getCellObservableValue(getIndex());
-		//		                if (ov instanceof BooleanProperty) {
-		//		                    checkBox.selectedProperty().bindBidirectional((BooleanProperty) ov);
-		//		                }
-		//		            }
-		//		        }
-		//			
-		//		});
-
-		//		final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
-		//		ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
-		//		    @Override
-		//		    public ObservableValue<Boolean> call(Integer index) {
-		//		        return table.getItems().get(index).selectedProperty();
-		//		    }
-		//		});
-
 		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
 			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
 				final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
@@ -587,27 +553,6 @@ public class Main extends Application {
 
 		});
 
-
-		//		checkCol.setCellFactory(tc -> new CheckBoxTableCell<>());
-		//		checkCol.cellValueFactoryProperty().addListener(e -> new ChangeListener<Boolean>() {
-		//
-		//			@Override
-		//			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-		//				// TODO Auto-generated method stub
-		//				
-		//			}
-		//		
-		//			
-		//		});
-
-		//				Callback<TableColumn.CellDataFeature<Ad,Boolean>, ObservableValue<Boolean>>() {
-		//			    
-		//			 public ObservableValue<Boolean> call(CellDataFeatures<Person, String> p) {
-		//				         // p.getValue() returns the Person instance for a particular TableView row
-		//				         return p.getValue().firstNameProperty();
-		//				     }
-		//			  });
-
 		tvAd.setRowFactory( tv -> {
 			TableRow<Ad> row = new TableRow<>();
 
@@ -633,15 +578,7 @@ public class Main extends Application {
 		tvAd.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 		Button btnCompare = new Button("Compare Ads");
-		btnCompare.setOnAction(e -> {
-//			for(int i = 0; i < tvAd.getItems().size(); i++){
-//				if(tvAd.getItems().get(i).getCheck()){
-//					compareAds.add(tvAd.getItems().get(i));
-//				}
-//			}
-			Compare.display(compareAds);
-			
-		});
+		btnCompare.setOnAction(e -> Compare.display(compareAds));
 
 		vbox.getChildren().addAll(tvAd, btnCompare);
 		return vbox;
@@ -658,20 +595,8 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Go to previous scene.
-	 */
-	private void goBack(){
-		if(window.getScene() == scene2){
-			cbLocation.setValue("City");
-			window.setScene(scene1);
-		} 
-	}
-
-
-	/**
 	 * Go to start view.
 	 */
-
 	public void backToStart(){
 		cbLocation.setValue("City");
 		window.setScene(scene1);	

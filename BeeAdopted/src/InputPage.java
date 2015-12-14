@@ -468,7 +468,6 @@ public class InputPage {
 			try {
 				BufferedImage bufferedImage = ImageIO.read(file);
 				Image image = SwingFXUtils.toFXImage(bufferedImage, null);
-
 				if (image != null) {myImageView.setImage(image);}
 			} catch (Exception ex) {
 				System.err.println(">> No image was chosen or another error was encountered...");
@@ -532,17 +531,17 @@ public class InputPage {
 	private static void inputAdValues() {
 		String name, age, gender, description, species, type;
 
-		name = tfName.getText().trim();					// Trimming TFs with possibility of spaces
+		name = correctInput(tfName.getText().trim());	// Trimming TFs with possibility of spaces
 		age = tfAge.getText();
 		if (age.length() > 1 && age.charAt(0) == '0') {age = age.substring(1);}
 		gender = (String) cbGenders.getValue();
-		description = taDescription.getText().trim();	// Trimming TAs with possibility of spaces
+		description = correctInput(taDescription.getText().trim());	// Trimming TAs with possibility of spaces
 		if (InputValidation.validateChoiceBox(cbSpecies)) {	// If gets executed when the default value of CB is NOT chosen
 			species = (String) cbSpecies.getValue();
-		} else {species = tfNewSpecies.getText().trim();}
+		} else {species = correctInput(tfNewSpecies.getText().trim());}
 		if (InputValidation.validateChoiceBox(cbType)) {
 			type = (String) cbType.getValue();
-		} else {type = tfNewType.getText().trim();}
+		} else {type = correctInput(tfNewType.getText().trim());}
 		String insert = "INSERT INTO Ads (Name, Species, Type, Gender, Age, Description, AgencyID) ";
 		String values = "VALUES ('" + name + "', '" + species + "', '" + type + "', '" + gender + "', " + age
 				+ ", '" + description + "', " + agency.getID() + ");";		// Exchange 1 with the agencies ID.
@@ -559,7 +558,7 @@ public class InputPage {
 										 TextField tfStreet, TextField tfZip, TextField tfCity)  {
 		String name, phone, email, password, street, zip, city;
 		
-		name = tfName.getText().trim();
+		name = correctInput(tfName.getText().trim());
 		email = tfEmail.getText();
 		phone = tfPhone.getText();
 		password = pfPassword.getText();
@@ -572,9 +571,9 @@ public class InputPage {
 																	 + "Agencies ORDER BY "
 																	 + "ID DESC;")).get(0).get(0));
 		db.closeConnection();
-		street = tfStreet.getText().trim();
+		street = correctInput(tfStreet.getText().trim());
 		zip = tfZip.getText();
-		city = tfCity.getText().trim();
+		city = correctInput(tfCity.getText().trim());
 		String insertAddress = "INSERT INTO Addresses (Street, ZIP, City, AgencyID)";
 		String valuesAddress = " VALUES ('" + street + "', '" + zip + "', '" + city + "', " + agencyID + ");";
 		System.out.println(">> " + insertAddress + valuesAddress);
@@ -598,17 +597,17 @@ public class InputPage {
 		values = "";
 		where = " WHERE ID = " + ad.getID() + ";";
 		
-		values += "Name = '" + name.getText().trim() + "', ";					// Trimming TFs with possibility of spaces
+		values += "Name = '" + correctInput(name.getText().trim()) + "', ";					// Trimming TFs with possibility of spaces
 		values += "Age = " + age.getText() + ", ";
 		values += "Gender = '" + (String) gender.getValue() + "', ";
-		values += "Description = '" + description.getText().trim() + "', ";	 	// Trimming TAs with possibility of spaces
+		values += "Description = '" + correctInput(description.getText().trim()) + "', ";// Trimming TAs with possibility of spaces
 		if (InputValidation.validateChoiceBox(cbSpecies)) {				 				// If gets executed when the default value of CB is NOT chosen
 			values += "Species = '" + (String) cbSpecies.getValue() + "', ";
-		} else {values += "Species = '" + tfSpecies.getText().trim() + "', ";}
+		} else {values += "Species = '" + correctInput(tfSpecies.getText().trim()) + "', ";}
 
 		if (InputValidation.validateChoiceBox(cbType)) {
 			values += "Type = '" + (String) cbType.getValue() + "'";
-		} else {values += "Type = '" + tfType.getText().trim() + "'";}
+		} else {values += "Type = '" + correctInput(tfType.getText().trim()) + "'";}
 		if (reActivate.isSelected()) {
 			values += ", StartDate = date('NOW'), EndDate = date('NOW', '+90 days')";
 		}
@@ -633,16 +632,16 @@ public class InputPage {
 		whereInfo = " WHERE ID = " + inputAgency.getID() + ";";
 		whereAddress = " WHERE Addresses.AgencyID = " + inputAgency.getID() + ";";
 	
-		valuesInfo += "Name = '" + name.getText() + "', ";
+		valuesInfo += "Name = '" + correctInput(name.getText()) + "', ";
 		valuesInfo += "Phone = '" + phone.getText() + "', ";
 		valuesInfo += "Email = '" + email.getText() + "'";
 		updateInfo += valuesInfo + whereInfo;
 		System.out.println(">> INFO " + updateInfo.substring(0, 10) + ": " + inputAgency.getID());
 		db.executeUpdate(updateInfo);
 		
-		valuesAddress += "Street = '" + street.getText().trim() + "', ";
+		valuesAddress += "Street = '" + correctInput(street.getText().trim()) + "', ";
 		valuesAddress += "ZIP = '" + zip.getText() + "', ";
-		valuesAddress += "City = '" + city.getText().trim() + "'";
+		valuesAddress += "City = '" + correctInput(city.getText().trim()) + "'";
 		updateAddress += valuesAddress + whereAddress;
 		System.out.println(">> ADDRESS " + updateAddress.substring(0, 10) + ": " + inputAgency.getID());
 		db.executeUpdate(updateAddress);
@@ -662,6 +661,31 @@ public class InputPage {
 		updatePassword += value + where;
 		System.out.println(">> PASSWORD " + updatePassword.substring(0, 10) + ": " + inputAgency.getID());
 		db.executeUpdate(updatePassword);
+	}
+	
+	/**
+	 * Check for ' in the input to fix them
+	 */
+	
+	public static String correctInput(String input) {
+		String correctedInput = input;
+		
+		for (int index = 0; index < correctedInput.length(); index++) {
+			String temp = "";
+			if (index < correctedInput.length() - 1) {	
+				if ((correctedInput.charAt(index) == '\'') &&
+					(correctedInput.charAt(index - 1) != '\'') &&
+					(correctedInput.charAt(index + 1) != '\'')) {
+					temp = correctedInput.substring(0, index) + "''";
+					correctedInput = temp + correctedInput.substring(index + 1);
+				} 
+			} else if ((correctedInput.charAt(index) == '\'') && 
+					correctedInput.charAt(index - 1) != '\'') {
+				correctedInput += "'";
+			}
+		}
+		
+		return correctedInput;
 	}
 	
 	/**

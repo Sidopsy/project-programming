@@ -152,32 +152,21 @@ public class ViewAd {
 		description.autosize();
 
 
-		java.sql.Connection conn = DriverManager.getConnection("jdbc:sqlite:BeeHive");
-		db.closeConnection();
-
-		BufferedImage image = null;  //Buffered image coming from database
+		BufferedImage bufferedImage = null;  //Buffered image coming from database
 		InputStream fis = null; //Inputstream
 
-		try{
-
-			ResultSet databaseResults;  //Returned results from DB
-
-			Statement stmt = conn.createStatement(); //Create the SQL statement
-
-			databaseResults = stmt.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";"); //Execute query
+		try {
+			fis = db.executeQuery("SELECT Picture FROM Ads WHERE ID = " + ad.getID() + ";").getBinaryStream("Picture"); //Execute query
 			db.closeConnection();
-
-			fis = databaseResults.getBinaryStream("Picture");  //It happens that the 3rd column in my database is where the image is stored (a BLOB)
-
-			image = javax.imageio.ImageIO.read(fis);  //create the BufferedImaged
-
-
-			if(image != null){
-				Image newPic = SwingFXUtils.toFXImage(image, null);
+			bufferedImage = javax.imageio.ImageIO.read(fis);	//create the BufferedImaged
+			Image newPic = SwingFXUtils.toFXImage(bufferedImage, null);
+			animalPicture.setImage(newPic);
+			fis.close();
+		} catch (Exception e) {
+			if (e instanceof NullPointerException) {
+				Image newPic = new Image("PlaceholderSmall.png");
 				animalPicture.setImage(newPic);
-			} 
-		} catch (Exception e){
-			//print error if caught
+			}
 		}
 
 		// Buttons for adopting or closing the ad.

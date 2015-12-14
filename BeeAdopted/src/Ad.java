@@ -30,6 +30,9 @@ public class Ad {
 				int age, String description, String start, String end, int agencyID, String agencyName, double rating) {
 		this.id = new SimpleIntegerProperty(id);
 		this.picture = new ImageView(picture);
+		this.picture.setPreserveRatio(false);
+		this.picture.setFitWidth(50);
+		this.picture.setFitHeight(50);
 		this.name = new SimpleStringProperty(name);
 		this.gender = new SimpleStringProperty(gender);
 		this.species = new SimpleStringProperty(species);

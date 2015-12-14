@@ -94,7 +94,9 @@ public class InputValidation {
 	public static boolean validateInputTextFieldString(TextField tf) {
 		if ((tf.getLength() <= 30) && (tf.getLength() > 0)) {										// Checking number of characters in TF
 			for (int index = 0; index < tf.getLength(); index++)	{
-				if (!(Character.isAlphabetic(tf.getText().charAt(index))) && !(tf.getText().charAt(index) == ' ')) {
+				if (!(Character.isAlphabetic(tf.getText().charAt(index))) && 
+					!(tf.getText().charAt(index) == ' ') &&
+					!(tf.getText().charAt(index) == '\'')) {
 					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
 					return false;										// Loop is broken, a character that is not alphabetical was found
 				} else {}
@@ -185,8 +187,8 @@ public class InputValidation {
 		if ((tf.getLength() <= 30) && (tf.getLength() >= 1)) {			// Checking number of characters in TF
 			for (int index = 0; index < tf.getLength(); index++)	{
 				if (!(Character.isAlphabetic(tf.getText().charAt(index))) && 
-					!(tf.getText().charAt(index) == ' ' && 
-					!(tf.getText().charAt(index) == '\''))) {
+					!(tf.getText().charAt(index) == ' ') && 
+					!(tf.getText().charAt(index) == '\'')) {
 					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
 					return false;										// Loop is broken, a character that is not alphabetical was found
 				} else {}
@@ -230,7 +232,9 @@ public class InputValidation {
 	 */
 	
 	public static boolean validateInputEmail(TextField tf) {
-		if ((tf.getLength() <= 50) && (tf.getLength() >= 8) && (tf.getText().contains("@"))) {	// Checking number of characters in TF
+		if ((tf.getLength() <= 50) && (tf.getLength() >= 8) && 
+				(tf.getText().contains("@")) &&
+				(tf.getText().contains("."))) {
 			for (int index = 0; index < tf.getLength(); index++) {
 				if (!(Character.isDigit(tf.getText().charAt(index))) && 
 					!(Character.isAlphabetic(tf.getText().charAt(index))) &&
@@ -260,7 +264,8 @@ public class InputValidation {
 			for (int index = 0; index < tf.getLength(); index++)	{
 				if (!(Character.isDigit(tf.getText().charAt(index))) && 
 					!(Character.isAlphabetic(tf.getText().charAt(index))) && 
-					!(tf.getText().charAt(index) == ' ')) {
+					!(tf.getText().charAt(index) == ' ') &&
+					!(tf.getText().charAt(index) == '\'')) {
 					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
 					return false;										// Loop is broken, a character that is not alphabetical was found
 				} else {}
@@ -307,7 +312,8 @@ public class InputValidation {
 		if ((tf.getLength() < 30) && (tf.getLength() >= 1)) {										// Checking number of characters in TF
 			for (int index = 0; index < tf.getLength(); index++)	{
 				if (!(Character.isAlphabetic(tf.getText().charAt(index))) && 
-					!(tf.getText().charAt(index) == ' ')) {
+					!(tf.getText().charAt(index) == ' ') &&
+					!(tf.getText().charAt(index) == '\'')) {
 					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
 					return false;										// Loop is broken, a character that is not alphabetical was found
 				} else {}
