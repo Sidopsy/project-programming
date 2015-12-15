@@ -277,12 +277,12 @@ public class Main extends Application {
 
 	public VBox filter(){
 		VBox filters = new VBox();
-		filters.getStyleClass().add("vbox");
+		filters.getStyleClass().add("filter");
 		filters.setAlignment(Pos.CENTER);
 
 		HBox primaryFilters = new HBox();
 		primaryFilters.setAlignment(Pos.CENTER);
-		primaryFilters.getStyleClass().add("hbox");
+		primaryFilters.getStyleClass().add("filter");
 		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		primaryFilters.setSpacing(75);
 
@@ -314,11 +314,8 @@ public class Main extends Application {
 			type = (String) cbType.getValue();
 		});
 
-		VBox ageBox = new VBox();
 		String minAgeStatement;
 		String maxAgeStatement;
-		ageBox.setPadding(new Insets(0));
-		ageBox.setSpacing(2);
 		if(city != "Select all" && city != "City"){
 			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
 			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
@@ -347,7 +344,6 @@ public class Main extends Application {
 		//slAge.setMajorTickUnit(15);
 		//	slAge.setMinorTickCount(maxAge/2);
 		//	slAge.setBlockIncrement(5);
-		ageBox.getChildren().addAll(ageLabel, slAge);
 
 
 
@@ -433,11 +429,28 @@ public class Main extends Application {
 
 		if (firstSearch == true){	
 			if(city != "Select all"){
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + " GROUP BY Agencies.ID) as Rating FROM Ads,Agencies,Addresses,Ratings WHERE Agencies.ID = Addresses.AgencyID and Agencies.ID = Ratings.AgencyID and Agencies.ID = Ads.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Ads.ID;";
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + " GROUP BY Agencies.ID) as Rating FROM "
+						+ "Ads,Agencies,Addresses,Ratings WHERE "
+						+ "Agencies.ID = Addresses.AgencyID and "
+						+ "Agencies.ID = Ratings.AgencyID and "
+						+ "Agencies.ID = Ads.AgencyID " 
+						+ city + " and "
+						+ "EndDate >= '" + today 
+						+ "' ORDER BY Ads.ID;";
 			} else {
 
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, avg(Rating) as Rating FROM Ratings, Agencies,Ads where Ads.AgencyID == Agencies.ID and  Ratings.AgencyID == Agencies.ID and Ads.AgencyID == Agencies.ID Group by Ads.ID;";
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, AVG(Rating) as Rating FROM Ads,Agencies,Ratings WHERE Agencies.ID == Ratings.AgencyID and Agencies.ID == Ads.AgencyID and EndDate >= '" + today + "' Group BY Ads.ID;";
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, avg(Rating) as Rating FROM "
+						+ "Ratings, Agencies,Ads where "
+						+ "Ads.AgencyID == Agencies.ID and  "
+						+ "Ratings.AgencyID == Agencies.ID and "
+						+ "Ads.AgencyID == Agencies.ID "
+						+ "Group by Ads.ID;";
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, AVG(Rating) as Rating FROM "
+						+ "Ads,Agencies,Ratings WHERE "
+						+ "Agencies.ID == Ratings.AgencyID and "
+						+ "Agencies.ID == Ads.AgencyID and "
+						+ "EndDate >= '" + today 
+						+ "' Group BY Ads.ID;";
 			}
 			firstSearch = false;
 		} else {

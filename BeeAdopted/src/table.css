@@ -7,55 +7,15 @@
 }
 
 .background {
-	-fx-background-color: white;
-}
-
-.start-pane {
+	-fx-background-color: lightgrey;
 	-fx-background-image: url("CityChooser.png");
-	-fx-spacing: 75;
 }
 
-.start-pane .label {
-	-fx-font-size: 24pt;
-	-fx-text-fill: white;
-}
-
-.start-pane .choice-box {
-	-fx-background-radius: 5;
-	-fx-background-color: transparent;
-	-fx-border-width: 2;
-	-fx-border-radius: 5;	
-	-fx-border-color: #A7EBBF;
-}
-
-.start-pane .choice-box .label {
-	-fx-font-size: 14pt;
-	-fx-text-fill: white;
-}
-
-.start-pane .choice-box .context-menu {
-	-fx-background-radius: 5;
-	-fx-background: transparent;
-	-fx-background-color: transparent;
-	-fx-border-width: 2;
-	-fx-border-radius: 5;	
-	-fx-border-color: #A7EBBF;
-}
-
-
-
-/* HBox class */
-.hbox {
-	-fx-background-color: white;
-}
-
-.hbox .choice-box {
-	-fx-background-color: white;
-}
-
-.hbox .label {
-	-fx-font-size: 11pt;
-	-fx-text-fill: black;
+.label {
+	-fx-font-size: 11pt;
+	-fx-font-family: "Helvetica";
+	-fx-text-fill: black;
+	-fx-opacity: 0.6;
 }
 
 .button {
@@ -74,65 +34,27 @@
 }
 
 .choice-box {
-	-fx-background-color: white;
+	-fx-background-radius: 5;
+	-fx-background-color: lightgrey;
+	-fx-border-width: 2;
+	-fx-border-radius: 5;	
+	-fx-border-color: #A7EBBF;
 }
 
-
-/* VBox class */
-.vbox {
-	-fx-background-color: white;
-}
-
-.vbox .label {
-	-fx-font-size: 20pt;
-	-fx-alignment: center;
-}
-
-.vbox .choice-box {
-	-fx-background-color: white;
-}
-
-.vbox .choice-box .label{
+.choice-box .label {
 	-fx-font-size: 11pt;
+	-fx-text-fill: white;
+	-fx-alignment: CENTER;
 }
 
-
-/* GridPane class */
-.gridpane {
-	-fx-background-color: white;
-}
-
-
-
-.label {
-	-fx-font-size: 11pt;
-	-fx-font-family: "Helvetica";
-	-fx-text-fill: black;
-	-fx-opacity: 0.6;
-}
-
-.label-bright {
-	-fx-font-size: 11pt;
-	-fx-font-family: "Helvetica";
-	-fx-text-fill: black;
-	-fx-opacity: 1;
-}
-
-.label-header {
-	-fx-font-size: 24pt;
-	-fx-font-family: "Helvetica";
-	-fx-text-fill: black;
-	-fx-opacity: 1;
-}
-
-.choice-box {
-	-fx-background-color: white;
-	-fx-mark-color: green ;
-}
-
-
-.choice-box .label {
-	-fx-text-fill: black;
+.choice-box .context-menu {
+	-fx-background-radius: 5;
+	-fx-background-color: lightgrey;
+	-fx-border-width: 2;
+	-fx-border-radius: 5;	
+	-fx-border-color: #A7EBBF;
+	-fx-arrow-color: transparent;
+	-fx-alignment: CENTER;
 }
 
 .table-view {
@@ -187,6 +109,73 @@
 .table-view .table-column {
 	-fx-alignment: center;
 }
+
+
+
+/* Panes */
+.start-pane {
+	-fx-background-image: url("CityChooser.png");
+	-fx-spacing: 75;
+}
+
+.start-pane .label {
+	-fx-font-size: 24pt;
+	-fx-text-fill: white;
+}
+
+.start-pane .choice-box {
+	-fx-background-color: transparent;
+}
+
+.start-pane .choice-box .label {
+	-fx-font-size: 14pt;
+	-fx-text-fill: white;
+}
+
+
+.filter {
+	-fx-background-image: url("FilterBase.png");
+}
+
+.filter .choice-box {
+	-fx-background-color: transparent;
+}
+
+
+/* HBox class */
+.hbox {
+	-fx-background-color: transparent;
+}
+
+
+.hbox .label {
+	-fx-font-size: 11pt;
+	-fx-text-fill: black;
+}
+
+
+
+
+/* VBox class */
+.vbox {
+	-fx-background-color: transparent;
+}
+
+.vbox .label {
+	-fx-font-size: 20pt;
+	-fx-alignment: center;
+}
+
+
+
+/* GridPane class */
+.gridpane {
+	-fx-background-color: white;
+}
+
+
+
+
 
 .header {
 	-fx-background-color: white;
