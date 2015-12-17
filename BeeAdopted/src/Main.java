@@ -104,6 +104,7 @@ public class Main extends Application {
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
 		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
 		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
+		bpLayout1.setBottom(Membership.loginBox());
 		back.setVisible(false);
 		scene1 = new Scene(bpLayout1,800,600);
 		scene1.getStylesheets().add("table.css");
@@ -128,7 +129,7 @@ public class Main extends Application {
 		back = new Label("<");
 		back.setId("backbutton");
 		back.getStyleClass().add("backbutton");
-		back.setOnMouseClicked(e -> backToStart());
+		back.setOnMouseClicked(e -> back());
 
 		name = new Label("BeeAdopted");
 		name.setId("beeadopted");
@@ -188,82 +189,10 @@ public class Main extends Application {
 
 
 		// Vbox is populated with the label, the choicebox and the content from loginBox()
-		firstPage.getChildren().addAll(lblLocation, cbLocation,new Separator(), Membership.loginBox());
+		firstPage.getChildren().addAll(lblLocation, cbLocation);
 		firstPage.setAlignment(Pos.CENTER);
 
 		return firstPage;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	private static HBox loginBox(){
-		HBox hbox = new HBox();
-		Button btnShow = new Button("Go to agency pages");
-		TextField tfEmail = new TextField();
-		PasswordField pfPassword = new PasswordField();
-		Button btnLogin = new Button("Login");
-		Alert alert = new Alert(AlertType.INFORMATION);
-
-		hbox.setSpacing(10);
-		hbox.setAlignment(Pos.CENTER);
-
-		tfEmail.setPromptText("Enter your email");
-		pfPassword.setPromptText("Enter your password");
-
-		btnLogin.setOnAction(e -> {
-			String email = tfEmail.getText();
-			String password = pfPassword.getText();
-			try {
-				if ((email.equals("admin")) && (password.equals("admin"))){
-					AdminPage.start();
-				}
-				else if(Membership.verify(email, password)) {
-					System.out.println(">> Entered login correct");
-					AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
-												+ "Email = '" + email + "';")).get(0);
-					db.closeConnection();	
-					MemberPage.display(agencyInfo);
-					
-				} else {
-				
-					System.out.println(">> Entered login incorrect");
-					alert.setAlertType(AlertType.ERROR);
-					alert.setTitle("Failiure");
-					alert.setHeaderText("Login failed");
-					alert.setContentText("Information entered was incorrect, please try again.");
-					alert.showAndWait();
-				}
-			} catch (Exception e1) {
-				System.err.println(e1.getMessage());
-				System.err.println(">> There is most likely a problem with missing ratings, user cannot log in.");
-			} finally {
-				try {
-					if (!db.getConnection().isClosed()) {
-						db.closeConnection();
-					}
-				} catch (SQLException e1) {
-					System.err.println(">> Error when closing connection");
-				}
-			}
-		});
-
-
-		Button btnCreateAccount = new Button("Create account");
-		btnCreateAccount.setOnAction(e -> {
-			CreateAccount.display();
-		});
-
-
-		btnShow.setOnAction(e -> {
-			hbox.getChildren().removeAll(hbox.getChildren());
-			hbox.getChildren().addAll(tfEmail, pfPassword, btnLogin, btnCreateAccount);
-		});
-
-		hbox.getChildren().add(btnShow);
-
-		return hbox;
 	}
 
 
@@ -491,6 +420,7 @@ public class Main extends Application {
 	 */
 	public VBox searchResults(){
 		VBox vbox = new VBox();
+		vbox.getStyleClass().add("vbox");
 		vbox.setAlignment(Pos.CENTER);
 
 		tvAd = new TableView<Ad>();
@@ -512,37 +442,54 @@ public class Main extends Application {
 		speciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 		typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 		ratingCol.setCellValueFactory(new PropertyValueFactory<>("rating"));
+		checkCol.setCellValueFactory(new PropertyValueFactory<>("check"));
 		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
 			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
-				final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
-				final BooleanProperty selected = new SimpleBooleanProperty();
-				ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
+			final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
+			final BooleanProperty selected = new SimpleBooleanProperty();
+			ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
 
-					@Override
-					public ObservableValue<Boolean> call(Integer index) {
-						return selected;
-					}
+				@Override
+				public ObservableValue<Boolean> call(Integer index) {
+					return selected;
+				}
 
-				});
-				selected.addListener(new ChangeListener<Boolean>() {
+			});
+			return ctCell;
+		}
 
-					@Override
-					public void changed(ObservableValue<? extends Boolean> obs, Boolean wasSelected, Boolean isSelected) {
-						if (ctCell.selectedProperty().get() != true){
-							compareAds.add(tvAd.getItems().get(ctCell.getIndex()));							
-						} else {
-							compareAds.remove(compareAds.indexOf(tvAd.getItems().get(ctCell.getIndex())));
-						}
-						System.out.println(isSelected);
-						
-
-					}
-
-				});
-				return ctCell;
-			}
-
-		});
+	});
+//		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
+//			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
+//				final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
+//				final BooleanProperty selected = new SimpleBooleanProperty();
+//				ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
+//
+//					@Override
+//					public ObservableValue<Boolean> call(Integer index) {
+//						return selected;
+//					}
+//
+//				});
+//				selected.addListener(new ChangeListener<Boolean>() {
+//
+//					@Override
+//					public void changed(ObservableValue<? extends Boolean> obs, Boolean wasSelected, Boolean isSelected) {
+//						if (ctCell.selectedProperty().get() != true){
+//							compareAds.add(tvAd.getItems().get(ctCell.getIndex()));							
+//						} else {
+//							compareAds.remove(compareAds.indexOf(tvAd.getItems().get(ctCell.getIndex())));
+//						}
+//						System.out.println(isSelected);
+//						
+//
+//					}
+//
+//				});
+//				return ctCell;
+//			}
+//
+//		});
 
 		tvAd.setRowFactory( tv -> {
 			TableRow<Ad> row = new TableRow<>();
@@ -551,11 +498,20 @@ public class Main extends Application {
 
 				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
 					Ad ad = (Ad) row.getItem();
-					try {
-						AdView.display(ad.getName(), ad);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					
+						try {
+							bpLayout3 = new BorderPane();
+							bpLayout3.setTop(header());
+							bpLayout3.setCenter(AdView.showAd(ad, ad.getAgencyID()));
+							tvAd.refresh();
+							scene3 = new Scene(bpLayout3,800,600);
+							scene3.getStylesheets().add("table.css");
+							window.setScene(scene3);
+							
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					
 				}
 			});
 			return row ;
@@ -569,7 +525,17 @@ public class Main extends Application {
 		tvAd.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 		Button btnCompare = new Button("Compare Ads");
-		btnCompare.setOnAction(e -> Compare.display(compareAds));
+		btnCompare.setOnAction(e -> {
+			bpLayout3 = new BorderPane();
+			bpLayout3.setTop(header());
+			bpLayout3.setCenter(Compare.compareAds(compareAds));
+			tvAd.refresh();
+			scene3 = new Scene(bpLayout3,800,600);
+			scene3.getStylesheets().add("table.css");
+			window.setScene(scene3);
+			
+			
+		});
 
 		vbox.getChildren().addAll(tvAd, btnCompare);
 		return vbox;
@@ -588,8 +554,12 @@ public class Main extends Application {
 	/**
 	 * Go to start view.
 	 */
-	public void backToStart(){
-		cbLocation.setValue("City");
-		window.setScene(scene1);	
+	public void back(){
+		if(window.getScene() == scene2) {
+			cbLocation.setValue("City");
+			window.setScene(scene1);
+		} else {
+			window.setScene(scene2);
+		}
 	}
 }

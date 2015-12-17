@@ -416,7 +416,17 @@ public class MemberPage {
 		
 		btnInputPage = new Button("New ad");
 		btnInputPage.setOnAction(e -> {
-			InputPage.display(loggedInAgency);
+			//InputPage.display(loggedInAgency);
+			InputPage.agency = loggedInAgency;
+			
+			layoutUpdateAd = new BorderPane();
+			layoutUpdateAd.setTop(Header.smallHeader());
+			layoutUpdateAd.setCenter(InputPage.viewInputAd());
+
+			sceneUpdateAd = new Scene(layoutUpdateAd, 600, 550);
+
+			window.setScene(sceneUpdateAd);
+			
 		});
 		
 		gridPane.add(btnEditInfo, 0, 3);

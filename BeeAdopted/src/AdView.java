@@ -44,63 +44,7 @@ public class AdView {
 	public static ImageView animalPicture;
 	private static DBobject db = new DBobject();
 
-	public static void display(String title, Ad ad) throws IOException, SQLException {
-		window = new Stage();
-
-		// Sets Modality and window title.
-		window.initModality(Modality.APPLICATION_MODAL);	// Application modal makes sure that input to the app is only
-		window.setTitle(title);								// entered to the currently open window. This enum needs to be
-		window.setMinWidth(250);							// set before anything is shown in this stage.
-
-		// This is the Ad view of this Stage.
-		bpLayoutAd = new BorderPane();
-		bpLayoutAd.setTop(header());						// Show the iAdopt image.
-		bpLayoutAd.setCenter(showAd(ad, ad.getAgencyID()));			// Center of the BorderPane will show the Ad.
-		sceneAd = new Scene(bpLayoutAd,600,550);
-		sceneAd.getStylesheets().add("table.css");
-
-		// This is the view of the Ad once adopt is pressed.
-		bpLayoutAdopt = new BorderPane();
-		GridPane viewAdopt = adopted(ad.getAgencyID());
-		bpLayoutAdopt.setTop(header());						// Show the iAdopt image.
-		bpLayoutAdopt.setCenter(viewAdopt);					// Center of the BorderPane will show the Adopted layout.
-		sceneAdopt = new Scene(bpLayoutAdopt,600,550);
-		sceneAdopt.getStylesheets().add("table.css");
-
-		// Ad scene will be shown first and the App awaits instructions.
-		window.setScene(sceneAd);
-		window.showAndWait();
-	}
-
-	/**
-	 * Places an image in a stackpane and returns the stackpane once called.
-	 * 
-	 * @return header as stackpane
-	 */
-
-	private static BorderPane header(){
-
-		// The StackPane to be returned and used as a header.
-		BorderPane header = new BorderPane();
-		header.getStyleClass().add("header");
-
-		Label back = new Label("X");
-		back.setId("backbutton");
-		back.getStyleClass().add("backbutton");
-		back.setOnMouseClicked(e -> window.close());
-
-		Label name = new Label("BeeAdopted");
-		name.setId("beeadopted");
-		name.getStyleClass().add("beeadopted");
-
-
-		
-		header.setLeft(back);
-		header.setCenter(name);
-
-		return header;
-	}
-
+	
 	/**
 	 * This method returns a Hbox with Ad and Agency information about the currently viewed Ad. 
 	 * 
@@ -108,17 +52,30 @@ public class AdView {
 	 * @return Hbox containing Ad and Agency information
 	 */
 
-	private static HBox showAd(Ad ad, int agencyID) throws IOException, SQLException {
-
+	public static VBox showAd(Ad ad, int agencyID) throws IOException, SQLException {
+		VBox vbox = new VBox();
+		vbox.getStyleClass().add("outer-box");
 		// Creating the Hbox to be returned.
 		HBox hbox = new HBox();
 		hbox.setPadding(new Insets(10));
 		hbox.setSpacing(10);
 
+		// Buttons for adopting or closing the ad.
+		Button adoptButton = new Button("Adopt");
+
+		// Associating actions with the buttons.
+		adoptButton.setOnAction(e -> {
+			hbox.getChildren().removeAll(hbox.getChildren());
+			hbox.getChildren().add(adopted(agencyID));
+		});
+
+
+		
 		// Calling additional methods to retrieve the information.
 		hbox.getChildren().addAll(getAd(ad),getAgency(agencyID));
-
-		return hbox;
+		vbox.getChildren().addAll(hbox, adoptButton);
+		
+		return vbox;
 	}
 
 	/**
@@ -133,12 +90,10 @@ public class AdView {
 
 		// GridPane to be returned.
 		VBox vbox = new VBox();
+		vbox.getStyleClass().add("inner-box");
 		vbox.setPrefSize(350, 400);
 		vbox.setSpacing(10);										// Vertical gaps between columns.
-		vbox.setPadding(new Insets(2,2,2,2));				// Setting the padding around the content.
-		vbox.setStyle("-fx-border-style: solid;"
-				+ "-fx-border-width: 1;"
-				+ "-fx-border-color: black");
+		vbox.setPadding(new Insets(10));				// Setting the padding around the content.
 
 		animalPicture = new ImageView();
 		animalPicture.setPreserveRatio(false);
@@ -169,16 +124,7 @@ public class AdView {
 			}
 		}
 
-		// Buttons for adopting or closing the ad.
-		Button adoptButton = new Button("Adopt");
-		Button closeButton = new Button("Close the window");
-
-		// Associating actions with the buttons.
-		adoptButton.setOnAction(e -> window.setScene(sceneAdopt));
-		closeButton.setOnAction(e -> window.close());
-
-
-		vbox.getChildren().addAll(animalPicture,species,nameAgeGenderType, description, adoptButton, closeButton);
+		vbox.getChildren().addAll(animalPicture,species,nameAgeGenderType, description);
 
 
 		return vbox;
@@ -199,12 +145,11 @@ public class AdView {
 
 		// The Vbox to be returned.
 		VBox vbox = new VBox();
-		vbox.setPrefSize(250, 400);
+		vbox.getStyleClass().add("inner-box");
+		vbox.setPrefSize(350, 400);
 		vbox.setPadding(new Insets(10));
 		vbox.setSpacing(10);
-		vbox.setStyle("-fx-border-style: solid;"
-				+ "-fx-border-width: 1;"
-				+ "-fx-border-color: black");
+		
 
 		String sqlStatement = "SELECT Agencies.ID,Name,Logo,AVG(Rating),Email,Phone,Street,ZIP,City FROM "
 				+ "Agencies, Ratings, Addresses WHERE "
@@ -258,6 +203,7 @@ public class AdView {
 		grid.add(label, 0, 0);
 		
 		Rating rating = new Rating();
+		rating.getStyleClass().add("borderless-button");
 		grid.add(rating, 0, 1);
 		
 		TextArea textArea = new TextArea();
@@ -276,17 +222,11 @@ public class AdView {
 				comment = "";
 			}
 			String insert = "INSERT INTO Ratings (AgencyID, Rating, Comment) ";
-			String values = "VALUES (" + agency + ", " + ratingValue + comment + " );";		// Exchange 1 with the agencies ID.
+			String values = "VALUES (" + agency + ", " + ratingValue + comment + ");";		// Exchange 1 with the agencies ID.
 			System.out.println(">> " + insert + "\n" + ">> " + values);
 			db.executeUpdate(insert + values);
 		});
 		
-
-		// Same function as in other scene. Closes the window.
-		Button closeButton = new Button("Close the window");
-		grid.add(closeButton, 1, 3);
-		closeButton.setOnAction(e -> window.close());				// Closes the window.
-
 		return grid;		
 	}
 }

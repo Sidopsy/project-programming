@@ -58,7 +58,7 @@ public class InputPage {
 	private static File file = null;
 	private static ImageView myImageView;
 	private static FileChooser fileChooser;
-	private static AgencyExt agency;
+	public static AgencyExt agency;
 
 	private static DBobject db = new DBobject();
 
@@ -92,7 +92,7 @@ public class InputPage {
 	 * @return GridPane with option to input animals
 	 */
 
-	private static GridPane viewInputAd() {
+	public static GridPane viewInputAd() {
 		GridPane gridPane = new GridPane();
 		gridPane.setHgap(7);
 		gridPane.setVgap(7);

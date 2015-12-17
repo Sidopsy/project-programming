@@ -25,6 +25,7 @@ public class Membership {
 	 */
 	public static HBox loginBox(){
 		HBox hbox = new HBox();
+		hbox.getStyleClass().add("hbox");
 		Button btnShow = new Button("Go to agency pages");
 		TextField tfEmail = new TextField();
 		PasswordField pfPassword = new PasswordField();

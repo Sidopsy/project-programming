@@ -56,7 +56,7 @@ public class Ad {
         this.check.addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				// TODO Auto-generated method stub
+				System.out.println(newValue);
 				
 			}
 

@@ -136,13 +136,18 @@ public class DBobject {
 
 		try {
 			stmt = connect.prepareStatement(update);
-			stmt.executeUpdate();
-
 			connect.commit();
+			stmt.executeUpdate();
+			System.out.println("Hejhej!");
+			
+
+			System.out.println("Hejhej!");
 		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		}
+		} 
+
 		closeConnection();
+	
 	}
 
 	/**
@@ -392,10 +397,11 @@ public class DBobject {
 			if (stmt.isClosed()) {} 
 			else {stmt.close();}
 			if (connect.isClosed()) {} 
-			else {connect.close();}
+			else {this.getConnection().close();}
 		}catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-		}
+		} 
+		
 		System.out.println(">> Closed DB connection");
 	}
 

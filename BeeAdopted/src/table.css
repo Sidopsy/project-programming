@@ -2,13 +2,14 @@
 	-fx-font-size: 11pt;
 	-fx-font-family: "Helvetica";
 	-fx-base: white;
-	-fx-background: white;
+	-fx-background-image: url("CityChooser.png");
+	-fx-background-repeat: stretch;
+	-fx-background-size: cover;
 	-fx-focus-color: transparent;
 }
 
 .background {
 	-fx-background-color: lightgrey;
-	-fx-background-image: url("CityChooser.png");
 }
 
 .label {
@@ -31,6 +32,10 @@
 .button:hover {
 	-fx-border-radius: 5;
 	-fx-background-color: #A7EBBF;	
+}
+
+.borderless-button {
+	-fx-border-color: transparent;
 }
 
 .choice-box {
@@ -114,7 +119,6 @@
 
 /* Panes */
 .start-pane {
-	-fx-background-image: url("CityChooser.png");
 	-fx-spacing: 75;
 }
 
@@ -133,9 +137,11 @@
 }
 
 
-.filter {
+/*.filter {
 	-fx-background-image: url("FilterBase.png");
-}
+	-fx-background-repeat: stretch;
+	-fx-background-size: cover;
+}*/
 
 .filter .choice-box {
 	-fx-background-color: transparent;
@@ -145,6 +151,7 @@
 /* HBox class */
 .hbox {
 	-fx-background-color: transparent;
+	-fx-padding: 50;
 }
 
 
@@ -158,7 +165,7 @@
 
 /* VBox class */
 .vbox {
-	-fx-background-color: transparent;
+	-fx-spacing: 50;
 }
 
 .vbox .label {
@@ -169,7 +176,16 @@
 
 
 /* GridPane class */
-.gridpane {
+.outer-box {
+	-fx-alignment: center;
+}
+
+.outer-box .button {
+	-fx-alignment: center;
+}
+
+.inner-box {
+	-fx-alignment: center-left;
 	-fx-background-color: white;
 }
 
