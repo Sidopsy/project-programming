@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  * to press an Adopt button. The Adopt button should remove the Ad from being listed in the application and prompt the
  * user to input feedback on the transaction with a 0 to 5 rating and a comment.
  * 
- * @author ML
+ * @author ML & Yu Jet Hua
  */
 
 public class AdView {
@@ -106,7 +106,13 @@ public class AdView {
 		Text description = new Text("Description: " + ad.getDescription());
 		description.autosize();
 
-
+	/**
+	 * This method gets the BinaryStream out of the blob from the SQL statement and converts it into a BufferedImage
+	 * which is set into an ImageView to display the image. If there is no image to be taken, 
+	 * the default image will be used.
+	 * 
+	 * @author Yu Jet Hua
+	 */
 		BufferedImage bufferedImage = null;  //Buffered image coming from database
 		InputStream fis = null; //Inputstream
 

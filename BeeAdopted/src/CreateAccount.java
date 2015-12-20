@@ -232,6 +232,12 @@ public class CreateAccount {
 		return gridPane;
 	}
 	
+	/**
+	 * Eventhandler for choosing a PNG file through FileChooser and displaying it in the same window.
+	 * 
+	 * @author Yu Jet Hua
+	 */
+	
 	public static EventHandler<ActionEvent> loadPicture = new EventHandler<ActionEvent>() {
 
 		public void handle(ActionEvent t) {

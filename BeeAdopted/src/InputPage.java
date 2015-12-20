@@ -38,7 +38,7 @@ import javafx.stage.Stage;
 /**
  * This class creates a new window and lets the user input information into the database throught the GUI.
  * 
- * @author 		Mattias Landkvist
+ * @author 		Mattias Landkvist & Yu Jet Hua
  * @refactored 	M??ns Th??rnvik
  * 				Added new layout touches and input restrictions on all input fields.
  */
@@ -455,7 +455,9 @@ public class InputPage {
 	}
 
 	/**
-	 * Eventhandler for Image input into database.
+	 * Eventhandler for choosing a PNG file through FileChooser and displaying it in the same window.
+	 * 
+	 * @author Yu Jet Hua
 	 */
 
 	private static EventHandler<ActionEvent> loadPicture = new EventHandler<ActionEvent>() {
@@ -476,8 +478,10 @@ public class InputPage {
 	};
 	
 	/**
-	 * Upload of picture to a specific ad.
+	 * Upload a picture to a specific ad/agency by making the outputStream of the image into a ByteArray and then inserting
+	 * arrays of 1024 byte until the image has been completely uploaded into the database.
 	 * 
+	 * @author Yu Jet Hua
 	 * @throws Exception
 	 */
 
