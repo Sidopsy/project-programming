@@ -38,6 +38,10 @@
 	-fx-border-color: transparent;
 }
 
+.text-field {
+	-fx-pref-width: 200;
+}
+
 .choice-box {
 	-fx-background-radius: 5;
 	-fx-background-color: lightgrey;
@@ -146,6 +150,19 @@
 .filter .choice-box {
 	-fx-background-color: transparent;
 }
+
+.member-box {
+	-fx-padding: 10;
+	-fx-spacing: 10;
+	-fx-hgap: 30;
+	-fx-vgap: 3;
+}
+
+.member-box .text-field {
+	-fx-pref-width: 150;
+}
+
+
 
 
 /* HBox class */

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import com.sun.glass.events.ViewEvent;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -39,6 +41,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
@@ -93,11 +96,11 @@ public class MemberPage {
 
 		layoutMP = new BorderPane();
 		
-		layoutMP.setTop(viewMemberLogo());
-		layoutMP.setCenter(viewMemberInfo());
+		layoutMP.setTop(header());
+		layoutMP.setCenter(viewMemberLogoAndInfo());
 		layoutMP.setBottom(viewMemberAds());
-		sceneMP = new Scene(layoutMP, 600, 750);
-		sceneMP.getStylesheets().add("table.css");
+		sceneMP = new Scene(layoutMP, 700, 750);
+		sceneMP.getStylesheets().add("style.css");
 
 		window.setScene(sceneMP);
 		window.setOnCloseRequest(e -> {
@@ -105,7 +108,60 @@ public class MemberPage {
 		});
 		window.showAndWait();
 	}
+
+	private static Label back;
+	private static Label name;
 	
+	/**
+	 * This method returns a header for use as a top element of a BorderPane.
+	 * @return BorderPane header and navigation button
+	 * @author Mattias Landkvist
+	 */
+	private static BorderPane header(){
+
+		// The StackPane to be returned and used as a header.
+		BorderPane header = new BorderPane();
+		header.getStyleClass().add("header");
+
+		back = new Label("<");
+		back.setId("backbutton");
+		back.getStyleClass().add("backbutton");
+		back.setOnMouseClicked(e -> back());
+
+		name = new Label("BeeAdopted");
+		name.setId("beeadopted");
+		name.getStyleClass().add("beeadopted");
+
+
+		// All items created are added to HBox.
+		header.setLeft(back);
+		header.setCenter(name);					// Alignment of the items to the center left so that the back button is in an obvious place.
+
+		return header;
+	}
+	
+	/**
+	 * Go back to sceneMP. If already in sceneMP, close window.
+	 * @author Mattias Landkvist
+	 */
+	private static void back() {
+		if(window.getScene() == sceneUpdateAd) {;
+			window.setScene(sceneMP);
+		} else {
+			window.close();
+		}
+	}
+	
+	/**
+	 * @return VBox with viewMemberLogo() and viewMemberInfo()
+	 * @author Mattias Landkvist
+	 */
+	private static VBox viewMemberLogoAndInfo() {
+		VBox vbox = new VBox();
+		vbox.getChildren().addAll(viewMemberLogo(), viewMemberInfo());
+		return vbox;
+	}
+
 	/**
 	 * Insert logo for agency
 	 * @return
@@ -113,6 +169,7 @@ public class MemberPage {
 
 	private static HBox viewMemberLogo() {
 		HBox hBox = new HBox();
+		hBox.getStyleClass().add("member-box");
 		Button btnUpdateLogo, btnSaveLogo;
 		
 		myImageView = new ImageView();
@@ -121,9 +178,9 @@ public class MemberPage {
 		myImageView.setFitHeight(100);
 		
 		hBox.setAlignment(Pos.CENTER);
-		hBox.setMinHeight(150);
-		hBox.setMaxHeight(150);
-		hBox.setPadding(new Insets(5, 5, 5, 5));
+//		hBox.setMinHeight(150);
+//		hBox.setMaxHeight(150);
+//		hBox.setPadding(new Insets(5, 5, 5, 5));
 		
 		try{
 			BufferedImage image = null;
@@ -175,23 +232,24 @@ public class MemberPage {
 	
 	private static GridPane viewMemberInfo() {
 		GridPane gridPane = new GridPane();
-		ColumnConstraints col1 = new ColumnConstraints();
-		ColumnConstraints col2 = new ColumnConstraints();
-		ColumnConstraints col3 = new ColumnConstraints();
+		gridPane.getStyleClass().add("member-box");
+//		ColumnConstraints col1 = new ColumnConstraints();
+//		ColumnConstraints col2 = new ColumnConstraints();
+//		ColumnConstraints col3 = new ColumnConstraints();
 		
-		gridPane.setHgap(10);
-		gridPane.setVgap(10);
+//		gridPane.setHgap(10);
+//		gridPane.setVgap(10);
 		gridPane.setAlignment(Pos.CENTER);
-		gridPane.setPadding(new Insets(5, 5, 5, 5));
+//		gridPane.setPadding(new Insets(5, 5, 5, 5));
 		
-		col1.setHalignment(HPos.RIGHT);
-		col1.setPercentWidth(33);
-		col2.setHalignment(HPos.LEFT);
-		col2.setPercentWidth(33);
-		col3.setHalignment(HPos.LEFT);
-		col3.setPercentWidth(33);
-		gridPane.getColumnConstraints().addAll(col1, col2, col3);
-		
+//		col1.setHalignment(HPos.RIGHT);
+//		col1.setPercentWidth(33);
+//		col2.setHalignment(HPos.LEFT);
+//		col2.setPercentWidth(33);
+//		col3.setHalignment(HPos.LEFT);
+//		col3.setPercentWidth(33);
+//		gridPane.getColumnConstraints().addAll(col1, col2, col3);
+//		
 		addMemberLabels(gridPane);				// Calls a method to add labels to the members view.
 		addMemberTextFields(gridPane);			// Calls a method to add text fields to the members view.
 		addMemberButtons(gridPane);				// Calls a method to add buttons to the members view.
@@ -221,9 +279,9 @@ public class MemberPage {
 		gridPane.add(lblAgencyInfo, 0, 0);
 		gridPane.add(lblPassword, 2, 0);
 		gridPane.add(lblAdInfo, 1, 4);
-		GridPane.setMargin(lblAgencyInfo, new Insets(-45, 43, 0, 0));
-		GridPane.setMargin(lblPassword, new Insets(-45, 0, 0, 0));
-		GridPane.setMargin(lblAdInfo, new Insets(10, 0, 0, 0));	
+//		GridPane.setMargin(lblAgencyInfo, new Insets(-45, 43, 0, 0));
+//		GridPane.setMargin(lblPassword, new Insets(-45, 0, 0, 0));
+//		GridPane.setMargin(lblAdInfo, new Insets(10, 0, 0, 0));	
 		
 		return gridPane;
 	}
@@ -241,8 +299,8 @@ public class MemberPage {
 		tfName = new TextField();
 		tfName.setEditable(false);			// Cannot edit Agency name?
 		tfName.setText(loggedInAgency.getName());
-		tfName.setMinWidth(150);
-		tfName.setMaxWidth(150);
+//		tfName.setMinWidth(150);
+//		tfName.setMaxWidth(150);
 		tfName.setOnKeyReleased(e -> {
 			InputValidation.validateInputName(tfName);
 		});
@@ -251,8 +309,8 @@ public class MemberPage {
 		tfPhone.setEditable(false);
 		tfPhone.setText(loggedInAgency.getPhone());
 		tfPhone.setPromptText("Phone...");
-		tfPhone.setMinWidth(150);
-		tfPhone.setMaxWidth(150);
+//		tfPhone.setMinWidth(150);
+//		tfPhone.setMaxWidth(150);
 		tfPhone.setOnKeyReleased(e -> {
 			InputValidation.validateInputPhone(tfPhone);
 		});
@@ -261,8 +319,8 @@ public class MemberPage {
 		tfEmail.setEditable(false);
 		tfEmail.setText(loggedInAgency.getEmail());
 		tfEmail.setPromptText("Email...");
-		tfEmail.setMinWidth(150);
-		tfEmail.setMaxWidth(150);
+//		tfEmail.setMinWidth(150);
+//		tfEmail.setMaxWidth(150);
 		tfEmail.setOnKeyReleased(e -> {
 			InputValidation.validateInputEmail(tfEmail);
 		});
@@ -271,8 +329,8 @@ public class MemberPage {
 		tfStreet.setEditable(false);
 		tfStreet.setText(loggedInAgency.getStreet());
 		tfStreet.setPromptText("Street...");
-		tfStreet.setMinWidth(150);
-		tfStreet.setMaxWidth(150);
+//		tfStreet.setMinWidth(150);
+//		tfStreet.setMaxWidth(150);
 		tfStreet.setOnKeyReleased(e -> {
 			InputValidation.validateInputStreet(tfStreet);
 		});
@@ -281,8 +339,8 @@ public class MemberPage {
 		tfZip.setEditable(false);
 		tfZip.setText(loggedInAgency.getZip());
 		tfZip.setPromptText("ZIP code...");
-		tfZip.setMinWidth(100);
-		tfZip.setMaxWidth(100);
+//		tfZip.setMinWidth(100);
+//		tfZip.setMaxWidth(100);
 		tfZip.setOnKeyReleased(e -> {
 			InputValidation.validateInputZip(tfZip);
 		});
@@ -291,8 +349,8 @@ public class MemberPage {
 		tfCity.setEditable(false);
 		tfCity.setText(loggedInAgency.getCity());
 		tfCity.setPromptText("City...");
-		tfCity.setMinWidth(150);
-		tfCity.setMaxWidth(150);
+//		tfCity.setMinWidth(150);
+//		tfCity.setMaxWidth(150);
 		tfCity.setOnKeyReleased(e -> {
 			InputValidation.validateInputCity(tfCity);
 		});
@@ -306,13 +364,13 @@ public class MemberPage {
 		
 		pfPassword = new PasswordField();
 		pfPassword.setPromptText("Password...");
-		pfPassword.setMinWidth(100);
-		pfPassword.setMaxWidth(100);
+//		pfPassword.setMinWidth(100);
+//		pfPassword.setMaxWidth(100);
 		
 		pfConfirmPassword = new PasswordField();
 		pfConfirmPassword.setPromptText("Confirm...");
-		pfConfirmPassword.setMinWidth(100);
-		pfConfirmPassword.setMaxWidth(100);
+//		pfConfirmPassword.setMinWidth(100);
+//		pfConfirmPassword.setMaxWidth(100);
 		
 		gridPane.add(pfPassword, 2, 0);
 		gridPane.add(pfConfirmPassword, 2, 1);
@@ -336,14 +394,14 @@ public class MemberPage {
 		
 		btnEditInfo = new Button("Edit");
 		btnSaveInfo = new Button("Save");
-		btnCancelEdit = new Button("Cancel");
+//		btnCancelEdit = new Button("Cancel");
 		
-		btnEditInfo.setMinWidth(50);
-		btnEditInfo.setMaxWidth(50);
+//		btnEditInfo.setMinWidth(50);
+//		btnEditInfo.setMaxWidth(50);
 		btnEditInfo.setOnAction(e -> {
 			btnEditInfo.setVisible(false);
 			btnSaveInfo.setVisible(true);
-			btnCancelEdit.setVisible(true);
+//			btnCancelEdit.setVisible(true);
 			
 			tfName.setEditable(true);
 			
@@ -358,15 +416,15 @@ public class MemberPage {
 			tfCity.setEditable(true);
 		});
 		
-		btnSaveInfo.setMinWidth(50);
-		btnSaveInfo.setMaxWidth(50);
+//		btnSaveInfo.setMinWidth(50);
+//		btnSaveInfo.setMaxWidth(50);
 		btnSaveInfo.setVisible(false);
 		btnSaveInfo.setOnAction(e -> {
 			if (InputValidation.validateMemberInfo(tfName, tfPhone, tfEmail, 
 													tfStreet, tfZip, tfCity)) {
 				
 				btnSaveInfo.setVisible(false);
-				btnCancelEdit.setVisible(false);
+//				btnCancelEdit.setVisible(false);
 				btnEditInfo.setVisible(true);
 				
 				InputPage.updateMemberInfo(loggedInAgency, tfName, tfPhone, tfEmail, 
@@ -386,21 +444,21 @@ public class MemberPage {
 			}
 		});	
 		
-		btnCancelEdit.setMinWidth(70);
-		btnCancelEdit.setMaxWidth(70);
-		btnCancelEdit.setVisible(false);
-		btnCancelEdit.setOnAction(e -> {
-			btnSaveInfo.setVisible(false);
-			btnCancelEdit.setVisible(false);
-			btnEditInfo.setVisible(true);
-			
-			resetColorMemberFields();
-			resetInfoMemberFields();
-		});
+//		btnCancelEdit.setMinWidth(70);
+//		btnCancelEdit.setMaxWidth(70);
+//		btnCancelEdit.setVisible(false);
+//		btnCancelEdit.setOnAction(e -> {
+//			btnSaveInfo.setVisible(false);
+//			btnCancelEdit.setVisible(false);
+//			btnEditInfo.setVisible(true);
+//			
+//			resetColorMemberFields();
+//			resetInfoMemberFields();
+//		});
 		
 		btnSavePassword = new Button("Save");
-		btnSavePassword.setMinWidth(50);
-		btnSavePassword.setMaxWidth(50);
+//		btnSavePassword.setMinWidth(50);
+//		btnSavePassword.setMaxWidth(50);
 		btnSavePassword.setOnAction(e -> {
 			InputValidation.validateInputPassword(pfPassword);
 			InputValidation.validateInputPassword(pfConfirmPassword);
@@ -420,10 +478,11 @@ public class MemberPage {
 			InputPage.agency = loggedInAgency;
 			
 			layoutUpdateAd = new BorderPane();
-			layoutUpdateAd.setTop(Header.smallHeader());
+			layoutUpdateAd.setTop(header());
 			layoutUpdateAd.setCenter(InputPage.viewInputAd());
 
-			sceneUpdateAd = new Scene(layoutUpdateAd, 600, 550);
+			sceneUpdateAd = new Scene(layoutUpdateAd, 700, 750);
+			sceneUpdateAd.getStylesheets().add("style.css");
 
 			window.setScene(sceneUpdateAd);
 			
@@ -431,15 +490,15 @@ public class MemberPage {
 		
 		gridPane.add(btnEditInfo, 0, 3);
 		gridPane.add(btnSaveInfo, 0, 3);
-		gridPane.add(btnCancelEdit, 0, 3);
+//		gridPane.add(btnCancelEdit, 0, 3);
 		gridPane.add(btnSavePassword, 2, 2);
 		gridPane.add(btnInputPage, 2, 4);
-		GridPane.setHalignment(btnEditInfo, HPos.LEFT);
-		GridPane.setMargin(btnEditInfo, new Insets(0, 0, 0, 38));
-		GridPane.setHalignment(btnSaveInfo, HPos.LEFT);
-		GridPane.setMargin(btnSaveInfo, new Insets(0, 0, 0, 38));
-		GridPane.setHalignment(btnCancelEdit, HPos.LEFT);
-		GridPane.setMargin(btnCancelEdit, new Insets(0, 0, 0, 100));
+//		GridPane.setHalignment(btnEditInfo, HPos.LEFT);
+//		GridPane.setMargin(btnEditInfo, new Insets(0, 0, 0, 38));
+//		GridPane.setHalignment(btnSaveInfo, HPos.LEFT);
+//		GridPane.setMargin(btnSaveInfo, new Insets(0, 0, 0, 38));
+//		GridPane.setHalignment(btnCancelEdit, HPos.LEFT);
+//		GridPane.setMargin(btnCancelEdit, new Insets(0, 0, 0, 100));
 		
 		return gridPane;
 	}
@@ -452,8 +511,8 @@ public class MemberPage {
 	 */
 	
 	@SuppressWarnings("unchecked")
-	private static HBox viewMemberAds() {
-		HBox hbTable = new HBox();
+	private static TableView<Ad> viewMemberAds() {
+	//	HBox hbTable = new HBox();
 		table = new TableView<Ad>();		
 		TableColumn<Ad, String> tcName 		=	new TableColumn<>("Name");
 		TableColumn<Ad, String> tcGender 	=	new TableColumn<>("Gender");
@@ -477,13 +536,13 @@ public class MemberPage {
 		db.closeConnection();
 		ObservableList<Ad> olAgencyAds = db.createObservableList((alAgencyAds));
 		
-		hbTable.setPadding(new Insets(5, 5, 5, 5));
-		hbTable.setMinSize(590, 350);
-		hbTable.setMaxSize(500, 350);
+//		hbTable.setPadding(new Insets(5, 5, 5, 5));
+//		hbTable.setMinSize(590, 350);
+//		hbTable.setMaxSize(500, 350);
 		
 		table.setEditable(true);
-		table.setMinSize(590, 340);
-		table.setMaxSize(590, 340);
+//		table.setMinSize(590, 340);
+//		table.setMaxSize(590, 340);
 		table.setRowFactory(e -> {
 			TableRow<Ad> tableRow = new TableRow<>();
 			tableRow.setOnMouseClicked(event -> {
@@ -491,10 +550,11 @@ public class MemberPage {
 					Ad ad = (Ad) tableRow.getItem();
 					
 					layoutUpdateAd = new BorderPane();
-					layoutUpdateAd.setTop(Header.smallHeader());
+					layoutUpdateAd.setTop(header());
 					layoutUpdateAd.setCenter(viewUpdateMemberAd(ad));
 
-					sceneUpdateAd = new Scene(layoutUpdateAd, 600, 550);
+					sceneUpdateAd = new Scene(layoutUpdateAd, 700, 750);
+					sceneUpdateAd.getStylesheets().add("style.css");
 
 					window.setScene(sceneUpdateAd);
 				}
@@ -509,19 +569,20 @@ public class MemberPage {
 		tcStartDate.setCellValueFactory(new PropertyValueFactory<>("StartDate"));
 		tcEndDate.setCellValueFactory(	new PropertyValueFactory<>("EndDate"));
 		
-		tcName.setPrefWidth(100);
-		tcGender.setPrefWidth(65);
-		tcSpecies.setPrefWidth(105);
-		tcType.setPrefWidth(115);
-		tcStartDate.setPrefWidth(80);
-		tcEndDate.setPrefWidth(80);
+//		tcName.setPrefWidth(100);
+//		tcGender.setPrefWidth(65);
+//		tcSpecies.setPrefWidth(105);
+//		tcType.setPrefWidth(115);
+//		tcStartDate.setPrefWidth(80);
+//		tcEndDate.setPrefWidth(80);
 		
 		table.setItems(olAgencyAds);
 		table.getColumns().addAll(tcName, tcGender, tcSpecies, tcType, tcStartDate, tcEndDate);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
-		hbTable.getChildren().add(table);
+//		hbTable.getChildren().add(table);
 		
-		return hbTable;
+		return table;
 	}
 	
 	/**
@@ -560,10 +621,10 @@ public class MemberPage {
 	private static GridPane viewUpdateMemberAd(Ad ad) {
 		GridPane gridPane = new GridPane();
 		
-		gridPane.setHgap(7);
-		gridPane.setVgap(7);
-		gridPane.setPadding(new Insets(5, 5, 5, 5));
-		gridPane.getColumnConstraints().setAll(new ColumnConstraints(250, 250, 250));
+//		gridPane.setHgap(7);
+//		gridPane.setVgap(7);
+//		gridPane.setPadding(new Insets(5, 5, 5, 5));
+//		gridPane.getColumnConstraints().setAll(new ColumnConstraints(250, 250, 250));
 		gridPane.setAlignment(Pos.CENTER);
 		
 		addAdLabels(gridPane, ad);
@@ -597,10 +658,10 @@ public class MemberPage {
 		gridPane.add(lblAge, 0, 0);
 		gridPane.add(lblGender, 1, 0);
 		gridPane.add(lblActiveInfo, 1, 4);		
-		GridPane.setMargin(lblName, 	new Insets(-45, 0, 0, 0));
-		GridPane.setMargin(lblAge, 		new Insets(-45, 0, 0, 160));
-		GridPane.setMargin(lblGender, 	new Insets(-45, 0, 0, 143));
-		GridPane.setMargin(lblActiveInfo, new Insets(-45, 0, 0, 0));
+//		GridPane.setMargin(lblName, 	new Insets(-45, 0, 0, 0));
+//		GridPane.setMargin(lblAge, 		new Insets(-45, 0, 0, 160));
+//		GridPane.setMargin(lblGender, 	new Insets(-45, 0, 0, 143));
+//		GridPane.setMargin(lblActiveInfo, new Insets(-45, 0, 0, 0));
 		
 		return gridPane;
 	}
@@ -617,16 +678,16 @@ public class MemberPage {
 		
 		tfAdName = new TextField();
 		tfAdName.setText(ad.getName());
-		tfAdName.setMinWidth(150);
-		tfAdName.setMaxWidth(150);
+//		tfAdName.setMinWidth(150);
+//		tfAdName.setMaxWidth(150);
 		tfAdName.setOnKeyReleased(e -> {
 			InputValidation.validateInputTextFieldString(tfAdName);
 		});
 		
 		tfAdAge = new TextField();
 		tfAdAge.setText(ad.getAge() + ""); // need "" since its and integer
-		tfAdAge.setMinWidth(50);
-		tfAdAge.setMaxWidth(50);
+//		tfAdAge.setMinWidth(50);
+//		tfAdAge.setMaxWidth(50);
 		tfAdAge.setOnKeyReleased(e -> {
 			InputValidation.validateInputAge(tfAdAge);
 		});
@@ -640,8 +701,8 @@ public class MemberPage {
 		});
 		
 		tfAdNewSpecies = new TextField();				// TF for new species
-		tfAdNewSpecies.setMinWidth(100);				// Setting size for TF
-		tfAdNewSpecies.setMaxWidth(100);
+//		tfAdNewSpecies.setMinWidth(100);				// Setting size for TF
+//		tfAdNewSpecies.setMaxWidth(100);
 		tfAdNewSpecies.setVisible(false);				// TF not visible by default
 		tfAdNewSpecies.setPromptText("Species...");	// Prompt text for TF to be displayed in the background
 		tfAdNewSpecies.setOnKeyReleased(e -> {
@@ -663,8 +724,8 @@ public class MemberPage {
 		});
 		
 		tfAdNewType = new TextField();				// TF for new types
-		tfAdNewType.setMinWidth(100);
-		tfAdNewType.setMaxWidth(100);
+//		tfAdNewType.setMinWidth(100);
+//		tfAdNewType.setMaxWidth(100);
 		tfAdNewType.setVisible(false);
 		tfAdNewType.setPromptText("Type...");
 		tfAdNewType.setOnKeyReleased(e -> {
@@ -677,8 +738,8 @@ public class MemberPage {
 		gridPane.add(taAdDescription, 0, 3);
 		gridPane.add(tfAdNewSpecies, 0, 2);			// Adding CHB for new species to gridpane, column 0, row 3
 		gridPane.add(tfAdNewType, 1, 2);
-		GridPane.setMargin(tfAdAge, 			new Insets(0, 0, 0, 160));
-		GridPane.setMargin(tfAdNewType, 		new Insets(0, 0, 0, -97));
+//		GridPane.setMargin(tfAdAge, 			new Insets(0, 0, 0, 160));
+//		GridPane.setMargin(tfAdNewType, 		new Insets(0, 0, 0, -97));
 		
 		return gridPane;
 	}
@@ -697,8 +758,8 @@ public class MemberPage {
 		cbAdGenders = new ChoiceBox<>(genders = FXCollections.observableArrayList("Male", new Separator()));
 		genders.add("Female");
 		cbAdGenders.setValue(ad.getGender());
-		cbAdGenders.setMinWidth(100);
-		cbAdGenders.setMaxWidth(100);
+//		cbAdGenders.setMinWidth(100);
+//		cbAdGenders.setMaxWidth(100);
 		cbAdGenders.setOnAction(e -> {
 			InputValidation.validateChoiceBox(cbAdGenders);
 		});
@@ -777,8 +838,8 @@ public class MemberPage {
 		});
 		
 		cbAdSpecies.setValue(ad.getSpecies());			// Setting default value to "Species"
-		cbAdSpecies.setMinWidth(100);					// Setting size of the CB
-		cbAdSpecies.setMaxWidth(100);
+//		cbAdSpecies.setMinWidth(100);					// Setting size of the CB
+//		cbAdSpecies.setMaxWidth(100);
 		cbAdSpecies.setOnAction(e -> {				// On action (selection) it should...
 			InputValidation.validateChoiceBox(cbAdSpecies);
 			if ((String) cbAdSpecies.getValue() != "Species") {	// If it has changed from "Species", do:
@@ -803,8 +864,8 @@ public class MemberPage {
 		});
 
 		cbAdType.setValue(ad.getType());			// Setting default value of type CB to "Type"
-		cbAdType.setMinWidth(100);					// Setting size of type CB
-		cbAdType.setMaxWidth(100);
+//		cbAdType.setMinWidth(100);					// Setting size of type CB
+//		cbAdType.setMaxWidth(100);
 		cbAdType.setDisable(false);					// Type CB is disables by default
 		cbAdType.setOnAction(e -> {
 			try {
@@ -822,10 +883,10 @@ public class MemberPage {
 		gridPane.add(chbNewSpecies, 0, 2);
 		gridPane.add(chbNewType, 1, 2);
 		gridPane.add(chbReActivate, 1, 4);
-		GridPane.setMargin(cbAdGenders, 	new Insets(0, 0, 0, 143));
-		GridPane.setMargin(cbAdType, 		new Insets(0, 0, 0, -97));
-		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
-		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 8));	
+//		GridPane.setMargin(cbAdGenders, 	new Insets(0, 0, 0, 143));
+//		GridPane.setMargin(cbAdType, 		new Insets(0, 0, 0, -97));
+//		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
+//		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 8));	
 		
 		return gridPane;
 	}
@@ -867,15 +928,15 @@ public class MemberPage {
 		}
 		
 		btnAddPicture = new Button("Upload picture");
-		btnAddPicture.setMinSize(110, 50);
-		btnAddPicture.setMaxSize(110, 50);
+//		btnAddPicture.setMinSize(110, 50);
+//		btnAddPicture.setMaxSize(110, 50);
 		btnAddPicture.setOnAction(loadPicture);
 		
 		alert = new Alert(AlertType.ERROR);
 		
 		btnSaveAd = new Button("Save ad");
-		btnSaveAd.setMinWidth(110);
-		btnSaveAd.setMaxWidth(110);
+//		btnSaveAd.setMinWidth(110);
+//		btnSaveAd.setMaxWidth(110);
 		btnSaveAd.setOnAction(e -> {
 			if (InputValidation.validateAdInfo(tfAdName, tfAdAge, cbAdGenders, cbAdSpecies, cbAdType, 
 												tfAdNewSpecies, tfAdNewType, taAdDescription)) {
@@ -928,8 +989,8 @@ public class MemberPage {
 		gridPane.add(btnSaveAd, 0, 5);
 		gridPane.add(btnBack, 0, 5);
 		gridPane.add(btnDelete, 1, 5);
-		GridPane.setMargin(btnBack, 	new Insets(0, 0, 0, 115));
-		GridPane.setMargin(myImageView, new Insets(0, 0, 0, -135));
+//		GridPane.setMargin(btnBack, 	new Insets(0, 0, 0, 115));
+//		GridPane.setMargin(myImageView, new Insets(0, 0, 0, -135));
 		
 		
 		return gridPane;

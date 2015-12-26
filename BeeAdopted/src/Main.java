@@ -107,7 +107,7 @@ public class Main extends Application {
 		bpLayout1.setBottom(Membership.loginBox());
 		back.setVisible(false);
 		scene1 = new Scene(bpLayout1,800,600);
-		scene1.getStylesheets().add("table.css");
+		scene1.getStylesheets().add("style.css");
 
 
 		// Setting the currently open window to show the scene created above.
@@ -182,7 +182,7 @@ public class Main extends Application {
 				bpLayout2.setTop(header());		// Setting the header as before.
 				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
 				scene2 = new Scene(bpLayout2,800,600);
-				scene2.getStylesheets().add("table.css");
+				scene2.getStylesheets().add("style.css");
 				window.setScene(scene2);
 			}
 		});
@@ -301,7 +301,7 @@ public class Main extends Application {
 			bpLayout2.setCenter(mainCenterView());
 			tvAd.refresh();
 			scene2 = new Scene(bpLayout2,800,600);
-			scene2.getStylesheets().add("table.css");
+			scene2.getStylesheets().add("style.css");
 			window.setScene(scene2);
 		});
 
@@ -358,22 +358,15 @@ public class Main extends Application {
 
 		if (firstSearch == true){	
 			if(city != "Select all"){
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,(SELECT AVG(Rating) FROM Ads,Agencies,Ratings,Addresses WHERE Agencies.ID = Ratings.AgencyID and Agencies.ID = Addresses.AgencyID " + city + " GROUP BY Agencies.ID) as Rating FROM "
+				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, AVG(Rating) as Rating FROM "
 						+ "Ads,Agencies,Addresses,Ratings WHERE "
 						+ "Agencies.ID = Addresses.AgencyID and "
 						+ "Agencies.ID = Ratings.AgencyID and "
-						+ "Agencies.ID = Ads.AgencyID " 
-						+ city + " and "
-						+ "EndDate >= '" + today 
-						+ "' ORDER BY Ads.ID;";
+						+ "Agencies.ID = Ads.AgencyID and " 
+						+ "EndDate >= '" + today + "' "
+						+ city
+						+ " GROUP BY Ads.ID;";
 			} else {
-
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, avg(Rating) as Rating FROM "
-						+ "Ratings, Agencies,Ads where "
-						+ "Ads.AgencyID == Agencies.ID and  "
-						+ "Ratings.AgencyID == Agencies.ID and "
-						+ "Ads.AgencyID == Agencies.ID "
-						+ "Group by Ads.ID;";
 				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, AVG(Rating) as Rating FROM "
 						+ "Ads,Agencies,Ratings WHERE "
 						+ "Agencies.ID == Ratings.AgencyID and "
@@ -505,7 +498,7 @@ public class Main extends Application {
 							bpLayout3.setCenter(AdView.showAd(ad, ad.getAgencyID()));
 							tvAd.refresh();
 							scene3 = new Scene(bpLayout3,800,600);
-							scene3.getStylesheets().add("table.css");
+							scene3.getStylesheets().add("style.css");
 							window.setScene(scene3);
 							
 						} catch (Exception e1) {
@@ -526,12 +519,13 @@ public class Main extends Application {
 
 		Button btnCompare = new Button("Compare Ads");
 		btnCompare.setOnAction(e -> {
+			getCheckedAds();
 			bpLayout3 = new BorderPane();
 			bpLayout3.setTop(header());
 			bpLayout3.setCenter(Compare.compareAds(compareAds));
 			tvAd.refresh();
 			scene3 = new Scene(bpLayout3,800,600);
-			scene3.getStylesheets().add("table.css");
+			scene3.getStylesheets().add("style.css");
 			window.setScene(scene3);
 			
 			
@@ -539,6 +533,21 @@ public class Main extends Application {
 
 		vbox.getChildren().addAll(tvAd, btnCompare);
 		return vbox;
+	}
+	
+	private void getCheckedAds(){
+		for(int i = 0; i <= tvAd.getItems().size(); i++){
+			if(tvAd.getItems().get(i).getCheck()){
+				compareAds.add(tvAd.getItems().get(i));
+			}
+//			else {
+//				try {
+//					compareAds.remove(compareAds.indexOf(tvAd.getItems().get(i)));
+//				} catch (NullPointerException e) {
+//					System.out.println("Bop bop");
+//				}
+//			}
+		}
 	}
 
 	public VBox mainCenterView(){
