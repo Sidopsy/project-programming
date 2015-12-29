@@ -1,21 +1,18 @@
-
 import javafx.beans.property.SimpleStringProperty;
 
 /**
- * Object for agencies, containing extended information about agencies for users to get more detailed information.
+ * Object for agencies, containing extended information about them in order for users to get more detailed information.
  * 
- * Added orgNo as String because of formatting reasons.
- * 
- * @author MTs
+ * @author Maans Thoernvik
  * @since 10-26-15
  */
 
 public class AgencyExt extends Agency {
 	private final SimpleStringProperty email, phone, street, zip, city;
 	
-	public AgencyExt(int id, String logo, String name, String rating, String email, 
+	public AgencyExt(int id, String name, String rating, String email, 
 						  String phone, String street, String zip, String city) {
-		super(id, logo, name, rating);
+		super(id, name, rating);
 		this.email = new SimpleStringProperty(email);
 		this.phone = new SimpleStringProperty(phone);
 		this.street = new SimpleStringProperty(street);
@@ -25,10 +22,6 @@ public class AgencyExt extends Agency {
 	
 	public int getID() {
 		return super.getID();
-	}
-	
-	public String getLogo() {
-		return super.getLogo();
 	}
 	
 	public String getName() {

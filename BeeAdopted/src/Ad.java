@@ -1,22 +1,16 @@
-
-import java.sql.Blob;
-
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
  * Object for ads, appropriate variables for displaying in the application.
  * 
- * @author MTs
+ * @author Maans Thoernvik
  * @since 10-26-15
  */
 
@@ -44,6 +38,7 @@ public class Ad {
 		this.endDate = new SimpleStringProperty(end);
 		this.agencyID = new SimpleIntegerProperty(agencyID);
 		this.agencyName = new SimpleStringProperty(agencyName);
+		
 		this.rating = new RatingObject(agencyID, rating);
 		this.rating.setDisable(true);
 		this.rating.setScaleX(0.5);
@@ -113,13 +108,14 @@ public class Ad {
 	public boolean getCheck() {
 		return check.get();
 	}
+
+	public Ad getAd(){
+		return this;
+	}
 	
 	public String toString() {
 		return picture + " " + name + " " + gender + " " + species + " " + 
 				type + " " + age + " " + description + " " + startDate + " " + endDate;
 	}
 
-	public Ad getAd(){
-		return this;
-	}
 }

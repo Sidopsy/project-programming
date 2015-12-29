@@ -63,19 +63,11 @@ public class MemberPage {
 	
 	private static TextField tfName, tfPhone, tfEmail, tfStreet, tfZip, tfCity;
 	private static PasswordField pfPassword, pfConfirmPassword;
-	
-	private static TextField tfAdName, tfAdAge, tfAdNewSpecies, tfAdNewType;
-	private static ChoiceBox<Object> cbAdGenders, cbAdSpecies, cbAdType;
-	private static TextArea taAdDescription;
-	private static CheckBox chbNewSpecies, chbNewType, chbReActivate;
 	private static ImageView myImageView;
-	
-	private static TableView<Ad> table;
-	private static AgencyExt loggedInAgency;
-	
 	private static File file;
+	private static TableView<Ad> table;
 	
-	private static ObservableList<Object> obsListType;
+	private static AgencyExt loggedInAgency;	
 	
 	private static DBobject db = new DBobject();
 
@@ -117,6 +109,7 @@ public class MemberPage {
 	 * @return BorderPane header and navigation button
 	 * @author Mattias Landkvist
 	 */
+	
 	private static BorderPane header(){
 
 		// The StackPane to be returned and used as a header.
@@ -132,7 +125,6 @@ public class MemberPage {
 		name.setId("beeadopted");
 		name.getStyleClass().add("beeadopted");
 
-
 		// All items created are added to HBox.
 		header.setLeft(back);
 		header.setCenter(name);					// Alignment of the items to the center left so that the back button is in an obvious place.
@@ -144,7 +136,8 @@ public class MemberPage {
 	 * Go back to sceneMP. If already in sceneMP, close window.
 	 * @author Mattias Landkvist
 	 */
-	private static void back() {
+	
+	public static void back() {
 		if(window.getScene() == sceneUpdateAd) {;
 			window.setScene(sceneMP);
 		} else {
@@ -156,6 +149,7 @@ public class MemberPage {
 	 * @return VBox with viewMemberLogo() and viewMemberInfo()
 	 * @author Mattias Landkvist
 	 */
+	
 	private static VBox viewMemberLogoAndInfo() {
 		VBox vbox = new VBox();
 		vbox.getChildren().addAll(viewMemberLogo(), viewMemberInfo());
@@ -197,11 +191,11 @@ public class MemberPage {
 			} catch (SQLException e) {System.err.println(">> Error when closing connection");}
 		}
 		
-		btnUpdateLogo = new Button("Change logo");
+		btnUpdateLogo = new Button("Upload logo");
 		btnUpdateLogo.setAlignment(Pos.CENTER_RIGHT);
 		btnUpdateLogo.setOnAction(loadPicture);
 		
-		btnSaveLogo = new Button("Save logo");
+		btnSaveLogo = new Button("Save");
 		btnSaveLogo.setAlignment(Pos.CENTER_RIGHT);
 		btnSaveLogo.setOnAction(e -> {
 			if (file != null) {	
@@ -209,8 +203,6 @@ public class MemberPage {
 					InputPage.inputUpdatePicture(loggedInAgency.getID(), file, false);
 				} catch (Exception e1) {
 					System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
-				} finally {
-					layoutMP.setTop(viewMemberLogo());
 				}
 				file = null;
 			} else {}
