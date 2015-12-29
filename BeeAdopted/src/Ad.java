@@ -56,6 +56,7 @@ public class Ad {
         this.check.addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				check.set(newValue);
 				System.out.println(newValue);
 				
 			}
@@ -118,6 +119,10 @@ public class Ad {
 	
 	public boolean getCheck() {
 		return check.get();
+	}
+	
+	public BooleanProperty getCheckProperty(){
+		return check;
 	}
 	
 	

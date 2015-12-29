@@ -102,8 +102,8 @@ public class Main extends Application {
 
 		// Creating the window.
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
-		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
-		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
+		bpLayout1.setTop(getHeader());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
+		bpLayout1.setCenter(getCityChooser());		// Center element of BorderPane contains the dropdown vbox.
 		bpLayout1.setBottom(Membership.loginBox());
 		back.setVisible(false);
 		scene1 = new Scene(bpLayout1,800,600);
@@ -120,7 +120,7 @@ public class Main extends Application {
 	 * 
 	 * @return Vbox header image and navigation buttons
 	 */
-	private BorderPane header(){
+	private BorderPane getHeader(){
 
 		// The StackPane to be returned and used as a header.
 		BorderPane header = new BorderPane();
@@ -144,67 +144,25 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
-	 * going to the input page.
-	 * 
-	 * @return Vbox location dropdown menu and input page button
+	 * Go to start view.
 	 */
-	private VBox startLocation() {
-
-		// The Vbox to be returned.
-		VBox firstPage = new VBox();
-		firstPage.getStyleClass().add("start-pane");
-
-		// Displayed above the choicebox for cities to let the user know what to do.
-		Label lblLocation = new Label("Where are you?");
-
-		// This inputs information into the choicebox, namely the cities in which there are agencies.
-		cbLocation = new ChoiceBox<>(db.createObservableList("City",db.fetchResult(
-				db.executeQuery("SELECT Distinct City FROM "
-						+ "Addresses ORDER BY "
-						+ "City;"))));
-		db.closeConnection();
-
-		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
-
-		cbLocation.setOnAction(e -> {
-			if(!cbLocation.getValue().equals("City")){
-				if(!cbLocation.getValue().equals("Select all")){
-					city = " and City == '" + cbLocation.getValue() + "'";		// What location was input?
-					System.out.println(city);
-				} else {
-					city = "";
-				}
-
-				firstSearch = true;												
-				search();
-				bpLayout2 = new BorderPane();				// Preparing for a new scene.
-				bpLayout2.setTop(header());		// Setting the header as before.
-				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
-				scene2 = new Scene(bpLayout2,800,600);
-				scene2.getStylesheets().add("style.css");
-				window.setScene(scene2);
-			}
-		});
-
-
-		// Vbox is populated with the label, the choicebox and the content from loginBox()
-		firstPage.getChildren().addAll(lblLocation, cbLocation);
-		firstPage.setAlignment(Pos.CENTER);
-
-		return firstPage;
+	public static void back(){
+		if(window.getScene() == scene2) {
+			cbLocation.setValue("City");
+			window.setScene(scene1);
+		} else {
+			window.setScene(scene2);
+		}
 	}
 
-
-	//	
 
 	/**
 	 * This method contains filter options for searches. 
 	 * 
-	 * @return Hbox displaying filers
+	 * @return Vbox displaying filers
 	 */
 
-	public VBox filter(){
+	public VBox getFilter(){
 		VBox filters = new VBox();
 		filters.getStyleClass().add("filter");
 		filters.setAlignment(Pos.CENTER);
@@ -297,8 +255,8 @@ public class Main extends Application {
 			tvAd.getChildrenUnmodifiable().removeAll(theSearch);
 			search();
 			bpLayout2 = new BorderPane();
-			bpLayout2.setTop(header());
-			bpLayout2.setCenter(mainCenterView());
+			bpLayout2.setTop(getHeader());
+			bpLayout2.setCenter(getAdSearchAndChooser());
 			tvAd.refresh();
 			scene2 = new Scene(bpLayout2,800,600);
 			scene2.getStylesheets().add("style.css");
@@ -405,13 +363,65 @@ public class Main extends Application {
 		System.out.println(theSearch.toString());
 
 	}
+	
+	/**
+	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
+	 * going to the input page.
+	 * 
+	 * @return Vbox location dropdown menu and input page button
+	 */
+	private VBox getCityChooser() {
+
+		// The Vbox to be returned.
+		VBox firstPage = new VBox();
+		firstPage.getStyleClass().add("start-pane");
+
+		// Displayed above the choicebox for cities to let the user know what to do.
+		Label lblLocation = new Label("Where are you?");
+
+		// This inputs information into the choicebox, namely the cities in which there are agencies.
+		cbLocation = new ChoiceBox<>(db.createObservableList("City",db.fetchResult(
+				db.executeQuery("SELECT Distinct City FROM "
+						+ "Addresses ORDER BY "
+						+ "City;"))));
+		db.closeConnection();
+
+		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
+
+		cbLocation.setOnAction(e -> {
+			if(!cbLocation.getValue().equals("City")){
+				if(!cbLocation.getValue().equals("Select all")){
+					city = " and City == '" + cbLocation.getValue() + "'";		// What location was input?
+					System.out.println(city);
+				} else {
+					city = "";
+				}
+
+				firstSearch = true;												
+				search();
+				bpLayout2 = new BorderPane();				// Preparing for a new scene.
+				bpLayout2.setTop(getHeader());		// Setting the header as before.
+				bpLayout2.setCenter(getAdSearchAndChooser());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
+				scene2 = new Scene(bpLayout2,800,600);
+				scene2.getStylesheets().add("style.css");
+				window.setScene(scene2);
+			}
+		});
+
+
+		// Vbox is populated with the label, the choicebox and the content from loginBox()
+		firstPage.getChildren().addAll(lblLocation, cbLocation);
+		firstPage.setAlignment(Pos.CENTER);
+
+		return firstPage;
+	}
 
 	/**
-	 * This method returns a table with properties and specific variables from the Ad object.
+	 * This method 
 	 * 
-	 * @return TableView<Ad>
+	 * @return VBox with a tableview populated by n Ad objects from a database and a button.
 	 */
-	public VBox searchResults(){
+	public VBox getTableViewAndCompare(){
 		VBox vbox = new VBox();
 		vbox.getStyleClass().add("vbox");
 		vbox.setAlignment(Pos.CENTER);
@@ -444,10 +454,21 @@ public class Main extends Application {
 
 				@Override
 				public ObservableValue<Boolean> call(Integer index) {
-					return selected;
+					
+					return tvAd.getItems().get(index).getCheckProperty();
 				}
+				
 
 			});
+			System.out.println("Cell index: " + ctCell.getIndex());
+			if(tvAd.getItems().get(ctCell.getIndex() + 1).getCheck() == true){
+				compareAds.add(tvAd.getItems().get(ctCell.getIndex() +1 ));
+//			} 
+//			else  if (tvAd.getItems().get(ctCell.getIndex() + 1).getCheck() == false){
+//				compareAds.remove(compareAds.indexOf(tvAd.getItems().get(ctCell.getIndex() + 1)));
+			} else {
+				return ctCell;
+			}
 			return ctCell;
 		}
 
@@ -494,7 +515,7 @@ public class Main extends Application {
 					
 						try {
 							bpLayout3 = new BorderPane();
-							bpLayout3.setTop(header());
+							bpLayout3.setTop(getHeader());
 							bpLayout3.setCenter(AdView.showAd(ad, ad.getAgencyID()));
 							tvAd.refresh();
 							scene3 = new Scene(bpLayout3,800,600);
@@ -519,9 +540,9 @@ public class Main extends Application {
 
 		Button btnCompare = new Button("Compare Ads");
 		btnCompare.setOnAction(e -> {
-			getCheckedAds();
+		//	getCheckedAds();
 			bpLayout3 = new BorderPane();
-			bpLayout3.setTop(header());
+			bpLayout3.setTop(getHeader());
 			bpLayout3.setCenter(Compare.compareAds(compareAds));
 			tvAd.refresh();
 			scene3 = new Scene(bpLayout3,800,600);
@@ -535,40 +556,28 @@ public class Main extends Application {
 		return vbox;
 	}
 	
-	private void getCheckedAds(){
-		for(int i = 0; i <= tvAd.getItems().size(); i++){
-			if(tvAd.getItems().get(i).getCheck()){
-				compareAds.add(tvAd.getItems().get(i));
-			}
-//			else {
-//				try {
-//					compareAds.remove(compareAds.indexOf(tvAd.getItems().get(i)));
-//				} catch (NullPointerException e) {
-//					System.out.println("Bop bop");
-//				}
-//			}
-		}
-	}
-
-	public VBox mainCenterView(){
+	public VBox getAdSearchAndChooser(){
 		VBox vbox = new VBox();
 		vbox.setPadding(new Insets(0));
 		vbox.setSpacing(10);
 
-		vbox.getChildren().addAll(filter(), searchResults());
+		vbox.getChildren().addAll(getFilter(), getTableViewAndCompare());
 
 		return vbox;
 	}
-
-	/**
-	 * Go to start view.
-	 */
-	public void back(){
-		if(window.getScene() == scene2) {
-			cbLocation.setValue("City");
-			window.setScene(scene1);
-		} else {
-			window.setScene(scene2);
-		}
-	}
+	
+//	private void getCheckedAds(){
+//		System.out.println("Length: " + tvAd.getItems().toArray().length);
+//		int i = 1;
+//		while(true){
+//			compareAds.add(tvAd.getItems().get(i));
+////			else {
+////				try {
+////					compareAds.remove(compareAds.indexOf(tvAd.getItems().get(i)));
+////				} catch (NullPointerException e) {
+////					System.out.println("Bop bop");
+////				}
+////			}
+//		}
+//	}
 }

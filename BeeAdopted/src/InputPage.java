@@ -94,11 +94,12 @@ public class InputPage {
 
 	public static GridPane viewInputAd() {
 		GridPane gridPane = new GridPane();
-		gridPane.setHgap(7);
-		gridPane.setVgap(7);
-		gridPane.setPadding(new Insets(5, 5, 5, 5));
-		gridPane.getColumnConstraints().setAll(new ColumnConstraints(250, 250, 250));
-		gridPane.setAlignment(Pos.CENTER);
+//		gridPane.getStyleClass().add("member-box");
+//		gridPane.setHgap(7);
+//		gridPane.setVgap(7);
+//		gridPane.setPadding(new Insets(5, 5, 5, 5));
+//		gridPane.getColumnConstraints().setAll(new ColumnConstraints(250, 250, 250));
+//		gridPane.setAlignment(Pos.CENTER);
 
 
 		addInputLabels(gridPane);
@@ -130,9 +131,9 @@ public class InputPage {
 		gridPane.add(lblName, 0, 0);
 		gridPane.add(lblAge, 0, 0);
 		gridPane.add(lblGender, 1, 0);
-		GridPane.setMargin(lblName, 	new Insets(-45, 0, 0, 0));
-		GridPane.setMargin(lblAge, 		new Insets(-45, 0, 0, 160));
-		GridPane.setMargin(lblGender, 	new Insets(-45, 0, 0, 143));
+//		GridPane.setMargin(lblName, 	new Insets(-45, 0, 0, 0));
+//		GridPane.setMargin(lblAge, 		new Insets(-45, 0, 0, 160));
+//		GridPane.setMargin(lblGender, 	new Insets(-45, 0, 0, 143));
 
 
 		return gridPane;
@@ -153,8 +154,8 @@ public class InputPage {
 		tfName = new TextField();
 		tfName.setPromptText("...");
 		tfName.setContextMenu(strings);
-		tfName.setMinWidth(150);
-		tfName.setMaxWidth(150);
+//		tfName.setMinWidth(150);
+//		tfName.setMaxWidth(150);
 		tfName.setOnKeyReleased(e -> {
 			InputValidation.validateInputTextFieldString(tfName);
 		});
@@ -162,8 +163,8 @@ public class InputPage {
 
 		tfAge = new TextField();
 		tfAge.setPromptText("...");
-		tfAge.setMinWidth(50);
-		tfAge.setMaxWidth(50);
+//		tfAge.setMinWidth(50);
+//		tfAge.setMaxWidth(50);
 		tfAge.setOnKeyReleased(e -> {
 			InputValidation.validateInputAge(tfAge);
 		});
@@ -179,8 +180,8 @@ public class InputPage {
 
 
 		tfNewSpecies = new TextField();				// TF for new species
-		tfNewSpecies.setMinWidth(100);				// Setting size for TF
-		tfNewSpecies.setMaxWidth(100);
+//		tfNewSpecies.setMinWidth(100);				// Setting size for TF
+//		tfNewSpecies.setMaxWidth(100);
 		tfNewSpecies.setVisible(false);				// TF not visible by default
 		tfNewSpecies.setPromptText("Species...");	// Prompt text for TF to be displayed in the background
 		tfNewSpecies.setOnKeyReleased(e -> {
@@ -203,8 +204,8 @@ public class InputPage {
 
 
 		tfNewType = new TextField();				// TF for new types
-		tfNewType.setMinWidth(100);
-		tfNewType.setMaxWidth(100);
+//		tfNewType.setMinWidth(100);
+//		tfNewType.setMaxWidth(100);
 		tfNewType.setVisible(false);
 		tfNewType.setPromptText("Type...");
 		tfNewType.setOnKeyReleased(e -> {
@@ -217,9 +218,9 @@ public class InputPage {
 		GridPane.setColumnSpan(taDescription, 2);
 		gridPane.add(taDescription, 0, 3);
 		gridPane.add(tfNewSpecies, 0, 2);			// Adding CHB for new species to gridpane, column 0, row 3
-		gridPane.add(tfNewType, 1, 2);
-		GridPane.setMargin(tfAge, 			new Insets(0, 0, 0, 160));
-		GridPane.setMargin(tfNewType, 		new Insets(0, 0, 0, -97));
+		gridPane.add(tfNewType, 2, 2);
+//		GridPane.setMargin(tfAge, 			new Insets(0, 0, 0, 160));
+//		GridPane.setMargin(tfNewType, 		new Insets(0, 0, 0, -97));
 
 
 		return gridPane;
@@ -241,8 +242,8 @@ public class InputPage {
 		genders.add("Female");
 		cbGenders = new ChoiceBox<>(genders);
 		cbGenders.setValue(cbGenders.getItems().get(0));
-		cbGenders.setMinWidth(100);
-		cbGenders.setMaxWidth(100);
+//		cbGenders.setMinWidth(100);
+//		cbGenders.setMaxWidth(100);
 		cbGenders.setOnAction(e -> {
 			InputValidation.validateChoiceBox(cbGenders);
 		});
@@ -318,8 +319,8 @@ public class InputPage {
 						+ "Species;"))));
 		db.closeConnection();
 		cbSpecies.setValue("Species");				// Setting default value to "Species"
-		cbSpecies.setMinWidth(100);					// Setting size of the CB
-		cbSpecies.setMaxWidth(100);
+//		cbSpecies.setMinWidth(100);					// Setting size of the CB
+//		cbSpecies.setMaxWidth(100);
 		cbSpecies.setOnAction(e -> {				// On action (selection) it should...
 			InputValidation.validateChoiceBox(cbSpecies);
 			if ((String) cbSpecies.getValue() != "Species") {	// If it has changed from "Species", do:
@@ -351,8 +352,8 @@ public class InputPage {
 						+ "Type;"))));
 		db.closeConnection();
 		cbType.setValue("Type");					// Setting default value of type CB to "Type"
-		cbType.setMinWidth(100);					// Setting size of type CB
-		cbType.setMaxWidth(100);
+//		cbType.setMinWidth(100);					// Setting size of type CB
+//		cbType.setMaxWidth(100);
 		cbType.setDisable(true);					// Type CB is disables by default
 		cbType.setOnAction(e -> {
 			try {
@@ -363,13 +364,13 @@ public class InputPage {
 
 		gridPane.add(cbGenders, 1, 0);
 		gridPane.add(cbSpecies, 0, 2);				// Adding CB for species to gridpane, column 0, row 3
-		gridPane.add(cbType, 1, 2);
-		gridPane.add(chbNewSpecies, 0, 2);
-		gridPane.add(chbNewType, 1, 2);
-		GridPane.setMargin(cbGenders, 		new Insets(0, 0, 0, 143));
-		GridPane.setMargin(cbType, 			new Insets(0, 0, 0, -97));
-		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
-		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 8));
+		gridPane.add(cbType, 2, 2);
+		gridPane.add(chbNewSpecies, 1, 2);
+		gridPane.add(chbNewType, 3, 2);
+//		GridPane.setMargin(cbGenders, 		new Insets(0, 0, 0, 143));
+//		GridPane.setMargin(cbType, 			new Insets(0, 0, 0, -97));
+//		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
+//		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 8));
 
 
 		return gridPane;
@@ -395,15 +396,15 @@ public class InputPage {
 
 
 		btnAddPicture = new Button("Upload picture");
-		btnAddPicture.setMinSize(50, 50);
+//		btnAddPicture.setMinSize(50, 50);
 		btnAddPicture.setOnAction(loadPicture);	// Button for adding pictures guides you to a new window
 
 
 		alert = new Alert(AlertType.INFORMATION);
 
 		btnSaveAd = new Button("Save ad");
-		btnSaveAd.setMinWidth(110);
-		btnSaveAd.setMaxWidth(110);
+//		btnSaveAd.setMinWidth(110);
+//		btnSaveAd.setMaxWidth(110);
 		btnSaveAd.setOnAction(e -> {
 			if (InputValidation.validateAdInfo(tfName, tfAge, cbGenders, cbSpecies, cbType, 
 											   tfNewSpecies, tfNewType, taDescription)) {
@@ -447,8 +448,8 @@ public class InputPage {
 		gridPane.add(btnAddPicture, 0, 4);
 		gridPane.add(myImageView, 1, 4);
 		gridPane.add(btnSaveAd, 0, 5);
-		gridPane.add(btnClose, 0, 5);
-		GridPane.setMargin(btnClose, new Insets(0, 0, 0, 115));
+		gridPane.add(btnClose, 1, 5);
+//		GridPane.setMargin(btnClose, new Insets(0, 0, 0, 115));
 
 
 		return gridPane;

@@ -48,6 +48,7 @@
 	-fx-border-width: 2;
 	-fx-border-radius: 5;	
 	-fx-border-color: #A7EBBF;
+	-fx-pref-width: 100;
 }
 
 .choice-box .label {
