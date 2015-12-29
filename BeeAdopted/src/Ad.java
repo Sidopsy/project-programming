@@ -50,18 +50,12 @@ public class Ad {
 		this.rating.setScaleY(0.5);
 		
 		this.check = new SimpleBooleanProperty(false);
-		 
-        
-		 
         this.check.addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				System.out.println(newValue);
-				
 			}
-
         });          
-
 	}
 	
 	public int getID(){
@@ -120,13 +114,11 @@ public class Ad {
 		return check.get();
 	}
 	
-	
 	public String toString() {
 		return picture + " " + name + " " + gender + " " + species + " " + 
 				type + " " + age + " " + description + " " + startDate + " " + endDate;
 	}
 
-	
 	public Ad getAd(){
 		return this;
 	}

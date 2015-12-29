@@ -1,52 +1,28 @@
-import java.sql.Date;
-import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Observable;
 
 import org.controlsfx.control.RangeSlider;
-
-import com.sun.xml.internal.fastinfoset.vocab.SerializerVocabulary;
 
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -64,30 +40,27 @@ public class Main extends Application {
 	private static Scene scene1, scene2, scene3;
 	private static BorderPane bpLayout1, bpLayout2, bpLayout3;
 	private static TableView<Ad> tvAd;
-	private static ArrayList<Ad> theSearch = null;
+	private static ArrayList<Ad> searchResults = null;
 	private static ObservableList<Object> obsListSpecies, obsListType, obsListGender, obsListAgencies;
 	private static ObservableList<Ad> compareAds = FXCollections.observableArrayList();
-	private static ChoiceBox<Object> cbLocation, cbSpecies, cbType, cbGender, cbAgencies;
-	private static RangeSlider slAge;
-	private static String city, species, type, age, gender, agency;
+	private static ChoiceBox<Object> cbCity, cbSpecies, cbType, cbGender, cbAgency;
+	private static RangeSlider rslAge;
+	private static String city, species, type, gender, agency;
 	private static boolean firstSearch;
 	private static DBobject db = new DBobject();
-	private static String sqlStatement;
-	private static Date today = Date.valueOf(LocalDate.now());
 	private static int minAge = 0;
 	private static int maxAge = 100;
 	private static Label back, name;
-
 
 	/**
 	 * The main method, only used to start the application with the launch command from javaFX.
 	 * 
 	 * @param args
 	 */
+	
 	public static void main(String[] args){
 		launch(args);
 	}
-
 
 	/**
 	 * Start method that is launched with Application.launch(args). This builds the main windows shown on launch which is
@@ -96,6 +69,7 @@ public class Main extends Application {
 	 * 
 	 * @param primaryStage
 	 */
+	
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");	
@@ -109,7 +83,6 @@ public class Main extends Application {
 		scene1 = new Scene(bpLayout1,800,600);
 		scene1.getStylesheets().add("style.css");
 
-
 		// Setting the currently open window to show the scene created above.
 		window.setScene(scene1);
 		window.show();
@@ -118,11 +91,10 @@ public class Main extends Application {
 	/**
 	 * This method returs a header for use as a top element of a BorderPane. The header consists of the iAdopt image.
 	 * 
-	 * @return Vbox header image and navigation buttons
+	 * @return BorderPane with logotype and navigation button
 	 */
+	
 	private BorderPane header(){
-
-		// The StackPane to be returned and used as a header.
 		BorderPane header = new BorderPane();
 		header.getStyleClass().add("header");
 
@@ -134,7 +106,6 @@ public class Main extends Application {
 		name = new Label("BeeAdopted");
 		name.setId("beeadopted");
 		name.getStyleClass().add("beeadopted");
-
 
 		// All items created are added to HBox.
 		header.setLeft(back);
@@ -149,54 +120,46 @@ public class Main extends Application {
 	 * 
 	 * @return Vbox location dropdown menu and input page button
 	 */
+	
 	private VBox startLocation() {
-
-		// The Vbox to be returned.
 		VBox firstPage = new VBox();
+		Label lblLocation = new Label("Where are you?"); 		// Displayed above the choicebox for cities to let the user know what to do.
 		firstPage.getStyleClass().add("start-pane");
 
-		// Displayed above the choicebox for cities to let the user know what to do.
-		Label lblLocation = new Label("Where are you?");
-
 		// This inputs information into the choicebox, namely the cities in which there are agencies.
-		cbLocation = new ChoiceBox<>(db.createObservableList("City",db.fetchResult(
-				db.executeQuery("SELECT Distinct City FROM "
-						+ "Addresses ORDER BY "
-						+ "City;"))));
+		cbCity = new ChoiceBox<>(db.createSelectAllObservableList("City", db.fetchResult(
+				db.executeQuery("SELECT DISTINCT City "
+						+ "FROM Addresses "
+						+ "ORDER BY City;"))));
 		db.closeConnection();
+		cbCity.setValue(cbCity.getItems().get(0));	// Getting retrieved items from the DB.
 
-		cbLocation.setValue(cbLocation.getItems().get(0));	// Getting retrieved items from the DB.
-
-		cbLocation.setOnAction(e -> {
-			if(!cbLocation.getValue().equals("City")){
-				if(!cbLocation.getValue().equals("Select all")){
-					city = " and City == '" + cbLocation.getValue() + "'";		// What location was input?
-					System.out.println(city);
-				} else {
-					city = "";
-				}
-
+		cbCity.setOnAction(e -> {
+			if (!cbCity.getValue().equals("City")){
+				if (!cbCity.getValue().equals("Select all")){
+					city = "and City == '" + cbCity.getValue() + "' ";		// What location was input?
+				} else {city = "";}
+				
 				firstSearch = true;												
 				search();
+				
 				bpLayout2 = new BorderPane();				// Preparing for a new scene.
-				bpLayout2.setTop(header());		// Setting the header as before.
+				bpLayout2.setTop(header());					// Setting the header as before.
 				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
+				
 				scene2 = new Scene(bpLayout2,800,600);
 				scene2.getStylesheets().add("style.css");
+				
 				window.setScene(scene2);
 			}
 		});
 
-
 		// Vbox is populated with the label, the choicebox and the content from loginBox()
-		firstPage.getChildren().addAll(lblLocation, cbLocation);
+		firstPage.getChildren().addAll(lblLocation, cbCity);
 		firstPage.setAlignment(Pos.CENTER);
 
 		return firstPage;
 	}
-
-
-	//	
 
 	/**
 	 * This method contains filter options for searches. 
@@ -215,66 +178,91 @@ public class Main extends Application {
 		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		primaryFilters.setSpacing(75);
 
-		obsListSpecies = db.createObservableList("Species",db.fetchResult(db.executeQuery("SELECT Distinct Species FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Species;")));
-		obsListType = db.createObservableList("Type",db.fetchResult(db.executeQuery("SELECT Distinct Type FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Type;")));
-		obsListGender = db.createObservableList("Gender",db.fetchResult(db.executeQuery("SELECT Distinct Gender FROM Ads, Agencies, Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "' ORDER BY Gender;")));
-		obsListAgencies = db.createObservableList("Agencies",db.fetchResult(db.executeQuery("SELECT Distinct Name FROM Agencies, Addresses WHERE Agencies.ID == Addresses.AgencyID " + city + " ORDER BY Name;")));
-
-
+		obsListSpecies = db.createObservableList("Species",db.fetchResult(
+				db.executeQuery("SELECT DISTINCT Species FROM Ads, Agencies, Addresses "
+						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
+						+ "and EndDate >= DATE('NOW') ORDER BY Species;")));
+		
+		obsListType = db.createObservableList("Type",db.fetchResult(
+				db.executeQuery("SELECT DISTINCT Type FROM Ads, Agencies, Addresses "
+						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
+						+ "and EndDate >= DATE('NOW') ORDER BY Type;")));
+		
+		obsListGender = db.createObservableList("Gender",db.fetchResult(
+				db.executeQuery("SELECT DISTINCT Gender FROM Ads, Agencies, Addresses "
+						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
+						+ "and EndDate >= DATE('NOW') ORDER BY Gender;")));
+		
+		obsListAgencies = db.createSelectAllObservableList("Agencies",db.fetchResult(
+				db.executeQuery("SELECT DISTINCT Name FROM Agencies, Addresses "
+						+ "WHERE Agencies.ID == Addresses.AgencyID " + city
+						+ "ORDER BY Name;")));
+		
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setPrefWidth(150);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
 		cbSpecies.setOnAction(e -> {
 			if(!((String)cbSpecies.getValue()).equals("Species")){
 				species = (String) cbSpecies.getValue();
-				sqlStatement = "SELECT Distinct Type FROM Ads WHERE Species == '" + species + "' ORDER BY Type;";
 
-				obsListType = db.createObservableList("Type",db.fetchResult(db.executeQuery(sqlStatement)));
-
+				obsListType = db.createObservableList("Type",db.fetchResult(
+						db.executeQuery("SELECT Distinct Type FROM Ads "
+								+ "WHERE Species == '" + species + "' ORDER BY Type;")));
 				cbType.setItems(obsListType);
-				cbType.setValue("Type");
+				cbType.setValue(cbType.getItems().get(0));
+				
+				type = "Type";	// Reset value of string "type" when a new species is selected
+			} else {
+				species = (String) cbSpecies.getValue();
+
+				obsListType = db.createObservableList("Type",db.fetchResult(
+						db.executeQuery("SELECT DISTINCT Type FROM Ads, Agencies, Addresses "
+								+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
+								+ "and EndDate >= DATE('NOW') ORDER BY Type;")));
+				cbType.setItems(obsListType);
+				cbType.setValue(cbType.getItems().get(0));
+				
+				type = "Type";
 			}
 		});
-
+		
 		cbType = new ChoiceBox<>(obsListType);
 		cbType.setPrefWidth(150);
 		cbType.setValue(cbType.getItems().get(0));
-		cbType.setOnAction(e -> {
-			type = (String) cbType.getValue();
-		});
+		cbType.setOnAction(e -> type = (String) cbType.getValue());
 
-		String minAgeStatement;
-		String maxAgeStatement;
-		if(city != "Select all" && city != "City"){
-			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
-			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city + " and EndDate >= '" + today + "';";
+		String minAgeStatement, maxAgeStatement;
+
+		if(!city.equals("")){
+			minAgeStatement = "SELECT MIN(Age) "
+					+ "FROM Ads, Agencies, Addresses "
+					+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city 
+					+ "and EndDate >= DATE('NOW');";
+			
+			maxAgeStatement = "SELECT MAX(Age) "
+					+ "FROM Ads, Agencies, Addresses "
+					+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city 
+					+ "and EndDate >= DATE('NOW');";
 		} else {
-			minAgeStatement = "SELECT MIN(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
-			maxAgeStatement = "SELECT MAX(Age) FROM Ads,Agencies,Addresses WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID and EndDate >= '" + today + "';";
-		}
-
+			minAgeStatement = "SELECT MIN(Age) "
+					+ "FROM Ads "
+					+ "WHERE EndDate >= DATE('NOW');";
+			maxAgeStatement = "SELECT MAX(Age) "
+					+ "FROM Ads "
+					+ "WHERE EndDate >= DATE('NOW');";
+		}		
 		minAge = Integer.parseInt(db.fetchResult(db.executeQuery(minAgeStatement)).get(0).get(0));
-		maxAge = Integer.parseInt(db.fetchResult(db.executeQuery(maxAgeStatement)).get(0).get(0));
-		System.out.println(minAge);
-		System.out.println(maxAge);
-
-
-		Label ageLabel = new Label("Age");
-		slAge = new RangeSlider();
-		slAge.setMin(minAge);
-		slAge.setMax(maxAge);
-		slAge.setShowTickLabels(true);
-		slAge.setShowTickMarks(true);
-		slAge.setSnapToTicks(true);
-		slAge.setBlockIncrement(3);
-		slAge.setPrefWidth(150);
-		slAge.setHighValue(maxAge);
-		//	slAge.setShowTickMarks(true);
-		//slAge.setMajorTickUnit(15);
-		//	slAge.setMinorTickCount(maxAge/2);
-		//	slAge.setBlockIncrement(5);
-
-
+		maxAge = Integer.parseInt(db.fetchResult(db.executeQuery(maxAgeStatement)).get(0).get(0));		
+		
+		rslAge = new RangeSlider();
+		rslAge.setMin(minAge);
+		rslAge.setMax(maxAge);
+		rslAge.setShowTickLabels(true);
+		rslAge.setShowTickMarks(true);
+		rslAge.setSnapToTicks(true);
+		rslAge.setBlockIncrement(3);
+		rslAge.setPrefWidth(150);
+		rslAge.setHighValue(maxAge);
 
 		HBox secondaryFilters = new HBox();
 		secondaryFilters.setAlignment(Pos.CENTER);
@@ -287,14 +275,16 @@ public class Main extends Application {
 		cbGender.setValue(cbGender.getItems().get(0));
 		cbGender.setOnAction(e -> gender = (String) cbGender.getValue());
 
-		cbAgencies = new ChoiceBox<>(obsListAgencies);
-		cbAgencies.setPrefWidth(150);
-		cbAgencies.setValue(cbAgencies.getItems().get(0));
-		cbAgencies.setOnAction(e -> agency = (String) cbAgencies.getValue());
+		cbAgency = new ChoiceBox<>(obsListAgencies);
+		cbAgency.setPrefWidth(150);
+		cbAgency.setValue(cbAgency.getItems().get(0));
+		cbAgency.setOnAction(e -> {
+			agency = InputPage.correctInput((String) cbAgency.getValue());
+		});
 
 		Button btnSearch = new Button("Search");
 		btnSearch.setOnAction(e -> {
-			tvAd.getChildrenUnmodifiable().removeAll(theSearch);
+			tvAd.getChildrenUnmodifiable().removeAll(searchResults);
 			search();
 			bpLayout2 = new BorderPane();
 			bpLayout2.setTop(header());
@@ -305,105 +295,84 @@ public class Main extends Application {
 			window.setScene(scene2);
 		});
 
-
-		primaryFilters.getChildren().addAll(cbSpecies,cbType,slAge,cbGender,cbAgencies);
-
+		primaryFilters.getChildren().addAll(cbSpecies,cbType,rslAge,cbGender,cbAgency);
 		filters.getChildren().addAll(primaryFilters, btnSearch);
-
-
-
+		
 		return filters;
 	}
 
 	/**
-	 * This method has two functions. When you select an agency in scene 2 this method gets all ads for that specific agency. After this, you can specify conditions
-	 * for which ads you want to view.
+	 * This method has two functions. When you select an agency in scene 2 this method gets all ads for that specific agency. 
+	 * After this, you can specify conditions for which ads you want to view.
 	 */
+	
 	public static void search(){
-
-		// Search string to be sent to DB along with small parts of the statement.
-		String searchStatement, searchSpecies, searchType, searchAge, searchGender, searchAgency;
+		String searchStatement, searchSpecies, searchType, searchGender, searchAgency;
 
 		// Null values are ignored as well as if the user left the cbs in their original posistions.
-		if (species != null && species != "Species" && species != "Select all"){
-			searchSpecies = " and Species == '" + species + "'";
-		} else {
-			searchSpecies = "";
-		}
+		if (species != null && species != "Species" && species != "Select all") {
+			searchSpecies = "and Species == '" + species + "' ";
+		} else {searchSpecies = "";}
 
-		if (type != null && type != "Type" && type != "Select all"){
-			searchType = " and Type == '" + type + "'";
-		} else {
-			searchType = "";
+		if (type != null && type != "Type" && type != "Select all") {
+			searchType = "and Type == '" + type + "' ";
+		} else {searchType = "";}
 
-		}
+		if (gender != null && gender != "Gender" && gender != "Select all") {
+			searchGender = "and Gender == '" + gender + "' ";
+		} else {searchGender = "";}
 
-		if (age != null && age != "Age"){
-			searchAge = " and Age >= " + slAge.getMin() + " and Age <= " + slAge.getMax();
-		} else {
-			searchAge = "";
-		}
+		if (agency != null && agency != "Agencies" && agency != "Select all") {
+			searchAgency = "and Agencies.Name == '" + agency + "' ";
+		} else {searchAgency = "";}
 
-		if (gender != null && gender != "Gender" && gender != "Select all"){
-			searchGender = " and Gender == '" + gender + "'";
-		} else {
-			searchGender = "";
-		}
-
-		if (agency != null && agency != "Agency" && agency != "Select all"){
-			searchAgency = " and Agencies.Name as Agency == '" + agency + "'";
-		} else {
-			searchAgency = "";
-		}
-
-		if (firstSearch == true){	
-			if(city != "Select all"){
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, AVG(Rating) as Rating FROM "
-						+ "Ads,Agencies,Addresses,Ratings WHERE "
-						+ "Agencies.ID = Addresses.AgencyID and "
-						+ "Agencies.ID = Ratings.AgencyID and "
-						+ "Agencies.ID = Ads.AgencyID and " 
-						+ "EndDate >= '" + today + "' "
-						+ city
-						+ " GROUP BY Ads.ID;";
-			} else {
-				searchStatement = "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency, AVG(Rating) as Rating FROM "
-						+ "Ads,Agencies,Ratings WHERE "
+		if (firstSearch == true) {	
+			if (!city.equals("")) {
+				searchStatement = "SELECT DISTINCT Ads.ID, Picture, Ads.Name, Species, Type, Gender, Age, Description, StartDate, EndDate, Ads.AgencyID, "
+						+ "Agencies.Name as Agency, AVG(Rating) as Rating "
+						+ "FROM Ads, Agencies, Addresses, Ratings "
+						+ "WHERE Agencies.ID == Addresses.AgencyID and "
 						+ "Agencies.ID == Ratings.AgencyID and "
+						+ "Agencies.ID == Ads.AgencyID and " 
+						+ "EndDate >= DATE('NOW') "
+						+ city
+						+ "GROUP BY Ads.ID "
+						+ "ORDER BY Ads.ID;";
+			} else {
+				searchStatement = "SELECT DISTINCT Ads.ID, Picture, Ads.Name, Species, Type, Gender, Age, Description, StartDate, EndDate, Ads.AgencyID, "
+						+ "Agencies.Name as Agency, AVG(Rating) as Rating "
+						+ "FROM Ads, Agencies, Ratings "
+						+ "WHERE Agencies.ID == Ratings.AgencyID and "
 						+ "Agencies.ID == Ads.AgencyID and "
-						+ "EndDate >= '" + today 
-						+ "' Group BY Ads.ID;";
+						+ "EndDate >= DATE('NOW') "
+						+ "GROUP BY Ads.ID "
+						+ "ORDER BY Ads.ID;";
 			}
 			firstSearch = false;
 		} else {
-			System.out.println("Bob0: " + searchSpecies + searchType + searchAge + searchGender);
-			searchStatement =  "SELECT Distinct Ads.ID,Picture,Ads.Name,Species,Type,Gender,Age,Description,StartDate,EndDate,Ads.AgencyID,Agencies.Name as Agency,AVG(Rating) as Rating FROM "
-					+ "Ads,Agencies,Ratings,Addresses WHERE "
-					+ "Agencies.ID == Addresses.AgencyID and "
+			searchStatement =  "SELECT DISTINCT Ads.ID,Picture, Ads.Name, Species, Type, Gender, Age, Description, StartDate, EndDate, Ads.AgencyID, "
+					+ "Agencies.Name as Agency,AVG(Rating) as Rating "
+					+ "FROM Ads, Agencies, Ratings, Addresses "
+					+ "WHERE Agencies.ID == Addresses.AgencyID and "
 					+ "Agencies.ID == Ads.AgencyID and "
 					+ "Agencies.ID == Ratings.AgencyID and "
-					+ "EndDate >= '" + today + "' and "
-					+ "Age >= " + slAge.getLowValue() + " and Age <= " + slAge.getHighValue()
+					+ "EndDate >= DATE('NOW') "
 					+ city
 					+ searchSpecies
 					+ searchType
-					+ searchAge 
+					+ "and Age >= " + rslAge.getLowValue() + " and Age <= " + rslAge.getHighValue() + " "
 					+ searchGender 
 					+ searchAgency 
-					+ " GROUP BY Agencies.ID"
-					+ " ORDER BY Ads.ID;";
-
+					+ "GROUP BY Ads.ID "
+					+ "ORDER BY Ads.ID;";
 		}
 
-		theSearch = db.fetchAd(db.executeQuery(searchStatement));
+		System.out.println(searchStatement);
+		searchResults = db.fetchAd(db.executeQuery(searchStatement));
 		species = null;
 		type = null;
-		age = null;
 		gender = null;
 		agency = null;
-		System.out.println(searchStatement);
-		System.out.println(theSearch.toString());
-
 	}
 
 	/**
@@ -411,6 +380,8 @@ public class Main extends Application {
 	 * 
 	 * @return TableView<Ad>
 	 */
+	
+	@SuppressWarnings("unchecked")
 	public VBox searchResults(){
 		VBox vbox = new VBox();
 		vbox.getStyleClass().add("vbox");
@@ -428,7 +399,7 @@ public class Main extends Application {
 		TableColumn<Ad, String> ratingCol = new TableColumn<>("Rating");
 		TableColumn<Ad, Boolean> checkCol = new TableColumn<>("Compare");
 
-		ObservableList<Ad> adList = db.createObservableList(theSearch);
+		ObservableList<Ad> adList = db.createObservableList(searchResults);
 
 		pictureCol.setCellValueFactory(new PropertyValueFactory<>("picture"));
 		nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -510,11 +481,9 @@ public class Main extends Application {
 			return row ;
 		});
 
-
 		tvAd.setItems(adList);
 
 		tvAd.getColumns().addAll(pictureCol, nameCol, speciesCol, typeCol, ratingCol,checkCol);
-		//vbox.getChildren().add(tvAd);
 		tvAd.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 		Button btnCompare = new Button("Compare Ads");
@@ -565,7 +534,7 @@ public class Main extends Application {
 	 */
 	public void back(){
 		if(window.getScene() == scene2) {
-			cbLocation.setValue("City");
+			cbCity.setValue("City");
 			window.setScene(scene1);
 		} else {
 			window.setScene(scene2);

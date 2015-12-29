@@ -50,7 +50,7 @@ public class InputPage {
 
 	private static TextField tfName, tfAge, tfNewSpecies, tfNewType;
 	private static TextArea taDescription;
-	private static CheckBox chbNewSpecies, chbNewType;
+	private static CheckBox chbNewSpecies, chbNewType, chbReActivate;
 
 	private static ChoiceBox<Object> cbSpecies, cbType, cbGenders;
 	private static ObservableList<Object> obsListType;
@@ -58,33 +58,11 @@ public class InputPage {
 	private static File file = null;
 	private static ImageView myImageView;
 	private static FileChooser fileChooser;
-	public static AgencyExt agency;
+	
+	private static AgencyExt agency;
+	private static Ad ad;
 
 	private static DBobject db = new DBobject();
-
-	/**
-	 * Starting the input page by displaying a small header and letting the user specify input.
-	 * 
-	 */
-
-	public static void display(AgencyExt agencyInfo){
-		window = new Stage();
-
-		agency = agencyInfo;
-
-		window.initModality(Modality.APPLICATION_MODAL);
-		window.setTitle("Input page");
-		window.setMinWidth(250);
-
-		layoutInput = new BorderPane();
-		layoutInput.setTop(Header.smallHeader());
-		layoutInput.setCenter(viewInputAd());
-
-		sceneInput = new Scene(layoutInput, 600, 550);
-
-		window.setScene(sceneInput);
-		window.showAndWait();
-	}
 
 	/**
 	 * 
@@ -92,7 +70,7 @@ public class InputPage {
 	 * @return GridPane with option to input animals
 	 */
 
-	public static GridPane viewInputAd() {
+	public static GridPane viewInputAd(boolean updateAd) {
 		GridPane gridPane = new GridPane();
 		gridPane.setHgap(7);
 		gridPane.setVgap(7);
@@ -100,11 +78,10 @@ public class InputPage {
 		gridPane.getColumnConstraints().setAll(new ColumnConstraints(250, 250, 250));
 		gridPane.setAlignment(Pos.CENTER);
 
-
-		addInputLabels(gridPane);
-		addInputTextFields(gridPane);
-		addInputBoxes(gridPane);
-		addInputButtons(gridPane);
+		addInputLabels(gridPane, updateAd);
+		addInputTextFields(gridPane, updateAd);
+		addInputBoxes(gridPane, updateAd);
+		addInputButtons(gridPane, updateAd);
 
 
 		return gridPane;
@@ -117,24 +94,29 @@ public class InputPage {
 	 * @return GridPane containing the labels neccessary to guide the user.
 	 */
 
-	private static GridPane addInputLabels(GridPane inputGridPane) {
+	private static GridPane addInputLabels(GridPane inputGridPane, boolean updateAd) {
 		GridPane gridPane = inputGridPane;
-		Label lblName, lblAge, lblGender;
-
+		Label lblName, lblAge, lblGender, lblActiveInfo;
 
 		lblName = new Label("Name");
 		lblAge = new Label("Age");
 		lblGender = new Label("Gender");
-
-
+		lblActiveInfo = new Label("This ad has been removed from the site");
+		lblActiveInfo.setVisible(false);
+		
+		if (updateAd) {
+			if (InputValidation.checkEndAfterToday(ad)) {lblActiveInfo.setVisible(true);}
+		}
+		
 		gridPane.add(lblName, 0, 0);
 		gridPane.add(lblAge, 0, 0);
 		gridPane.add(lblGender, 1, 0);
 		GridPane.setMargin(lblName, 	new Insets(-45, 0, 0, 0));
 		GridPane.setMargin(lblAge, 		new Insets(-45, 0, 0, 160));
 		GridPane.setMargin(lblGender, 	new Insets(-45, 0, 0, 143));
+		GridPane.setMargin(lblActiveInfo, new Insets(-45, 0, 0, 0));
 
-
+		
 		return gridPane;
 	}
 
@@ -145,38 +127,36 @@ public class InputPage {
 	 * @return GridPane containing the textfields neccessary for inputing information about ads.
 	 */
 
-	private static GridPane addInputTextFields(GridPane inputGridPane) {
+	private static GridPane addInputTextFields(GridPane inputGridPane, boolean updateAd) {
 		GridPane gridPane = inputGridPane;
-
 		ContextMenu strings = new ContextMenu();
 
 		tfName = new TextField();
 		tfName.setPromptText("...");
+		if (updateAd) {tfName.setText(ad.getName());}
 		tfName.setContextMenu(strings);
 		tfName.setMinWidth(150);
 		tfName.setMaxWidth(150);
-		tfName.setOnKeyReleased(e -> {
-			InputValidation.validateInputTextFieldString(tfName);
-		});
-
+		tfName.setOnKeyReleased(e -> InputValidation.validateInputTextFieldString(tfName));
 
 		tfAge = new TextField();
 		tfAge.setPromptText("...");
+		if (updateAd) {
+			String age = "";
+			int intAge = ad.getAge();
+			age += intAge;
+			tfAge.setText(age);
+		}
 		tfAge.setMinWidth(50);
 		tfAge.setMaxWidth(50);
-		tfAge.setOnKeyReleased(e -> {
-			InputValidation.validateInputAge(tfAge);
-		});
-
+		tfAge.setOnKeyReleased(e -> InputValidation.validateInputAge(tfAge));
 
 		taDescription = new TextArea();
 		taDescription.setPromptText("Description...");
+		if (updateAd) {taDescription.setText(ad.getDescription());}
 		taDescription.setMinSize(500, 150);
 		taDescription.setMaxSize(500, 150);
-		taDescription.setOnKeyReleased(e -> {
-			InputValidation.validateInputTextArea(taDescription);
-		});
-
+		taDescription.setOnKeyReleased(e -> InputValidation.validateInputTextArea(taDescription));
 
 		tfNewSpecies = new TextField();				// TF for new species
 		tfNewSpecies.setMinWidth(100);				// Setting size for TF
@@ -201,16 +181,12 @@ public class InputPage {
 			}
 		});
 
-
 		tfNewType = new TextField();				// TF for new types
 		tfNewType.setMinWidth(100);
 		tfNewType.setMaxWidth(100);
 		tfNewType.setVisible(false);
 		tfNewType.setPromptText("Type...");
-		tfNewType.setOnKeyReleased(e -> {
-			InputValidation.validateInputTextFieldString(tfNewType);
-		});
-
+		tfNewType.setOnKeyReleased(e -> InputValidation.validateInputTextFieldString(tfNewType));
 
 		gridPane.add(tfName, 0, 0);
 		gridPane.add(tfAge, 0, 0);
@@ -232,21 +208,18 @@ public class InputPage {
 	 * @return GridPane containing the boxes (choice and check) neccessary for inputing information about ads.
 	 */
 
-	private static GridPane addInputBoxes(GridPane inputGridPane) {
+	private static GridPane addInputBoxes(GridPane inputGridPane, boolean updateAd) {
 		GridPane gridPane = inputGridPane;
-
 
 		ObservableList<Object> genders = FXCollections.observableArrayList("...", new Separator());
 		genders.add("Male");
 		genders.add("Female");
 		cbGenders = new ChoiceBox<>(genders);
-		cbGenders.setValue(cbGenders.getItems().get(0));
+		if (updateAd) {cbGenders.setValue(ad.getGender());
+		} else {cbGenders.setValue(cbGenders.getItems().get(0));}
 		cbGenders.setMinWidth(100);
 		cbGenders.setMaxWidth(100);
-		cbGenders.setOnAction(e -> {
-			InputValidation.validateChoiceBox(cbGenders);
-		});
-
+		cbGenders.setOnAction(e -> InputValidation.validateChoiceBox(cbGenders));
 
 		chbNewType = new CheckBox("New");			// Checkboxes for adding new species and types
 		chbNewSpecies = new CheckBox("New");
@@ -258,14 +231,11 @@ public class InputPage {
 
 				tfNewSpecies.setVisible(true);		// TextField appears
 
-				// Loading all types into type CB when TF has been used
 				obsListType = db.createObservableList("Type", db.fetchResult(
 						db.executeQuery("SELECT Distinct Type FROM "
 								+ "Ads ORDER BY "
 								+ "Type;")));
 				db.closeConnection();
-
-
 				cbType.setItems(obsListType);		// Loading type list into type CB
 				cbType.setValue("Type");			// Setting default value to "Type"
 
@@ -311,13 +281,13 @@ public class InputPage {
 			}
 		});
 
-
 		cbSpecies = new ChoiceBox<>(db.createObservableList("Species", db.fetchResult(
 				db.executeQuery("SELECT Distinct Species FROM "
 						+ "Ads ORDER BY "
 						+ "Species;"))));
 		db.closeConnection();
-		cbSpecies.setValue("Species");				// Setting default value to "Species"
+		if (updateAd) {cbSpecies.setValue(ad.getSpecies());
+		} else {cbSpecies.setValue("Species");}
 		cbSpecies.setMinWidth(100);					// Setting size of the CB
 		cbSpecies.setMaxWidth(100);
 		cbSpecies.setOnAction(e -> {				// On action (selection) it should...
@@ -329,7 +299,6 @@ public class InputPage {
 								+ "Species == '" + (String) cbSpecies.getValue() + "' ORDER BY "
 								+ "Type;")));
 				db.closeConnection();
-
 
 				cbType.setItems(obsListType);		// Add the updated list to the CB with types
 				cbType.setValue("Type");			// Setting default value of Type CB to "Type"
@@ -343,29 +312,43 @@ public class InputPage {
 				chbNewType.setDisable(true);		// Cannot add new type until species has been chosen
 			}
 		});
-
-
-		cbType = new ChoiceBox<>(db.createObservableList("Type", db.fetchResult(
-				db.executeQuery("SELECT Distinct Type FROM "
-						+ "Ads ORDER BY "
-						+ "Type;"))));
-		db.closeConnection();
-		cbType.setValue("Type");					// Setting default value of type CB to "Type"
+		if (updateAd) {
+			cbType = new ChoiceBox<>(db.createObservableList("Type", db.fetchResult(
+				db.executeQuery("SELECT DISTINCT Type "
+						+ "FROM Ads "
+						+ "WHERE Species = '" + ad.getSpecies() + "' "
+						+ "ORDER BY Type;"))));
+			db.closeConnection();
+			cbType.setValue(ad.getType());
+			cbType.setDisable(false);				
+		} else {
+			cbType = new ChoiceBox<>(db.createObservableList("Type", db.fetchResult(
+				db.executeQuery("SELECT DISTINCT Type "
+						+ "FROM Ads "
+						+ "ORDER BY Type;"))));
+			db.closeConnection();
+			cbType.setValue("Type");
+			cbType.setDisable(true);				// Type CB is disabled by default when a new ad is to be added
+		}
 		cbType.setMinWidth(100);					// Setting size of type CB
 		cbType.setMaxWidth(100);
-		cbType.setDisable(true);					// Type CB is disables by default
 		cbType.setOnAction(e -> {
-			try {
-				InputValidation.validateChoiceBox(cbType);
-			} catch (Exception error) {}			// When Type is activated by selecting a species, validate points to null
-		});											// which throws and error, catch lets us ignore it.
+		try {
+			InputValidation.validateChoiceBox(cbType);
+		} catch (Exception error) {}			// When Type is activated by selecting a species, validate points to null
+		});											// which throws an error, catch lets us ignore it since it is not function critical.
 
-
+		chbReActivate = new CheckBox("Re-activate?");
+		chbReActivate.setVisible(false);
+		if (InputValidation.checkEndAfterToday(ad)) {chbReActivate.setVisible(true);} 
+		
+		
 		gridPane.add(cbGenders, 1, 0);
 		gridPane.add(cbSpecies, 0, 2);				// Adding CB for species to gridpane, column 0, row 3
 		gridPane.add(cbType, 1, 2);
 		gridPane.add(chbNewSpecies, 0, 2);
 		gridPane.add(chbNewType, 1, 2);
+		gridPane.add(chbReActivate, 1, 4);
 		GridPane.setMargin(cbGenders, 		new Insets(0, 0, 0, 143));
 		GridPane.setMargin(cbType, 			new Insets(0, 0, 0, -97));
 		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
@@ -382,22 +365,20 @@ public class InputPage {
 	 * @return GridPane containing the buttons neccessary for inputing information about ads.
 	 */
 
-	private static GridPane addInputButtons(GridPane inputGridPane) {
+	private static GridPane addInputButtons(GridPane inputGridPane, boolean updateAd) {
 		GridPane gridPane = inputGridPane;
-		Button btnAddPicture, btnSaveAd, btnClose;
+		Button btnAddPicture, btnSaveAd;
 		Alert alert;
 
-
 		myImageView = new ImageView();
+		if (updateAd) {myImageView = ad.getPicture();}
 		myImageView.setPreserveRatio(false);
 		myImageView.setFitWidth(100);
 		myImageView.setFitHeight(100);
 
-
 		btnAddPicture = new Button("Upload picture");
 		btnAddPicture.setMinSize(50, 50);
-		btnAddPicture.setOnAction(loadPicture);	// Button for adding pictures guides you to a new window
-
+		btnAddPicture.setOnAction(loadPicture);		// Button for adding pictures guides you to a new window
 
 		alert = new Alert(AlertType.INFORMATION);
 
@@ -408,10 +389,20 @@ public class InputPage {
 			if (InputValidation.validateAdInfo(tfName, tfAge, cbGenders, cbSpecies, cbType, 
 											   tfNewSpecies, tfNewType, taDescription)) {
 				System.out.println(">> Input values OK");
-				inputAdValues();
+				
+				if (updateAd) {
+					updateMemberAd();
+				} else {
+					inputAdValues();
+				}
+			
 				if (file != null) {	
 					try {
-						inputUpdatePicture(0, file, true);
+						if (updateAd) {
+							inputUpdatePicture(ad.getID(), file, true);
+						} else {
+							inputUpdatePicture(0, file, true);
+						}
 					} catch (Exception e1) {
 						System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
 					}
@@ -437,18 +428,9 @@ public class InputPage {
 			}
 		});
 
-		btnClose = new Button("Close");
-		btnClose.setOnAction(e -> {
-			MemberPage.refreshTable();
-			window.close();
-		});
-
-
 		gridPane.add(btnAddPicture, 0, 4);
 		gridPane.add(myImageView, 1, 4);
 		gridPane.add(btnSaveAd, 0, 5);
-		gridPane.add(btnClose, 0, 5);
-		GridPane.setMargin(btnClose, new Insets(0, 0, 0, 115));
 
 
 		return gridPane;
@@ -593,26 +575,24 @@ public class InputPage {
 	 * @param Ad
 	 */
 	
-	public static void updateMemberAd(Ad ad, TextField name, TextField age, ChoiceBox<Object> gender, 
-									ChoiceBox<Object> cbSpecies, ChoiceBox<Object> cbType, TextField tfSpecies, 
-									TextField tfType, TextArea description, CheckBox reActivate) {
+	public static void updateMemberAd() {
 		String updateAd, values, where;
 		updateAd = "UPDATE Ads SET ";
 		values = "";
 		where = " WHERE ID = " + ad.getID() + ";";
 		
-		values += "Name = '" + correctInput(name.getText().trim()) + "', ";					// Trimming TFs with possibility of spaces
-		values += "Age = " + age.getText() + ", ";
-		values += "Gender = '" + (String) gender.getValue() + "', ";
-		values += "Description = '" + correctInput(description.getText().trim()) + "', ";// Trimming TAs with possibility of spaces
+		values += "Name = '" + correctInput(tfName.getText().trim()) + "', ";					// Trimming TFs with possibility of spaces
+		values += "Age = " + tfAge.getText() + ", ";
+		values += "Gender = '" + (String) cbGenders.getValue() + "', ";
+		values += "Description = '" + correctInput(taDescription.getText().trim()) + "', ";// Trimming TAs with possibility of spaces
 		if (InputValidation.validateChoiceBox(cbSpecies)) {				 				// If gets executed when the default value of CB is NOT chosen
 			values += "Species = '" + (String) cbSpecies.getValue() + "', ";
-		} else {values += "Species = '" + correctInput(tfSpecies.getText().trim()) + "', ";}
+		} else {values += "Species = '" + correctInput(tfNewSpecies.getText().trim()) + "', ";}
 
 		if (InputValidation.validateChoiceBox(cbType)) {
 			values += "Type = '" + (String) cbType.getValue() + "'";
-		} else {values += "Type = '" + correctInput(tfType.getText().trim()) + "'";}
-		if (reActivate.isSelected()) {
+		} else {values += "Type = '" + correctInput(tfNewType.getText().trim()) + "'";}
+		if (chbReActivate.isSelected()) {
 			values += ", StartDate = date('NOW'), EndDate = date('NOW', '+90 days')";
 		}
 		updateAd += values + where;
@@ -699,5 +679,37 @@ public class InputPage {
 	public static void deleteMemberAd(Ad ad) {
 		System.out.println(">> DELETE FROM Ads: " + ad.getID());
 		db.executeUpdate("DELETE FROM Ads WHERE ID = " + ad.getID() + ";");		
+	}
+	
+	/**
+	 * 
+	 */
+	
+	public static AgencyExt getAgency() {
+		return agency;
+	}
+	
+	/**
+	 * 
+	 */
+	
+	public static void setAgency(AgencyExt inputAgency) {
+		agency = inputAgency;
+	}
+	
+	/**
+	 * 
+	 */
+	
+	public static Ad getAd() {
+		return ad;
+	}
+	
+	/**
+	 * 
+	 */
+	
+	public static void setAd(Ad inputAd) {
+		ad = inputAd;
 	}
 }

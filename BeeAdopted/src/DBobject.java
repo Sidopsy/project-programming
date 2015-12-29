@@ -136,18 +136,14 @@ public class DBobject {
 
 		try {
 			stmt = connect.prepareStatement(update);
-			connect.commit();
 			stmt.executeUpdate();
-			System.out.println("Hejhej!");
-			
 
-			System.out.println("Hejhej!");
+			connect.commit();
 		} catch (SQLException e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 		} 
 
 		closeConnection();
-	
 	}
 
 	/**
@@ -359,7 +355,7 @@ public class DBobject {
 	 * @returns ObservableList<Object>
 	 */
 
-	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
+	public ObservableList<Object> createSelectAllObservableList(String columnName, ArrayList<ArrayList<String>> input) {
 		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator(), "Select all" , new Separator());
 
 		for (int i = 0; input.size() > i; i++) {
@@ -370,7 +366,26 @@ public class DBobject {
 		}
 		return resultList;
 	}
+	
+	/**
+	 * Additional ObservableList method since not all OBSLists should have the select all option. Otherwise, this method performs the same task.
+	 * 
+	 * @param ArrayList<ArrayList<String>
+	 * @returns ObservableList<Object>
+	 */
+	
+	public ObservableList<Object> createObservableList(String columnName, ArrayList<ArrayList<String>> input) {
+		ObservableList<Object> resultList = FXCollections.observableArrayList(columnName, new Separator());
 
+		for (int i = 0; input.size() > i; i++) {
+			ArrayList<String> fetch = input.get(i);
+			for (int j = 0; fetch.size() > j; j++) {
+				resultList.add(fetch.get(j));
+			}
+		}
+		return resultList;
+	}
+	
 	/**
 	 * Method for creating observable lists using ArrayList<Ad>, ordinarily after obtaining the resulting array-
 	 * list from a query.
