@@ -27,15 +27,15 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 /**
- * Class for starting the application.
+ * Class for starting the application, it also contains the DSS's main functionality, the search function.
  * 
- * TODO: List all methods.
+ * The application launch shows the location window where the user inputs his or her desired city for searching.
+ * One is then shown a table containing ads in the specified location, clickable to show additional information.
  * 
- * @author ML
+ * @author Mattias Landkvist
  */
 
 public class Main extends Application {
-
 	private static Stage window;
 	private static Scene scene1, scene2, scene3;
 	private static BorderPane bpLayout1, bpLayout2, layoutViewAd;
@@ -54,8 +54,6 @@ public class Main extends Application {
 
 	/**
 	 * The main method, only used to start the application with the launch command from javaFX.
-	 * 
-	 * @param args
 	 */
 	
 	public static void main(String[] args){
@@ -64,17 +62,16 @@ public class Main extends Application {
 
 	/**
 	 * Start method that is launched with Application.launch(args). This builds the main windows shown on launch which is
-	 * the prompt for a location. This view also contains a button for going to the input page, the code for this is in
+	 * the prompt for a location. This view also contains a button for going logging into the MemberPages, the code for this is in
 	 * startLocation().
 	 * 
-	 * @param primaryStage
+	 * @param Stage
 	 */
 	
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");	
-
-		// Creating the window.
+		
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
 		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
 		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
@@ -83,13 +80,12 @@ public class Main extends Application {
 		scene1 = new Scene(bpLayout1,800,600);
 		scene1.getStylesheets().add("style.css");
 
-		// Setting the currently open window to show the scene created above.
 		window.setScene(scene1);
 		window.show();
 	}
 
 	/**
-	 * This method returs a header for use as a top element of a BorderPane. The header consists of the iAdopt image.
+	 * This method returs a header for use as a top element of a BorderPane. The header consists of the BeeAdopted Logo.
 	 * 
 	 * @return BorderPane with logotype and navigation button
 	 */
@@ -107,9 +103,9 @@ public class Main extends Application {
 		name.setId("beeadopted");
 		name.getStyleClass().add("beeadopted");
 
-		// All items created are added to HBox.
+		// All items created are added to the BorderPane.
 		header.setLeft(back);
-		header.setCenter(name);					// Alignment of the items to the center left so that the back button is in an obvious place.
+		header.setCenter(name);
 
 		return header;
 	}
@@ -118,22 +114,21 @@ public class Main extends Application {
 	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
 	 * going to the input page.
 	 * 
-	 * @return Vbox location dropdown menu and input page button
+	 * @return VBox with location dropdown menu, MemberPage login and account creation button.
 	 */
 	
 	private VBox startLocation() {
 		VBox firstPage = new VBox();
-		Label lblLocation = new Label("Where are you?"); 		// Displayed above the choicebox for cities to let the user know what to do.
+		Label lblLocation = new Label("Where are you?");
 		firstPage.getStyleClass().add("start-pane");
 
-		// This inputs information into the choicebox, namely the cities in which there are agencies.
 		cbCity = new ChoiceBox<>(db.createSelectAllObservableList("City", db.fetchResult(
 				db.executeQuery("SELECT DISTINCT City "
 						+ "FROM Addresses "
 						+ "ORDER BY City;"))));
 		db.closeConnection();
+		
 		cbCity.setValue(cbCity.getItems().get(0));	// Getting retrieved items from the DB.
-
 		cbCity.setOnAction(e -> {
 			if (!cbCity.getValue().equals("City")){
 				if (!cbCity.getValue().equals("Select all")){
@@ -186,21 +181,25 @@ public class Main extends Application {
 				db.executeQuery("SELECT DISTINCT Species FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Species;")));
+		db.closeConnection();
 		
 		obsListType = db.createObservableList("Type",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Type FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Type;")));
+		db.closeConnection();
 		
 		obsListGender = db.createObservableList("Gender",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Gender FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Gender;")));
+		db.closeConnection();
 		
 		obsListAgencies = db.createObservableList("Agencies",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Name FROM Agencies, Addresses "
 						+ "WHERE Agencies.ID == Addresses.AgencyID " + city
 						+ "ORDER BY Name;")));
+		db.closeConnection();
 		
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setPrefWidth(150);
@@ -212,6 +211,8 @@ public class Main extends Application {
 				obsListType = db.createObservableList("Type",db.fetchResult(
 						db.executeQuery("SELECT Distinct Type FROM Ads "
 								+ "WHERE Species == '" + species + "' ORDER BY Type;")));
+				db.closeConnection();
+				
 				cbType.setItems(obsListType);
 				cbType.setValue(cbType.getItems().get(0));
 				
@@ -223,6 +224,8 @@ public class Main extends Application {
 						db.executeQuery("SELECT DISTINCT Type FROM Ads, Agencies, Addresses "
 								+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 								+ "and EndDate >= DATE('NOW') ORDER BY Type;")));
+				db.closeConnection();
+				
 				cbType.setItems(obsListType);
 				cbType.setValue(cbType.getItems().get(0));
 				
@@ -257,6 +260,8 @@ public class Main extends Application {
 		}		
 		minAge = Integer.parseInt(db.fetchResult(db.executeQuery(minAgeStatement)).get(0).get(0));
 		maxAge = Integer.parseInt(db.fetchResult(db.executeQuery(maxAgeStatement)).get(0).get(0));		
+		
+		db.closeConnection();
 		
 		rslAge = new RangeSlider();
 		rslAge.setMin(minAge);
@@ -375,6 +380,7 @@ public class Main extends Application {
 					+ "ORDER BY Ads.ID;";
 		}
 		searchResults = db.fetchAd(db.executeQuery(searchStatement));
+		db.closeConnection();
 	}
 
 	private static void refreshTable() {

@@ -2,7 +2,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
@@ -32,7 +31,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -44,10 +42,6 @@ import javafx.stage.Stage;
  */
 
 public class InputPage {
-	private static Stage window;
-	private static Scene sceneInput;
-	private static BorderPane layoutInput;
-
 	private static TextField tfName, tfAge, tfNewSpecies, tfNewType;
 	private static TextArea taDescription;
 	private static CheckBox chbNewSpecies, chbNewType, chbReActivate;
@@ -101,12 +95,6 @@ public class InputPage {
 		lblName = new Label("Name");
 		lblAge = new Label("Age");
 		lblGender = new Label("Gender");
-		lblActiveInfo = new Label("This ad has been removed from the site");
-		lblActiveInfo.setVisible(false);
-		
-		if (updateAd) {
-			if (InputValidation.checkEndAfterToday(ad)) {lblActiveInfo.setVisible(true);}
-		}
 		
 		gridPane.add(lblName, 0, 0);
 		gridPane.add(lblAge, 0, 0);
@@ -114,7 +102,6 @@ public class InputPage {
 		GridPane.setMargin(lblName, 	new Insets(-45, 0, 0, 0));
 		GridPane.setMargin(lblAge, 		new Insets(-45, 0, 0, 160));
 		GridPane.setMargin(lblGender, 	new Insets(-45, 0, 0, 143));
-		GridPane.setMargin(lblActiveInfo, new Insets(-45, 0, 0, 0));
 
 		
 		return gridPane;
@@ -159,8 +146,8 @@ public class InputPage {
 		taDescription.setOnKeyReleased(e -> InputValidation.validateInputTextArea(taDescription));
 
 		tfNewSpecies = new TextField();				// TF for new species
-		tfNewSpecies.setMinWidth(100);				// Setting size for TF
-		tfNewSpecies.setMaxWidth(100);
+		tfNewSpecies.setMinWidth(150);				// Setting size for TF
+		tfNewSpecies.setMaxWidth(150);
 		tfNewSpecies.setVisible(false);				// TF not visible by default
 		tfNewSpecies.setPromptText("Species...");	// Prompt text for TF to be displayed in the background
 		tfNewSpecies.setOnKeyReleased(e -> {
@@ -182,8 +169,8 @@ public class InputPage {
 		});
 
 		tfNewType = new TextField();				// TF for new types
-		tfNewType.setMinWidth(100);
-		tfNewType.setMaxWidth(100);
+		tfNewType.setMinWidth(150);
+		tfNewType.setMaxWidth(150);
 		tfNewType.setVisible(false);
 		tfNewType.setPromptText("Type...");
 		tfNewType.setOnKeyReleased(e -> InputValidation.validateInputTextFieldString(tfNewType));
@@ -195,7 +182,7 @@ public class InputPage {
 		gridPane.add(tfNewSpecies, 0, 2);			// Adding CHB for new species to gridpane, column 0, row 3
 		gridPane.add(tfNewType, 1, 2);
 		GridPane.setMargin(tfAge, 			new Insets(0, 0, 0, 160));
-		GridPane.setMargin(tfNewType, 		new Insets(0, 0, 0, -97));
+		GridPane.setMargin(tfNewType, 		new Insets(0, 0, 0, -17));
 
 		return gridPane;
 	}
@@ -265,7 +252,8 @@ public class InputPage {
 			}
 		});
 
-		chbNewType.setDisable(true);				// Checkbox disables by default
+		if (updateAd) {
+		} else {chbNewType.setDisable(true);}		// Checkbox disables by default if a new ad is to be entered
 		chbNewType.setOnAction(e -> {
 			if (chbNewType.isSelected()) {
 				cbType.setValue("Type");			// Resetting value to Type
@@ -287,8 +275,8 @@ public class InputPage {
 		db.closeConnection();
 		if (updateAd) {cbSpecies.setValue(ad.getSpecies());
 		} else {cbSpecies.setValue("Species");}
-		cbSpecies.setMinWidth(100);					// Setting size of the CB
-		cbSpecies.setMaxWidth(100);
+		cbSpecies.setMinWidth(150);					// Setting size of the CB
+		cbSpecies.setMaxWidth(150);
 		cbSpecies.setOnAction(e -> {				// On action (selection) it should...
 			InputValidation.validateChoiceBox(cbSpecies);
 			if ((String) cbSpecies.getValue() != "Species") {	// If it has changed from "Species", do:
@@ -329,8 +317,8 @@ public class InputPage {
 			cbType.setValue("Type");
 			cbType.setDisable(true);				// Type CB is disabled by default when a new ad is to be added
 		}
-		cbType.setMinWidth(100);					// Setting size of type CB
-		cbType.setMaxWidth(100);
+		cbType.setMinWidth(150);					// Setting size of type CB
+		cbType.setMaxWidth(150);
 		cbType.setOnAction(e -> {
 		try {
 			InputValidation.validateChoiceBox(cbType);
@@ -339,6 +327,7 @@ public class InputPage {
 
 		chbReActivate = new CheckBox("Re-activate?");
 		chbReActivate.setVisible(false);
+		chbReActivate.setStyle("-fx-text-fill: red;");
 		if (updateAd) {	
 			if (InputValidation.checkEndAfterToday(ad)) {chbReActivate.setVisible(true);} 
 		}
@@ -348,11 +337,12 @@ public class InputPage {
 		gridPane.add(cbType, 1, 2);
 		gridPane.add(chbNewSpecies, 0, 2);
 		gridPane.add(chbNewType, 1, 2);
-		gridPane.add(chbReActivate, 1, 4);
+		gridPane.add(chbReActivate, 1, 5);
 		GridPane.setMargin(cbGenders, 		new Insets(0, 0, 0, 143));
-		GridPane.setMargin(cbType, 			new Insets(0, 0, 0, -97));
-		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
-		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 8));
+		GridPane.setMargin(cbType, 			new Insets(0, 0, 0, -17));
+		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 155));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF
+		GridPane.setMargin(chbNewType, 		new Insets(0, 0, 0, 137));
+		GridPane.setMargin(chbReActivate, new Insets(0, 0, 0, -120));
 
 		return gridPane;
 	}
@@ -439,7 +429,7 @@ public class InputPage {
 		gridPane.add(btnAddPicture, 0, 4);
 		gridPane.add(myImageView, 1, 4);
 		gridPane.add(btnSaveAd, 0, 5);
-
+		GridPane.setMargin(myImageView, new Insets(0, 0, 0, -120));
 
 		return gridPane;
 	}
