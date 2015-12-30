@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.swing.text.html.ImageView;
+
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -8,19 +10,21 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Compare {
 
-	public static GridPane compareAds(ObservableList<Ad> adList) {
+	public static StackPane compareAds(ObservableList<Ad> adList) {
+		StackPane stack = new StackPane();
+		stack.getStyleClass().add("hbox");
+		
 		GridPane grid = new GridPane();
 		grid.getStyleClass().add("grid");
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(5, 5, 5, 5));
 		
 		for(int i = 0; i < adList.size() ; i++ ){
+		//	ImageView picture = adList.get(i).getPicture();
 			Label species = new Label(adList.get(i).getSpecies());
 			Label type = new Label(adList.get(i).getType());
 			Label age = new Label("" + adList.get(i).getAge());
@@ -30,6 +34,7 @@ public class Compare {
 			grid.add(age, i, 2);
 		}
 		
-		return grid;
+		stack.getChildren().add(grid);
+		return stack;
 	}
 }

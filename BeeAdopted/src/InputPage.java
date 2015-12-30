@@ -343,8 +343,9 @@ public class InputPage {
 
 		chbReActivate = new CheckBox("Re-activate?");
 		chbReActivate.setVisible(false);
-		if (InputValidation.checkEndAfterToday(ad)) {chbReActivate.setVisible(true);} 
-		
+		if (updateAd) {	
+			if (InputValidation.checkEndAfterToday(ad)) {chbReActivate.setVisible(true);} 
+		}
 		
 		gridPane.add(cbGenders, 1, 0);
 		gridPane.add(cbSpecies, 0, 2);				// Adding CB for species to gridpane, column 0, row 3
@@ -385,7 +386,7 @@ public class InputPage {
 
 		alert = new Alert(AlertType.INFORMATION);
 
-		btnSaveAd = new Button("Save ad");
+		btnSaveAd = new Button("Save");
 //		btnSaveAd.setMinWidth(110);
 //		btnSaveAd.setMaxWidth(110);
 		btnSaveAd.setOnAction(e -> {
@@ -403,24 +404,33 @@ public class InputPage {
 					try {
 						if (updateAd) {
 							inputUpdatePicture(ad.getID(), file, true);
+							
+							alert.setAlertType(AlertType.INFORMATION);
+							alert.setTitle("Success");
+							alert.setHeaderText("Advertisement has been updated");
+							if (chbReActivate.isSelected()) {
+								alert.setContentText("Your advertisement is now updated and visible to all system users for 90 days.");
+							} else {
+								alert.setContentText("Your advertisement now has its updated information visible.");
+							}
+							alert.showAndWait();
 						} else {
 							inputUpdatePicture(0, file, true);
+							
+							alert.setAlertType(AlertType.INFORMATION);
+							alert.setTitle("Success");
+							alert.setHeaderText("Advertisement has been submitted");
+							alert.setContentText("Your advertisement is now visible to all system users for 90 days.");
+							alert.showAndWait();
 						}
 					} catch (Exception e1) {
 						System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
 					}
 					file = null;
-				} else {}
-				
-				alert.setAlertType(AlertType.INFORMATION);
-				alert.setTitle("Success");
-				alert.setHeaderText("Advertisement has been submitted");
-				alert.setContentText("Your advertisement is now visible to all system users for 90 days.");
-				alert.showAndWait();
-				
+				}
 				MemberPage.refreshTable();
-				
-				window.close();
+			
+				MemberPage.back();
 			} else {
 				System.out.println(">> Input values incorrect");
 				alert.setAlertType(AlertType.ERROR);

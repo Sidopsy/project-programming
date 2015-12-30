@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  * to press an button for adopting the animal and rating the agency. The button should remove the Ad from being listed in the application and prompt the
  * user to input feedback on the transaction with a 0 to 5 rating and a comment.
  * 
- * @author ML & Yu Jet Hua
+ * @author Mattias Landkvist & Yu Jet Hua
  */
 
 public class AdView {
@@ -46,17 +46,18 @@ public class AdView {
 
 	
 	/**
-	 * This method returns a Hbox with Ad and Agency information about the currently viewed Ad. 
+	 * This method returns a VBox with Ad and Agency information about the currently viewed Ad. 
 	 * 
-	 * @param Ad, Agency
-	 * @return Hbox containing Ad and Agency information
+	 * @param Ad, AgencyID
+	 * @return VBox containing Ad and Agency information
 	 */
 
 	public static VBox showAd(Ad ad, int agencyID) throws IOException, SQLException {
 		VBox vbox = new VBox();
-		vbox.getStyleClass().add("outer-box");
-		// Creating the Hbox to be returned.
 		HBox hbox = new HBox();
+
+		vbox.getStyleClass().add("outer-box");
+
 		hbox.setPadding(new Insets(10));
 		hbox.setSpacing(10);
 
@@ -85,12 +86,10 @@ public class AdView {
 	 * A button for adopting said item will be available as well as a close button that will close the entire window.
 	 * 
 	 * @param Ad
-	 * @return GridPane
+	 * @return VBox
 	 */
 
 	private static VBox getAd(Ad ad) throws IOException, SQLException {
-
-		// GridPane to be returned.
 		VBox vbox = new VBox();
 		vbox.getStyleClass().add("inner-box");
 		vbox.setPrefSize(350, 400);
@@ -143,14 +142,37 @@ public class AdView {
 
 		// Saving all information about the Agency in extended format.
 		AgencyExt agencyExtended = db.fetchAgencyExt(db.executeQuery(sqlStatement)).get(0);
-		System.out.println(agencyExtended);
-		
-		Image picture = new Image("PlaceholderSmall.png");
-		ImageView agencyPicture = new ImageView(picture);
 
+		ImageView agencyLogo = new ImageView();
+		Image logo;
+
+		agencyLogo.setFitWidth(100);
+		agencyLogo.setFitHeight(100);
+		
+		try{
+			BufferedImage image = null;
+			InputStream inputStream = null;
+			inputStream = db.executeQuery("SELECT Logo FROM Agencies WHERE ID = " + agencyID + ";").getBinaryStream("Logo");
+			db.closeConnection();
+			image = javax.imageio.ImageIO.read(inputStream);
+			if(image != null){
+				logo = SwingFXUtils.toFXImage(image, null);
+				agencyLogo.setImage(logo);
+			} 
+			inputStream.close();
+		} catch (Exception e) {
+			System.err.println(">> Error while loading image, or no image selected");
+			logo = new Image("PlaceholderSmall.png");
+			agencyLogo.setImage(logo);
+		} finally {
+			try {
+				if (!db.getConnection().isClosed()) {db.closeConnection();}
+			} catch (SQLException e) {System.err.println(">> Error when closing connection");}
+		}
+		
 		// Transfering the Agency information into labels.
-		Label name = new Label("Name: " + agencyExtended.getName());
-		Label rating = new Label("Rating: " + agencyExtended.getRating());
+		Label name = new Label("Agency: " + agencyExtended.getName());
+		Label rating = new Label("Rating (1-5): " + agencyExtended.getRating());
 		Label email = new Label("Email: " + agencyExtended.getEmail());
 		Label phone = new Label("Phone: " + agencyExtended.getPhone());
 		Label street = new Label("Street: " + agencyExtended.getStreet());
@@ -158,7 +180,7 @@ public class AdView {
 		Label city = new Label("City: " + agencyExtended.getCity());
 
 		// Adding all Agency information to the Vbox.
-		vbox.getChildren().addAll(agencyPicture, name, rating, email, phone, street, zip, city);
+		vbox.getChildren().addAll(agencyLogo, name, rating, email, phone, street, zip, city);
 
 
 		System.out.println("Shits not working");

@@ -15,7 +15,7 @@
 .label {
 	-fx-font-size: 11pt;
 	-fx-font-family: "Helvetica";
-	-fx-text-fill: black;
+	-fx-text-fill: white;
 	-fx-opacity: 0.6;
 }
 
@@ -163,7 +163,14 @@
 	-fx-pref-width: 150;
 }
 
-
+.grid {
+	-fx-background-color: white;
+	-fx-border-width: 50;
+	-fx-border-color: transparent;
+	-fx-alignment: center;	
+	-fx-hgap: 30;
+	-fx-vgap: 3;
+}
 
 
 /* HBox class */

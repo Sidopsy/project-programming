@@ -62,7 +62,7 @@ public class Main extends Application {
 
 	private static Stage window;
 	private static Scene scene1, scene2, scene3;
-	private static BorderPane bpLayout1, bpLayout2, bpLayout3;
+	private static BorderPane bpLayout1, bpLayout2, layoutViewAd;
 	private static TableView<Ad> tvAd;
 	private static ArrayList<Ad> searchResults = null;
 	private static ObservableList<Object> obsListSpecies, obsListType, obsListGender, obsListAgencies;
@@ -151,6 +151,53 @@ public class Main extends Application {
 			window.setScene(scene2);
 		}
 	}
+	
+	private static void refreshTable() {
+		ObservableList<Ad> adList = db.createObservableList(searchResults);
+		
+		tvAd.setItems(adList);
+		tvAd.refresh();
+	}
+
+private VBox startLocation() {
+		VBox firstPage = new VBox();
+		Label lblLocation = new Label("Where are you?"); 		// Displayed above the choicebox for cities to let the user know what to do.
+		firstPage.getStyleClass().add("start-pane");
+
+		// This inputs information into the choicebox, namely the cities in which there are agencies.
+		cbCity = new ChoiceBox<>(db.createSelectAllObservableList("City", db.fetchResult(
+				db.executeQuery("SELECT DISTINCT City "
+						+ "FROM Addresses "
+						+ "ORDER BY City;"))));
+		db.closeConnection();
+		cbCity.setValue(cbCity.getItems().get(0));	// Getting retrieved items from the DB.
+
+		cbCity.setOnAction(e -> {
+			if (!cbCity.getValue().equals("City")){
+				if (!cbCity.getValue().equals("Select all")){
+					city = "and City == '" + cbCity.getValue() + "' ";		// What location was input?
+				} else {city = "";}
+				
+				firstSearch = true;												
+				search();
+				
+				bpLayout2 = new BorderPane();				// Preparing for a new scene.
+				bpLayout2.setTop(getHeader());					// Setting the header as before.
+				bpLayout2.setCenter(getAdSearchAndChooser());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
+				
+				scene2 = new Scene(bpLayout2,800,600);
+				scene2.getStylesheets().add("style.css");
+				
+				window.setScene(scene2);
+			}
+		});
+
+		// Vbox is populated with the label, the choicebox and the content from loginBox()
+		firstPage.getChildren().addAll(lblLocation, cbCity);
+		firstPage.setAlignment(Pos.CENTER);
+
+		return firstPage;
+	}
 
 
 	/**
@@ -169,7 +216,11 @@ public class Main extends Application {
 		primaryFilters.getStyleClass().add("filter");
 		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		primaryFilters.setSpacing(75);
-
+		
+		HBox buttons = new HBox();
+		buttons.setAlignment(Pos.CENTER);
+		buttons.setSpacing(25);
+		
 		obsListSpecies = db.createObservableList("Species",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Species FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
@@ -185,7 +236,7 @@ public class Main extends Application {
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Gender;")));
 		
-		obsListAgencies = db.createSelectAllObservableList("Agencies",db.fetchResult(
+		obsListAgencies = db.createObservableList("Agencies",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Name FROM Agencies, Addresses "
 						+ "WHERE Agencies.ID == Addresses.AgencyID " + city
 						+ "ORDER BY Name;")));
@@ -278,17 +329,22 @@ public class Main extends Application {
 		btnSearch.setOnAction(e -> {
 			tvAd.getChildrenUnmodifiable().removeAll(searchResults);
 			search();
-			bpLayout2 = new BorderPane();
-			bpLayout2.setTop(getHeader());
-			bpLayout2.setCenter(getAdSearchAndChooser());
-			tvAd.refresh();
-			scene2 = new Scene(bpLayout2,800,600);
-			scene2.getStylesheets().add("style.css");
-			window.setScene(scene2);
+			refreshTable();
+			});
+		
+		Button btnReset = new Button("Reset filters");
+		btnReset.setOnAction(e -> {
+			cbSpecies.setValue(cbSpecies.getItems().get(0));
+			cbType.setValue(cbType.getItems().get(0));
+			rslAge.setLowValue(minAge);
+			rslAge.setHighValue(maxAge);
+			cbGender.setValue(cbGender.getItems().get(0));
+			cbAgency.setValue(cbAgency.getItems().get(0));
 		});
 
+		buttons.getChildren().addAll(btnReset, btnSearch);
 		primaryFilters.getChildren().addAll(cbSpecies,cbType,rslAge,cbGender,cbAgency);
-		filters.getChildren().addAll(primaryFilters, btnSearch);
+		filters.getChildren().addAll(primaryFilters, buttons);
 		
 		return filters;
 	}
@@ -357,13 +413,7 @@ public class Main extends Application {
 					+ "GROUP BY Ads.ID "
 					+ "ORDER BY Ads.ID;";
 		}
-
-		System.out.println(searchStatement);
 		searchResults = db.fetchAd(db.executeQuery(searchStatement));
-		species = null;
-		type = null;
-		gender = null;
-		agency = null;
 	}
 	
 	/**
@@ -432,7 +482,6 @@ public class Main extends Application {
 
 		tvAd = new TableView<Ad>();
 		tvAd.setEditable(true);
-		//tvAd.setMinWidth(0);
 
 		// Columns to be added to the TableView.
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
@@ -453,61 +502,20 @@ public class Main extends Application {
 		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
 			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
 			final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
-			final BooleanProperty selected = new SimpleBooleanProperty();
 			ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
 
 				@Override
 				public ObservableValue<Boolean> call(Integer index) {
-					
 					return tvAd.getItems().get(index).getCheckProperty();
 				}
 				
 
 			});
-			System.out.println("Cell index: " + ctCell.getIndex());
-			if(tvAd.getItems().get(ctCell.getIndex() + 1).getCheck() == true){
-				compareAds.add(tvAd.getItems().get(ctCell.getIndex() +1 ));
-//			} 
-//			else  if (tvAd.getItems().get(ctCell.getIndex() + 1).getCheck() == false){
-//				compareAds.remove(compareAds.indexOf(tvAd.getItems().get(ctCell.getIndex() + 1)));
-			} else {
-				return ctCell;
-			}
+
 			return ctCell;
 		}
 
 	});
-//		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
-//			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
-//				final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
-//				final BooleanProperty selected = new SimpleBooleanProperty();
-//				ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
-//
-//					@Override
-//					public ObservableValue<Boolean> call(Integer index) {
-//						return selected;
-//					}
-//
-//				});
-//				selected.addListener(new ChangeListener<Boolean>() {
-//
-//					@Override
-//					public void changed(ObservableValue<? extends Boolean> obs, Boolean wasSelected, Boolean isSelected) {
-//						if (ctCell.selectedProperty().get() != true){
-//							compareAds.add(tvAd.getItems().get(ctCell.getIndex()));							
-//						} else {
-//							compareAds.remove(compareAds.indexOf(tvAd.getItems().get(ctCell.getIndex())));
-//						}
-//						System.out.println(isSelected);
-//						
-//
-//					}
-//
-//				});
-//				return ctCell;
-//			}
-//
-//		});
 
 		tvAd.setRowFactory( tv -> {
 			TableRow<Ad> row = new TableRow<>();
@@ -518,11 +526,11 @@ public class Main extends Application {
 					Ad ad = (Ad) row.getItem();
 					
 						try {
-							bpLayout3 = new BorderPane();
-							bpLayout3.setTop(getHeader());
-							bpLayout3.setCenter(AdView.showAd(ad, ad.getAgencyID()));
+							layoutViewAd = new BorderPane();
+							layoutViewAd.setTop(getHeader());
+							layoutViewAd.setCenter(AdView.showAd(ad, ad.getAgencyID()));
 							tvAd.refresh();
-							scene3 = new Scene(bpLayout3,800,600);
+							scene3 = new Scene(layoutViewAd,800,600);
 							scene3.getStylesheets().add("style.css");
 							window.setScene(scene3);
 							
@@ -538,20 +546,19 @@ public class Main extends Application {
 		tvAd.setItems(adList);
 
 		tvAd.getColumns().addAll(pictureCol, nameCol, speciesCol, typeCol, ratingCol,checkCol);
-		//vbox.getChildren().add(tvAd);
 		tvAd.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 		Button btnCompare = new Button("Compare Ads");
 		btnCompare.setOnAction(e -> {
-		//	getCheckedAds();
-			bpLayout3 = new BorderPane();
-			bpLayout3.setTop(getHeader());
-			bpLayout3.setCenter(Compare.compareAds(compareAds));
+			getCheckedAds(adList);
+			layoutViewAd  = new BorderPane();
+			layoutViewAd .setTop(getHeader());
+			layoutViewAd .setCenter(Compare.compareAds(compareAds));
 			tvAd.refresh();
-			scene3 = new Scene(bpLayout3,800,600);
+			scene3 = new Scene(layoutViewAd,800,600);
 			scene3.getStylesheets().add("style.css");
 			window.setScene(scene3);
-			
+			compareAds.removeAll(compareAds);
 			
 		});
 
@@ -569,18 +576,13 @@ public class Main extends Application {
 		return vbox;
 	}
 	
-//	private void getCheckedAds(){
-//		System.out.println("Length: " + tvAd.getItems().toArray().length);
-//		int i = 1;
-//		while(true){
-//			compareAds.add(tvAd.getItems().get(i));
-////			else {
-////				try {
-////					compareAds.remove(compareAds.indexOf(tvAd.getItems().get(i)));
-////				} catch (NullPointerException e) {
-////					System.out.println("Bop bop");
-////				}
-////			}
-//		}
-//	}
+	private void getCheckedAds(ObservableList<Ad> adList){
+		System.out.println("Length: " + adList.toArray().length);
+		for(int i = 0; i < adList.size(); i++){
+			if(adList.get(i).getCheck()){
+				compareAds.add(tvAd.getItems().get(i));
+				System.out.println("true");	
+			}
+		}
+	}
 }
