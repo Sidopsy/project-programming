@@ -2,7 +2,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
@@ -32,7 +31,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -44,10 +42,6 @@ import javafx.stage.Stage;
  */
 
 public class InputPage {
-	private static Stage window;
-	private static Scene sceneInput;
-	private static BorderPane layoutInput;
-
 	private static TextField tfName, tfAge, tfNewSpecies, tfNewType;
 	private static TextArea taDescription;
 	private static CheckBox chbNewSpecies, chbNewType, chbReActivate;
@@ -103,12 +97,6 @@ public class InputPage {
 		lblName = new Label("Name");
 		lblAge = new Label("Age");
 		lblGender = new Label("Gender");
-		lblActiveInfo = new Label("This ad has been removed from the site");
-		lblActiveInfo.setVisible(false);
-		
-		if (updateAd) {
-			if (InputValidation.checkEndAfterToday(ad)) {lblActiveInfo.setVisible(true);}
-		}
 		
 		gridPane.add(lblName, 0, 0);
 		gridPane.add(lblAge, 0, 0);
@@ -269,7 +257,8 @@ public class InputPage {
 			}
 		});
 
-		chbNewType.setDisable(true);				// Checkbox disables by default
+		if (updateAd) {
+		} else {chbNewType.setDisable(true);}		// Checkbox disables by default if a new ad is to be entered
 		chbNewType.setOnAction(e -> {
 			if (chbNewType.isSelected()) {
 				cbType.setValue("Type");			// Resetting value to Type
@@ -343,6 +332,7 @@ public class InputPage {
 
 		chbReActivate = new CheckBox("Re-activate?");
 		chbReActivate.setVisible(false);
+		chbReActivate.setStyle("-fx-text-fill: red;");
 		if (updateAd) {	
 			if (InputValidation.checkEndAfterToday(ad)) {chbReActivate.setVisible(true);} 
 		}
@@ -352,7 +342,7 @@ public class InputPage {
 		gridPane.add(cbType, 2, 2);
 		gridPane.add(chbNewSpecies, 1, 2);
 		gridPane.add(chbNewType, 3, 2);
-		gridPane.add(chbReActivate, 1, 4);
+		gridPane.add(chbReActivate, 1, 5);
 //		GridPane.setMargin(cbGenders, 		new Insets(0, 0, 0, 143));
 //		GridPane.setMargin(cbType, 			new Insets(0, 0, 0, -97));
 //		GridPane.setMargin(chbNewSpecies, 	new Insets(0, 0, 0, 105));	// Displacing CHB for new species 110 pixels to the left, to appear after the species CB/TF

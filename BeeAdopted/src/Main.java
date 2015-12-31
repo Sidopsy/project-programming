@@ -51,11 +51,12 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 /**
- * Class for starting the application.
+ * Class for starting the application, it also contains the DSS's main functionality, the search function.
  * 
- * TODO: List all methods.
+ * The application launch shows the location window where the user inputs his or her desired city for searching.
+ * One is then shown a table containing ads in the specified location, clickable to show additional information.
  * 
- * @author ML
+ * @author Mattias Landkvist
  */
 
 public class Main extends Application {
@@ -78,8 +79,6 @@ public class Main extends Application {
 
 	/**
 	 * The main method, only used to start the application with the launch command from javaFX.
-	 * 
-	 * @param args
 	 */
 	public static void main(String[] args){
 		launch(args);
@@ -88,16 +87,15 @@ public class Main extends Application {
 
 	/**
 	 * Start method that is launched with Application.launch(args). This builds the main windows shown on launch which is
-	 * the prompt for a location. This view also contains a button for going to the input page, the code for this is in
+	 * the prompt for a location. This view also contains a button for going logging into the MemberPages, the code for this is in
 	 * startLocation().
 	 * 
-	 * @param primaryStage
+	 * @param Stage
 	 */
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");	
-
-		// Creating the window.
+		
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
 		bpLayout1.setTop(getHeader());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
 		bpLayout1.setCenter(getCityChooser());		// Center element of BorderPane contains the dropdown vbox.
@@ -113,13 +111,11 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method returs a header for use as a top element of a BorderPane. The header consists of the iAdopt image.
+	 * This method returs a header for use as a top element of a BorderPane. The header consists of the BeeAdopted Logo.
 	 * 
-	 * @return Vbox header image and navigation buttons
+	 * @return BorderPane with logotype and navigation button
 	 */
 	private BorderPane getHeader(){
-
-		// The StackPane to be returned and used as a header.
 		BorderPane header = new BorderPane();
 		header.getStyleClass().add("header");
 
@@ -133,9 +129,9 @@ public class Main extends Application {
 		name.getStyleClass().add("beeadopted");
 
 
-		// All items created are added to HBox.
+		// All items created are added to the BorderPane.
 		header.setLeft(back);
-		header.setCenter(name);					// Alignment of the items to the center left so that the back button is in an obvious place.
+		header.setCenter(name);
 
 		return header;
 	}
@@ -161,7 +157,7 @@ public class Main extends Application {
 
 private VBox startLocation() {
 		VBox firstPage = new VBox();
-		Label lblLocation = new Label("Where are you?"); 		// Displayed above the choicebox for cities to let the user know what to do.
+		Label lblLocation = new Label("Where are you?");
 		firstPage.getStyleClass().add("start-pane");
 
 		// This inputs information into the choicebox, namely the cities in which there are agencies.
@@ -170,8 +166,8 @@ private VBox startLocation() {
 						+ "FROM Addresses "
 						+ "ORDER BY City;"))));
 		db.closeConnection();
+		
 		cbCity.setValue(cbCity.getItems().get(0));	// Getting retrieved items from the DB.
-
 		cbCity.setOnAction(e -> {
 			if (!cbCity.getValue().equals("City")){
 				if (!cbCity.getValue().equals("Select all")){
@@ -225,21 +221,25 @@ private VBox startLocation() {
 				db.executeQuery("SELECT DISTINCT Species FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Species;")));
+		db.closeConnection();
 		
 		obsListType = db.createObservableList("Type",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Type FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Type;")));
+		db.closeConnection();
 		
 		obsListGender = db.createObservableList("Gender",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Gender FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Gender;")));
+		db.closeConnection();
 		
 		obsListAgencies = db.createObservableList("Agencies",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Name FROM Agencies, Addresses "
 						+ "WHERE Agencies.ID == Addresses.AgencyID " + city
 						+ "ORDER BY Name;")));
+		db.closeConnection();
 		
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setPrefWidth(150);
@@ -251,6 +251,8 @@ private VBox startLocation() {
 				obsListType = db.createObservableList("Type",db.fetchResult(
 						db.executeQuery("SELECT Distinct Type FROM Ads "
 								+ "WHERE Species == '" + species + "' ORDER BY Type;")));
+				db.closeConnection();
+				
 				cbType.setItems(obsListType);
 				cbType.setValue(cbType.getItems().get(0));
 				
@@ -262,6 +264,8 @@ private VBox startLocation() {
 						db.executeQuery("SELECT DISTINCT Type FROM Ads, Agencies, Addresses "
 								+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 								+ "and EndDate >= DATE('NOW') ORDER BY Type;")));
+				db.closeConnection();
+				
 				cbType.setItems(obsListType);
 				cbType.setValue(cbType.getItems().get(0));
 				
@@ -297,6 +301,8 @@ private VBox startLocation() {
 		minAge = Integer.parseInt(db.fetchResult(db.executeQuery(minAgeStatement)).get(0).get(0));
 		maxAge = Integer.parseInt(db.fetchResult(db.executeQuery(maxAgeStatement)).get(0).get(0));		
 		
+		db.closeConnection();
+		
 		rslAge = new RangeSlider();
 		rslAge.setMin(minAge);
 		rslAge.setMax(maxAge);
@@ -327,7 +333,6 @@ private VBox startLocation() {
 
 		Button btnSearch = new Button("Search");
 		btnSearch.setOnAction(e -> {
-			tvAd.getChildrenUnmodifiable().removeAll(searchResults);
 			search();
 			refreshTable();
 			});
@@ -414,6 +419,7 @@ private VBox startLocation() {
 					+ "ORDER BY Ads.ID;";
 		}
 		searchResults = db.fetchAd(db.executeQuery(searchStatement));
+		db.closeConnection();
 	}
 	
 	/**
@@ -469,7 +475,7 @@ private VBox startLocation() {
 	}
 
 	/**
-	 * This method 
+	 * This method returns a table with properties and specific variables from the Ad object.
 	 * 
 	 * @return VBox with a tableview populated by n Ad objects from a database and a button.
 	 */
@@ -551,9 +557,9 @@ private VBox startLocation() {
 		Button btnCompare = new Button("Compare Ads");
 		btnCompare.setOnAction(e -> {
 			getCheckedAds(adList);
-			layoutViewAd  = new BorderPane();
-			layoutViewAd .setTop(getHeader());
-			layoutViewAd .setCenter(Compare.compareAds(compareAds));
+			layoutViewAd = new BorderPane();
+			layoutViewAd.setTop(getHeader());
+			layoutViewAd.setCenter(Compare.compareAds(compareAds));
 			tvAd.refresh();
 			scene3 = new Scene(layoutViewAd,800,600);
 			scene3.getStylesheets().add("style.css");
