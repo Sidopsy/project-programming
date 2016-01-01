@@ -13,7 +13,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -27,11 +26,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 /**
  * This class creates a new window and lets the user input information into the database throught the GUI.
@@ -59,13 +56,14 @@ public class InputPage {
 	private static DBobject db = new DBobject();
 
 	/**
-	 * 
+	 * Creates the view in which an ad can be created or updated.
 	 * 
 	 * @return GridPane with option to input animals
 	 */
 
 	public static GridPane viewInputAd(boolean updateAd) {
 		GridPane gridPane = new GridPane();
+		
 		gridPane.setHgap(7);
 		gridPane.setVgap(7);
 		gridPane.setPadding(new Insets(5, 5, 5, 5));
@@ -84,13 +82,13 @@ public class InputPage {
 	/**
 	 * Updates the incoming GridPane with label for information about inputs.
 	 * 
-	 * @param initialized GridPane to add labels to.
+	 * @param GridPane to add labels to.
 	 * @return GridPane containing the labels neccessary to guide the user.
 	 */
 
 	private static GridPane addInputLabels(GridPane inputGridPane, boolean updateAd) {
 		GridPane gridPane = inputGridPane;
-		Label lblName, lblAge, lblGender, lblActiveInfo;
+		Label lblName, lblAge, lblGender;
 
 		lblName = new Label("Name");
 		lblAge = new Label("Age");
@@ -177,10 +175,10 @@ public class InputPage {
 
 		gridPane.add(tfName, 0, 0);
 		gridPane.add(tfAge, 0, 0);
-		GridPane.setColumnSpan(taDescription, 2);
 		gridPane.add(taDescription, 0, 3);
 		gridPane.add(tfNewSpecies, 0, 2);			// Adding CHB for new species to gridpane, column 0, row 3
 		gridPane.add(tfNewType, 1, 2);
+		GridPane.setColumnSpan(taDescription, 2);
 		GridPane.setMargin(tfAge, 			new Insets(0, 0, 0, 160));
 		GridPane.setMargin(tfNewType, 		new Insets(0, 0, 0, -17));
 
@@ -222,6 +220,7 @@ public class InputPage {
 								+ "Ads ORDER BY "
 								+ "Type;")));
 				db.closeConnection();
+				
 				cbType.setItems(obsListType);		// Loading type list into type CB
 				cbType.setValue("Type");			// Setting default value to "Type"
 
@@ -254,6 +253,7 @@ public class InputPage {
 
 		if (updateAd) {
 		} else {chbNewType.setDisable(true);}		// Checkbox disables by default if a new ad is to be entered
+		
 		chbNewType.setOnAction(e -> {
 			if (chbNewType.isSelected()) {
 				cbType.setValue("Type");			// Resetting value to Type
@@ -273,6 +273,7 @@ public class InputPage {
 						+ "Ads ORDER BY "
 						+ "Species;"))));
 		db.closeConnection();
+		
 		if (updateAd) {cbSpecies.setValue(ad.getSpecies());
 		} else {cbSpecies.setValue("Species");}
 		cbSpecies.setMinWidth(150);					// Setting size of the CB
@@ -306,6 +307,7 @@ public class InputPage {
 						+ "WHERE Species = '" + ad.getSpecies() + "' "
 						+ "ORDER BY Type;"))));
 			db.closeConnection();
+			
 			cbType.setValue(ad.getType());
 			cbType.setDisable(false);				
 		} else {
@@ -314,6 +316,7 @@ public class InputPage {
 						+ "FROM Ads "
 						+ "ORDER BY Type;"))));
 			db.closeConnection();
+			
 			cbType.setValue("Type");
 			cbType.setDisable(true);				// Type CB is disabled by default when a new ad is to be added
 		}
@@ -486,12 +489,14 @@ public class InputPage {
 				if (inputID == 0) {
 					id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Ads ORDER BY ID DESC;")).get(0).get(0));
 					db.closeConnection();
+					
 				} else {id = inputID;}
 				result = db.updatePicture("UPDATE Ads SET Picture = ? WHERE ID = ?;", image, id);
 			} else {
 				if (inputID == 0) {
 					id = Integer.parseInt(db.fetchResult(db.executeQuery("SELECT ID FROM Agencies ORDER BY ID DESC;")).get(0).get(0));
 					db.closeConnection();
+					
 				} else {id = inputID;}
 				result = db.updatePicture("UPDATE Agencies SET Logo = ? WHERE ID = ?;", image, id);
 			}
@@ -579,10 +584,10 @@ public class InputPage {
 		values = "";
 		where = " WHERE ID = " + ad.getID() + ";";
 		
-		values += "Name = '" + correctInput(tfName.getText().trim()) + "', ";					// Trimming TFs with possibility of spaces
+		values += "Name = '" + correctInput(tfName.getText().trim()) + "', ";			// Trimming TFs with possibility of spaces
 		values += "Age = " + tfAge.getText() + ", ";
 		values += "Gender = '" + (String) cbGenders.getValue() + "', ";
-		values += "Description = '" + correctInput(taDescription.getText().trim()) + "', ";// Trimming TAs with possibility of spaces
+		values += "Description = '" + correctInput(taDescription.getText().trim()) + "', ";	// Trimming TAs with possibility of spaces
 		if (InputValidation.validateChoiceBox(cbSpecies)) {				 				// If gets executed when the default value of CB is NOT chosen
 			values += "Species = '" + (String) cbSpecies.getValue() + "', ";
 		} else {values += "Species = '" + correctInput(tfNewSpecies.getText().trim()) + "', ";}
