@@ -54,6 +54,7 @@ public class MemberPage {
 	private static AgencyExt loggedInAgency;	
 	
 	private static DBobject db = new DBobject();
+	private static Label back,name;
 
 	/**
 	 * Displays the member page when called. This page lets the user see information about the account and allows for
@@ -84,8 +85,6 @@ public class MemberPage {
 		window.showAndWait();
 	}
 
-	private static Label back;
-	private static Label name;
 	
 	/**
 	 * This method returns a header for use as a top element of a BorderPane.
@@ -231,7 +230,7 @@ public class MemberPage {
 		lblPassword = new Label("Change password:");
 		
 		lblAdInfo = new Label("Click an item below to edit");
-		lblAdInfo.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 13));
+		lblAdInfo.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 15));
 		lblAdInfo.setAlignment(Pos.BOTTOM_CENTER);
 		
 		gridPane.add(lblAgencyInfo, 0, 0);
@@ -444,6 +443,8 @@ public class MemberPage {
 		ObservableList<Ad> olAgencyAds = db.createObservableList((alAgencyAds));
 		
 		table.setEditable(true);
+		table.setMinHeight(250);
+		table.setMaxHeight(250);
 		table.setRowFactory(e -> {
 			TableRow<Ad> tableRow = new TableRow<>();
 			tableRow.setOnMouseClicked(event -> {

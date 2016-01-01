@@ -34,7 +34,7 @@ import javafx.stage.FileChooser;
  * This class creates a new window and lets the user input information into the database throught the GUI.
  * 
  * @author 		Mattias Landkvist & Yu Jet Hua
- * @refactored 	M??ns Th??rnvik
+ * @refactored 	Maans Thoernvik
  * 				Added new layout touches and input restrictions on all input fields.
  */
 

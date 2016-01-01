@@ -15,7 +15,7 @@
 .label {
 	-fx-font-size: 11pt;
 	-fx-font-family: "Helvetica";
-	-fx-text-fill: black;
+	-fx-text-fill: white;
 	-fx-opacity: 0.6;
 }
 
@@ -48,6 +48,7 @@
 	-fx-border-width: 2;
 	-fx-border-radius: 5;	
 	-fx-border-color: #A7EBBF;
+	-fx-pref-width: 100;
 }
 
 .choice-box .label {
@@ -162,7 +163,14 @@
 	-fx-pref-width: 150;
 }
 
-
+.grid {
+	-fx-background-color: white;
+	-fx-border-width: 50;
+	-fx-border-color: transparent;
+	-fx-alignment: center;	
+	-fx-hgap: 30;
+	-fx-vgap: 3;
+}
 
 
 /* HBox class */

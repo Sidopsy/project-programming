@@ -1,28 +1,52 @@
+import java.sql.Date;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Observable;
 
 import org.controlsfx.control.RangeSlider;
+
+import com.sun.xml.internal.fastinfoset.vocab.SerializerVocabulary;
 
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -36,6 +60,7 @@ import javafx.util.Callback;
  */
 
 public class Main extends Application {
+
 	private static Stage window;
 	private static Scene scene1, scene2, scene3;
 	private static BorderPane bpLayout1, bpLayout2, layoutViewAd;
@@ -55,10 +80,10 @@ public class Main extends Application {
 	/**
 	 * The main method, only used to start the application with the launch command from javaFX.
 	 */
-	
 	public static void main(String[] args){
 		launch(args);
 	}
+
 
 	/**
 	 * Start method that is launched with Application.launch(args). This builds the main windows shown on launch which is
@@ -67,19 +92,20 @@ public class Main extends Application {
 	 * 
 	 * @param Stage
 	 */
-	
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");	
 		
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
-		bpLayout1.setTop(header());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
-		bpLayout1.setCenter(startLocation());		// Center element of BorderPane contains the dropdown vbox.
+		bpLayout1.setTop(getHeader());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
+		bpLayout1.setCenter(getCityChooser());		// Center element of BorderPane contains the dropdown vbox.
 		bpLayout1.setBottom(Membership.loginBox());
 		back.setVisible(false);
 		scene1 = new Scene(bpLayout1,800,600);
 		scene1.getStylesheets().add("style.css");
 
+
+		// Setting the currently open window to show the scene created above.
 		window.setScene(scene1);
 		window.show();
 	}
@@ -89,8 +115,7 @@ public class Main extends Application {
 	 * 
 	 * @return BorderPane with logotype and navigation button
 	 */
-	
-	private BorderPane header(){
+	private BorderPane getHeader(){
 		BorderPane header = new BorderPane();
 		header.getStyleClass().add("header");
 
@@ -103,6 +128,7 @@ public class Main extends Application {
 		name.setId("beeadopted");
 		name.getStyleClass().add("beeadopted");
 
+
 		// All items created are added to the BorderPane.
 		header.setLeft(back);
 		header.setCenter(name);
@@ -111,17 +137,30 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
-	 * going to the input page.
-	 * 
-	 * @return VBox with location dropdown menu, MemberPage login and account creation button.
+	 * Go to start view.
 	 */
+	public static void back(){
+		if(window.getScene() == scene2) {
+			cbCity.setValue("City");
+			window.setScene(scene1);
+		} else {
+			window.setScene(scene2);
+		}
+	}
 	
-	private VBox startLocation() {
+	private static void refreshTable() {
+		ObservableList<Ad> adList = db.createObservableList(searchResults);
+		
+		tvAd.setItems(adList);
+		tvAd.refresh();
+	}
+
+private VBox startLocation() {
 		VBox firstPage = new VBox();
 		Label lblLocation = new Label("Where are you?");
 		firstPage.getStyleClass().add("start-pane");
 
+		// This inputs information into the choicebox, namely the cities in which there are agencies.
 		cbCity = new ChoiceBox<>(db.createSelectAllObservableList("City", db.fetchResult(
 				db.executeQuery("SELECT DISTINCT City "
 						+ "FROM Addresses "
@@ -139,8 +178,8 @@ public class Main extends Application {
 				search();
 				
 				bpLayout2 = new BorderPane();				// Preparing for a new scene.
-				bpLayout2.setTop(header());					// Setting the header as before.
-				bpLayout2.setCenter(mainCenterView());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
+				bpLayout2.setTop(getHeader());					// Setting the header as before.
+				bpLayout2.setCenter(getAdSearchAndChooser());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
 				
 				scene2 = new Scene(bpLayout2,800,600);
 				scene2.getStylesheets().add("style.css");
@@ -156,13 +195,14 @@ public class Main extends Application {
 		return firstPage;
 	}
 
+
 	/**
 	 * This method contains filter options for searches. 
 	 * 
-	 * @return Hbox displaying filers
+	 * @return Vbox displaying filers
 	 */
 
-	public VBox filter(){
+	public VBox getFilter(){
 		VBox filters = new VBox();
 		filters.getStyleClass().add("filter");
 		filters.setAlignment(Pos.CENTER);
@@ -295,7 +335,7 @@ public class Main extends Application {
 		btnSearch.setOnAction(e -> {
 			search();
 			refreshTable();
-		});
+			});
 		
 		Button btnReset = new Button("Reset filters");
 		btnReset.setOnAction(e -> {
@@ -318,7 +358,6 @@ public class Main extends Application {
 	 * This method has two functions. When you select an agency in scene 2 this method gets all ads for that specific agency. 
 	 * After this, you can specify conditions for which ads you want to view.
 	 */
-	
 	public static void search(){
 		String searchStatement, searchSpecies, searchType, searchGender, searchAgency;
 
@@ -382,28 +421,74 @@ public class Main extends Application {
 		searchResults = db.fetchAd(db.executeQuery(searchStatement));
 		db.closeConnection();
 	}
-
-	private static void refreshTable() {
-		ObservableList<Ad> adList = db.createObservableList(searchResults);
-		
-		tvAd.setItems(adList);
-		tvAd.refresh();
-	}
 	
+	/**
+	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
+	 * going to the input page.
+	 * 
+	 * @return Vbox location dropdown menu and input page button
+	 */
+	private VBox getCityChooser() {
+
+		// The Vbox to be returned.
+		VBox firstPage = new VBox();
+		firstPage.getStyleClass().add("start-pane");
+
+		// Displayed above the choicebox for cities to let the user know what to do.
+		Label lblLocation = new Label("Where are you?");
+
+		// This inputs information into the choicebox, namely the cities in which there are agencies.
+		cbCity = new ChoiceBox<>(db.createObservableList("City",db.fetchResult(
+				db.executeQuery("SELECT Distinct City FROM "
+						+ "Addresses ORDER BY "
+						+ "City;"))));
+		db.closeConnection();
+
+		cbCity.setValue(cbCity.getItems().get(0));	// Getting retrieved items from the DB.
+
+		cbCity.setOnAction(e -> {
+			if(!cbCity.getValue().equals("City")){
+				if(!cbCity.getValue().equals("Select all")){
+					city = " and City == '" + cbCity.getValue() + "'";		// What location was input?
+					System.out.println(city);
+				} else {
+					city = "";
+				}
+
+				firstSearch = true;												
+				search();
+				bpLayout2 = new BorderPane();				// Preparing for a new scene.
+				bpLayout2.setTop(getHeader());		// Setting the header as before.
+				bpLayout2.setCenter(getAdSearchAndChooser());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
+				scene2 = new Scene(bpLayout2,800,600);
+				scene2.getStylesheets().add("style.css");
+				window.setScene(scene2);
+			}
+		});
+
+
+		// Vbox is populated with the label, the choicebox and the content from loginBox()
+		firstPage.getChildren().addAll(lblLocation, cbCity);
+		firstPage.setAlignment(Pos.CENTER);
+
+		return firstPage;
+	}
+
 	/**
 	 * This method returns a table with properties and specific variables from the Ad object.
 	 * 
-	 * @return TableView<Ad>
+	 * @return VBox with a tableview populated by n Ad objects from a database and a button.
 	 */
 	
 	@SuppressWarnings("unchecked")
-	public VBox searchResults(){
+	public VBox getTableViewAndCompare(){
 		VBox vbox = new VBox();
 		vbox.getStyleClass().add("vbox");
 		vbox.setAlignment(Pos.CENTER);
 
 		tvAd = new TableView<Ad>();
 		tvAd.setEditable(true);
+
 		// Columns to be added to the TableView.
 		TableColumn<Ad, String> pictureCol = new TableColumn<>("Picture");
 		TableColumn<Ad, String> nameCol = new TableColumn<>("Name");
@@ -422,46 +507,21 @@ public class Main extends Application {
 		checkCol.setCellValueFactory(new PropertyValueFactory<>("check"));
 		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
 			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
-				final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
-				final BooleanProperty selected = new SimpleBooleanProperty();
-				ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
+			final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
+			ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
 
 				@Override
 				public ObservableValue<Boolean> call(Integer index) {
-					return selected;
+					return tvAd.getItems().get(index).getCheckProperty();
 				}
+				
 
 			});
+
 			return ctCell;
 		}
 
 	});
-//		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
-//			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
-//				final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
-//				final BooleanProperty selected = new SimpleBooleanProperty();
-//				ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
-//
-//					@Override
-//					public ObservableValue<Boolean> call(Integer index) {
-//						return selected;
-//					}
-//				});
-//				selected.addListener(new ChangeListener<Boolean>() {
-//
-//					@Override
-//					public void changed(ObservableValue<? extends Boolean> obs, Boolean wasSelected, Boolean isSelected) {
-//						if (ctCell.selectedProperty().get() != true){
-//							compareAds.add(tvAd.getItems().get(ctCell.getIndex()));							
-//						} else {
-//							compareAds.remove(compareAds.indexOf(tvAd.getItems().get(ctCell.getIndex())));
-//						}
-//						System.out.println(isSelected);
-//					}
-//				});
-//				return ctCell;
-//			}
-//		});
 
 		tvAd.setRowFactory( tv -> {
 			TableRow<Ad> row = new TableRow<>();
@@ -473,7 +533,7 @@ public class Main extends Application {
 					
 						try {
 							layoutViewAd = new BorderPane();
-							layoutViewAd.setTop(header());
+							layoutViewAd.setTop(getHeader());
 							layoutViewAd.setCenter(AdView.showAd(ad, ad.getAgencyID()));
 							tvAd.refresh();
 							scene3 = new Scene(layoutViewAd,800,600);
@@ -496,48 +556,39 @@ public class Main extends Application {
 
 		Button btnCompare = new Button("Compare Ads");
 		btnCompare.setOnAction(e -> {
-			getCheckedAds();
+			getCheckedAds(adList);
 			layoutViewAd = new BorderPane();
-			layoutViewAd.setTop(header());
+			layoutViewAd.setTop(getHeader());
 			layoutViewAd.setCenter(Compare.compareAds(compareAds));
 			tvAd.refresh();
 			scene3 = new Scene(layoutViewAd,800,600);
 			scene3.getStylesheets().add("style.css");
 			window.setScene(scene3);
+			compareAds.removeAll(compareAds);
+			
 		});
 
 		vbox.getChildren().addAll(tvAd, btnCompare);
 		return vbox;
 	}
 	
-	private void getCheckedAds(){
-		for(int i = 0; i <= tvAd.getItems().size(); i++){
-			if(tvAd.getItems().get(i).getCheck()){
-				compareAds.add(tvAd.getItems().get(i));
-			}
-		}
-	}
-
-	public VBox mainCenterView(){
+	public VBox getAdSearchAndChooser(){
 		VBox vbox = new VBox();
 		vbox.setPadding(new Insets(0));
 		vbox.setSpacing(10);
 
-		vbox.getChildren().addAll(filter(), searchResults());
+		vbox.getChildren().addAll(getFilter(), getTableViewAndCompare());
 
 		return vbox;
 	}
-
-	/**
-	 * Go to start view.
-	 */
 	
-	public void back(){
-		if (window.getScene() == scene2) {
-			cbCity.setValue("City");
-			window.setScene(scene1);
-		} else {
-			window.setScene(scene2);
+	private void getCheckedAds(ObservableList<Ad> adList){
+		System.out.println("Length: " + adList.toArray().length);
+		for(int i = 0; i < adList.size(); i++){
+			if(adList.get(i).getCheck()){
+				compareAds.add(tvAd.getItems().get(i));
+				System.out.println("true");	
+			}
 		}
 	}
 }
