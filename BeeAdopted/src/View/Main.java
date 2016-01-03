@@ -148,10 +148,6 @@ public class Main extends Application {
 			cbCity.setValue("City");
 			window.setScene(scene1);
 		} else {
-			for(int i = 0; i < tvAd.getItems().size(); i++){
-				tvAd.getItems().get(i).getPicture().setFitHeight(50);
-				tvAd.getItems().get(i).getPicture().setFitWidth(50);
-			}
 			window.setScene(scene2);
 		}
 	}
@@ -163,7 +159,7 @@ public class Main extends Application {
 		tvAd.refresh();
 	}
 
-/**
+	/**
 	 * This method contains filter options for searches. 
 	 * 
 	 * @return Vbox displaying filers
@@ -267,7 +263,6 @@ public class Main extends Application {
 		}		
 		minAge = Integer.parseInt(db.fetchResult(db.executeQuery(minAgeStatement)).get(0).get(0));
 		maxAge = Integer.parseInt(db.fetchResult(db.executeQuery(maxAgeStatement)).get(0).get(0));		
-		
 		db.closeConnection();
 		
 		rslAge = new RangeSlider();
