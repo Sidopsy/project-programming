@@ -1,3 +1,4 @@
+package View;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -11,6 +12,10 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.controlsfx.control.Rating;
 
+import Control.InputValidation;
+import Object.Ad;
+import Object.AgencyExt;
+import Object.Database;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -42,7 +47,7 @@ public class AdView {
 	static Scene sceneAd, sceneAdopt;
 	static BorderPane bpLayoutAd, bpLayoutAdopt;
 	public static ImageView animalPicture;
-	private static DBobject db = new DBobject();
+	private static Database db = new Database();
 
 	
 	/**

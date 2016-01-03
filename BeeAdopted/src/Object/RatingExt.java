@@ -1,3 +1,4 @@
+package Object;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -11,12 +12,12 @@ import org.controlsfx.control.Rating;
  * @since 10-26-15
  */
 
-public class RatingObject extends Rating{
+public class RatingExt extends Rating{
 	private final SimpleIntegerProperty agency;
 	private final SimpleStringProperty comment;
 	private final SimpleDoubleProperty rating;
 	
-	public RatingObject(int agencyId, double rating) {
+	public RatingExt(int agencyId, double rating) {
 		super();
 		this.setPartialRating(true);
 		this.setRating(rating);
@@ -25,7 +26,7 @@ public class RatingObject extends Rating{
 		this.comment = new SimpleStringProperty("");
 	}
 	
-	public RatingObject(int agencyId, double rating, String comment) {
+	public RatingExt(int agencyId, double rating, String comment) {
 		super();
 		this.setPartialRating(true);
 		this.setRating(rating);

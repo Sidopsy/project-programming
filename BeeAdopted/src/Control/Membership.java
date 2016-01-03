@@ -1,5 +1,11 @@
+package Control;
 import java.sql.SQLException;
 
+import Object.AgencyExt;
+import Object.Database;
+import View.AdminPage;
+import View.CreateAccount;
+import View.MemberPage;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -19,7 +25,7 @@ import javafx.scene.layout.HBox;
  */
 
 public class Membership {
-	private static DBobject db = new DBobject();
+	private static Database db = new Database();
 	
 	/**
 	 * This method created the loginBox where a user can enter his or her email address and password. There is also an option

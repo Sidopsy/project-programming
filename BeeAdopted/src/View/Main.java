@@ -1,3 +1,4 @@
+package View;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -8,6 +9,9 @@ import org.controlsfx.control.RangeSlider;
 
 import com.sun.xml.internal.fastinfoset.vocab.SerializerVocabulary;
 
+import Control.Membership;
+import Object.Ad;
+import Object.Database;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -72,7 +76,7 @@ public class Main extends Application {
 	private static RangeSlider rslAge;
 	private static String city, species, type, gender, agency;
 	private static boolean firstSearch;
-	private static DBobject db = new DBobject();
+	private static Database db = new Database();
 	private static int minAge = 0;
 	private static int maxAge = 100;
 	private static Label back, name;
@@ -144,6 +148,10 @@ public class Main extends Application {
 			cbCity.setValue("City");
 			window.setScene(scene1);
 		} else {
+			for(int i = 0; i < tvAd.getItems().size(); i++){
+				tvAd.getItems().get(i).getPicture().setFitHeight(50);
+				tvAd.getItems().get(i).getPicture().setFitWidth(50);
+			}
 			window.setScene(scene2);
 		}
 	}
@@ -155,48 +163,7 @@ public class Main extends Application {
 		tvAd.refresh();
 	}
 
-private VBox startLocation() {
-		VBox firstPage = new VBox();
-		Label lblLocation = new Label("Where are you?");
-		firstPage.getStyleClass().add("start-pane");
-
-		// This inputs information into the choicebox, namely the cities in which there are agencies.
-		cbCity = new ChoiceBox<>(db.createSelectAllObservableList("City", db.fetchResult(
-				db.executeQuery("SELECT DISTINCT City "
-						+ "FROM Addresses "
-						+ "ORDER BY City;"))));
-		db.closeConnection();
-		
-		cbCity.setValue(cbCity.getItems().get(0));	// Getting retrieved items from the DB.
-		cbCity.setOnAction(e -> {
-			if (!cbCity.getValue().equals("City")){
-				if (!cbCity.getValue().equals("Select all")){
-					city = "and City == '" + cbCity.getValue() + "' ";		// What location was input?
-				} else {city = "";}
-				
-				firstSearch = true;												
-				search();
-				
-				bpLayout2 = new BorderPane();				// Preparing for a new scene.
-				bpLayout2.setTop(getHeader());					// Setting the header as before.
-				bpLayout2.setCenter(getAdSearchAndChooser());		// Getting the center view for the next scene which now will show a list of agencies in the input location.
-				
-				scene2 = new Scene(bpLayout2,800,600);
-				scene2.getStylesheets().add("style.css");
-				
-				window.setScene(scene2);
-			}
-		});
-
-		// Vbox is populated with the label, the choicebox and the content from loginBox()
-		firstPage.getChildren().addAll(lblLocation, cbCity);
-		firstPage.setAlignment(Pos.CENTER);
-
-		return firstPage;
-	}
-
-
-	/**
+/**
 	 * This method contains filter options for searches. 
 	 * 
 	 * @return Vbox displaying filers

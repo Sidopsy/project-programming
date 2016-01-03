@@ -1,9 +1,11 @@
+package View;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import Control.InputValidation;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,7 +28,7 @@ import javafx.stage.Stage;
  * 
  * @since 2015-12-03
  * @author Madisen Whitfield
- * @refactor Måns Thörnvik: Re-styled the save function to be done with one button click instead of two.
+ * @refactor M??ns Th??rnvik: Re-styled the save function to be done with one button click instead of two.
  */
 
 public class CreateAccount {

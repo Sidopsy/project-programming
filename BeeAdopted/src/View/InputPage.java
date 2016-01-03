@@ -1,3 +1,4 @@
+package View;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -6,6 +7,10 @@ import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
 
+import Control.InputValidation;
+import Object.Ad;
+import Object.AgencyExt;
+import Object.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -53,7 +58,7 @@ public class InputPage {
 	private static AgencyExt agency;
 	private static Ad ad;
 
-	private static DBobject db = new DBobject();
+	private static Database db = new Database();
 
 	/**
 	 * Creates the view in which an ad can be created or updated.

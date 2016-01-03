@@ -1,6 +1,8 @@
+package Control;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import Object.Ad;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
@@ -14,7 +16,7 @@ import javafx.scene.control.TextField;
  * today +1 day should not be displayed in the application.
  * 
  * @since 2015-12-05
- * @author Måns Thörnvik
+ * @author M??ns Th??rnvik
  */
 
 public class InputValidation {

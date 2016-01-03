@@ -1,9 +1,15 @@
+package View;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+
+import Control.InputValidation;
+import Object.Ad;
+import Object.AgencyExt;
+import Object.Database;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -53,7 +59,7 @@ public class MemberPage {
 	
 	private static AgencyExt loggedInAgency;	
 	
-	private static DBobject db = new DBobject();
+	private static Database db = new Database();
 	private static Label back,name;
 
 	/**

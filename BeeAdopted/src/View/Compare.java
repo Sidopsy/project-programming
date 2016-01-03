@@ -1,8 +1,10 @@
+package View;
 import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.swing.text.html.ImageView;
 
+import Object.Ad;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

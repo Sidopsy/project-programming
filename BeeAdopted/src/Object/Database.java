@@ -1,3 +1,4 @@
+package Object;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +21,7 @@ import javafx.scene.image.Image;
  * @author Maans Thoernvik
  */
 
-public class DBobject {
+public class Database {
 	private static Connection connect = null;
 	private static PreparedStatement stmt = null;
 	private static ResultSet resultSet = null;
@@ -222,7 +223,7 @@ public class DBobject {
 					bufferedImage = javax.imageio.ImageIO.read(fis);
 					picture = SwingFXUtils.toFXImage(bufferedImage, null);
 				} catch (NullPointerException | IOException e) {			// Null is returned when no picture is available,
-					picture = new Image("PlaceholderSmall.png");			// default placeholder is used in this case.
+					picture = new Image("PlaceholderBig.png");			// default placeholder is used in this case.
 				}
 				String name = input.getString("Name");
 				String gender = input.getString("Gender");

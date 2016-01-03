@@ -1,3 +1,4 @@
+package Object;
 import javafx.beans.property.SimpleStringProperty;
 
 /**

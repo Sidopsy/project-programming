@@ -1,3 +1,4 @@
+package View;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
@@ -9,7 +10,7 @@ public class AdminPage {
 	
 		
 	
-	static void start(){
+	public static void start(){
 	
 	
 	Stage stage = new Stage();

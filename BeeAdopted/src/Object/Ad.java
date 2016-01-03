@@ -1,3 +1,4 @@
+package Object;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -18,7 +19,7 @@ public class Ad {
 	private final SimpleStringProperty name, gender, species, type, description, startDate, endDate, agencyName;
 	private final SimpleIntegerProperty id, age, agencyID;
 	private final ImageView picture;
-	private final RatingObject rating;
+	private final RatingExt rating;
 	private final BooleanProperty check;
 	
 	public Ad(int id, Image picture, String name, String gender, String species, String type, 
@@ -39,7 +40,7 @@ public class Ad {
 		this.agencyID = new SimpleIntegerProperty(agencyID);
 		this.agencyName = new SimpleStringProperty(agencyName);
 		
-		this.rating = new RatingObject(agencyID, rating);
+		this.rating = new RatingExt(agencyID, rating);
 		this.rating.setDisable(true);
 		this.rating.setScaleX(0.5);
 		this.rating.setScaleY(0.5);
