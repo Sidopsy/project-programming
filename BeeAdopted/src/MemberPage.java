@@ -440,6 +440,7 @@ public class MemberPage {
 		+ "ORDER BY StartDate DESC;";
 		ArrayList<Ad> alAgencyAds = db.fetchAd(db.executeQuery(sql));
 		db.closeConnection();
+		
 		ObservableList<Ad> olAgencyAds = db.createObservableList((alAgencyAds));
 		
 		table.setEditable(true);

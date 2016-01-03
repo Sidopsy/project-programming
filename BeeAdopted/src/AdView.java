@@ -142,6 +142,7 @@ public class AdView {
 
 		// Saving all information about the Agency in extended format.
 		AgencyExt agencyExtended = db.fetchAgencyExt(db.executeQuery(sqlStatement)).get(0);
+		db.closeConnection();
 
 		ImageView agencyLogo = new ImageView();
 		Image logo;
@@ -182,8 +183,7 @@ public class AdView {
 		// Adding all Agency information to the Vbox.
 		vbox.getChildren().addAll(agencyLogo, name, rating, email, phone, street, zip, city);
 
-
-		System.out.println("Shits not working");
+		
 		return vbox;
 	}
 
@@ -205,7 +205,7 @@ public class AdView {
 		
 		
 		// Label containing information to the shown to the user when pressing Adopt.
-		Label label = new Label("Please rate the agency!");				// Friendly message shown when Adopt is pressed.
+		Label label = new Label("Please rate the agency!");			// Friendly message shown when Adopt is pressed.
 		grid.add(label, 0, 0);
 		
 		Rating rating = new Rating();
@@ -225,7 +225,7 @@ public class AdView {
 			if(InputValidation.validateInputTextArea(textArea)){
 				comment = ", '" + textArea.getText() + "'";
 			} else {
-				comment = "";
+				comment = ", 'No comment.'";
 			}
 			String insert = "INSERT INTO Ratings (AgencyID, Rating, Comment) ";
 			String values = "VALUES (" + agency + ", " + ratingValue + comment + ");";		// Exchange 1 with the agencies ID.

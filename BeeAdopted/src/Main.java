@@ -300,7 +300,6 @@ private VBox startLocation() {
 		}		
 		minAge = Integer.parseInt(db.fetchResult(db.executeQuery(minAgeStatement)).get(0).get(0));
 		maxAge = Integer.parseInt(db.fetchResult(db.executeQuery(maxAgeStatement)).get(0).get(0));		
-		
 		db.closeConnection();
 		
 		rslAge = new RangeSlider();
