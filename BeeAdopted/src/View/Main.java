@@ -148,6 +148,10 @@ public class Main extends Application {
 			cbCity.setValue("City");
 			window.setScene(scene1);
 		} else {
+			for(int i = 0; i < tvAd.getItems().size(); i++){
+				tvAd.getItems().get(i).getPicture().setFitHeight(50);
+				tvAd.getItems().get(i).getPicture().setFitWidth(50);
+			}
 			window.setScene(scene2);
 		}
 	}

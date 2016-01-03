@@ -103,7 +103,7 @@ public class Ad {
 		return agencyName.get();
 	}
 	
-	public RatingObject getRating(){
+	public RatingExt getRating(){
 		return rating;
 	}
 	

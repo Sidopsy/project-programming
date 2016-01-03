@@ -33,7 +33,7 @@ public class Database {
 	 * An empty constructor call to load the driver.
 	 */
 
-	public DBobject() {
+	public Database() {
 		this.dbType = "jdbc:sqlite:";
 		this.dbName = "BeeHive";
 		this.dbDriver = "org.sqlite.JDBC";
