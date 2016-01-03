@@ -36,7 +36,7 @@ import javafx.stage.Stage;
  * Page for showing member information and allowing for updates of both the specific member's personal information as well
  * as advertisements submitted by him/her.
  * 
- * @since 2015-11-25
+ * @since 2015-11-24
  * @author Maans Thoernvik for functionality & Madisen Whitfield for partial design.
  */
 
