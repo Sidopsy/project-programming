@@ -1,44 +1,28 @@
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
-
-import com.sun.glass.events.ViewEvent;
-
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -53,7 +37,7 @@ import javafx.stage.Stage;
  * as advertisements submitted by him/her.
  * 
  * @since 2015-11-25
- * @author M��ns Th��rnvik for functionality & Madisen Whitfield for partial design.
+ * @author Maans Thoernvik for functionality & Madisen Whitfield for partial design.
  */
 
 public class MemberPage {
@@ -75,7 +59,6 @@ public class MemberPage {
 	/**
 	 * Displays the member page when called. This page lets the user see information about the account and allows for
 	 * alteration of this information as well as advertisements associated with this particular user.
-	 * 
 	 */
 
 	public static void display(AgencyExt agencyInfo) {
@@ -105,6 +88,7 @@ public class MemberPage {
 	
 	/**
 	 * This method returns a header for use as a top element of a BorderPane.
+	 * 
 	 * @return BorderPane header and navigation button
 	 * @author Mattias Landkvist
 	 */
@@ -246,7 +230,7 @@ public class MemberPage {
 		lblPassword = new Label("Change password:");
 		
 		lblAdInfo = new Label("Click an item below to edit");
-		lblAdInfo.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 13));
+		lblAdInfo.setFont(Font.font("Lucida Grande", FontWeight.BOLD, 15));
 		lblAdInfo.setAlignment(Pos.BOTTOM_CENTER);
 		
 		gridPane.add(lblAgencyInfo, 0, 0);
@@ -459,6 +443,8 @@ public class MemberPage {
 		ObservableList<Ad> olAgencyAds = db.createObservableList((alAgencyAds));
 		
 		table.setEditable(true);
+		table.setMinHeight(250);
+		table.setMaxHeight(250);
 		table.setRowFactory(e -> {
 			TableRow<Ad> tableRow = new TableRow<>();
 			tableRow.setOnMouseClicked(event -> {
