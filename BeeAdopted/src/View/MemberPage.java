@@ -43,7 +43,7 @@ import javafx.stage.Stage;
  * as advertisements submitted by him/her.
  * 
  * @since 2015-11-24
- * @author Maans Thoernvik, Mattias Landkvist & Madisen Whitfield.
+ * @author Maans Thoernvik, Mattias Landkvist & Yu Jet Hua.
  */
 
 public class MemberPage {
