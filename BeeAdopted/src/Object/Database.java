@@ -17,7 +17,7 @@ import javafx.scene.image.Image;
  * This is an object that handles the Database communication. There are also static methods to handle ResultSet metaData for generic
  * result handling.
  * 
- * @author Maans Thoernvik
+ * @author Maans Thoernvik & Mattias Landkvist
  */
 
 public class Database {
@@ -30,6 +30,8 @@ public class Database {
 
 	/**
 	 * An empty constructor call to load the JDBC driver.
+	 * 
+	 * @author Maans Thoernvik
 	 */
 
 	public Database() {
@@ -46,6 +48,8 @@ public class Database {
 	/**
 	 * Setting the connection to the database based on the dbName and Type, foreign keys are also activated here using the SQLiteConfig object.
 	 * Setting up a connection happens automatically when you execute a query or update method.
+	 * 
+	 * @author Maans Thoernvik
 	 */
 
 	private void setConnection() {
@@ -66,6 +70,7 @@ public class Database {
 	 * 
 	 * This method is not currently in use but is left if need for it arises in the future.
 	 * 
+	 * @author Maans Thoernvik
 	 * @return boolean representing true for "yes, foreign keys are active".
 	 */
 
@@ -97,6 +102,7 @@ public class Database {
 	 * Execute queries to the database. Note that this method SETS the connection but never closes it. Remember to use
 	 * closeConnection() when the ResultSet has been read and the information has been retrieved.
 	 * 
+	 * @author Maans Thoernvik
 	 * @param Query to be sent to the database.
 	 * @return ResultSet containing the result of the query.
 	 */
@@ -118,6 +124,7 @@ public class Database {
 	/**
 	 * Execute single updates to the database. Closes connection automatically when update has been executed.
 	 * 
+	 * @author Maans Thoernvik
 	 * @param String update command.
 	 */
 
@@ -139,6 +146,7 @@ public class Database {
 	 * Method for updating pictures to existing entries in the database. Both advertisements and agency logotypes are
 	 * updated by means of this method.
 	 * 
+	 * @author Maans Thoernvik
 	 * @param String update command, byte[] of picture parameters, integer representing the ID of the item to be updated.
 	 */
 
@@ -164,6 +172,7 @@ public class Database {
 	/**
 	 * Returns an integer representing the number of columns in the ResultSet. If an error occurs, -1 is returned.
 	 * 
+	 * @author Maans Thoernvik
 	 * @param ResultSet input
 	 * @return Integer representing number of ResultSet columns
 	 */
@@ -182,6 +191,7 @@ public class Database {
 	/**
 	 * Takes in input a ResultSet and outputs information in the form of an ArrayList of ArrayLists.
 	 * 
+	 * @author Maans Thoernvik
 	 * @param ResultSet
 	 * @return ArrayList<ArrayList<String>>
 	 */
@@ -206,6 +216,7 @@ public class Database {
 	/**
 	 * Takes in input a ResultSet and reads the inforamtion into an ArrayList of Ad objects.
 	 * 
+	 * @author Maans Thoernvik
 	 * @param ResultSet
 	 * @return ArrayList<Ad> 
 	 */
@@ -248,6 +259,7 @@ public class Database {
 	/**
 	 * Method for fetching information about agencies for displaying in the application.
 	 * 
+	 * @author Maans Thoernvik
 	 * @param ResultSet
 	 * @return ArrayList<AgencyExtended>
 	 */
@@ -270,6 +282,7 @@ public class Database {
 	/**
 	 * Method for fetching extended information about agencies for displaying in the application.
 	 * 
+	 * @author Maans Thoernvik
 	 * @param ResultSet
 	 * @return ArrayList<AgencyExtended>
 	 */
@@ -297,6 +310,7 @@ public class Database {
 	 * Method for creating observable lists using ArrayList<ArrayList<String>>, ordinarily after obtaining the resulting 3D array-
 	 * list from a query. This ObservableList has the Select All option, applicable for some ChoiceBoxes.
 	 * 
+	 * @author Mattias Landkvist
 	 * @param ArrayList<ArrayList<String>>
 	 * @returns ObservableList<Object>
 	 */
@@ -316,6 +330,7 @@ public class Database {
 	/**
 	 * Additional ObservableList method since not all OBSLists should have the select all option. Otherwise, this method performs the same task.
 	 * 
+	 * @author Mattias Landkvist
 	 * @param ArrayList<ArrayList<String>
 	 * @returns ObservableList<Object>
 	 */
@@ -336,6 +351,7 @@ public class Database {
 	 * Method for creating observable lists using ArrayList<Ad>, ordinarily after obtaining the resulting array-
 	 * list from a query.
 	 * 
+	 * @author Mattias Landkvist
 	 * @param ArrayList<Ad>
 	 * @returns ObservableList<Object>
 	 */
@@ -347,6 +363,8 @@ public class Database {
 	/**
 	 * Closing connection to currently connected database, if one is connected at all. Otherwise, do nothing.
 	 * You should always close a connection after you've retrieved information/updated.
+	 * 
+	 * @author Maans Thoernvik
 	 */
 
 	public void closeConnection() {
@@ -366,6 +384,7 @@ public class Database {
 	/**
 	 * A getter for the Connection object, useful to check whether the connection has been closed or not.
 	 * 
+	 * @author Maans Thoernvik
 	 * @return Connection
 	 */
 	
