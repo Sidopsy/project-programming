@@ -142,17 +142,6 @@
 	-fx-text-fill: white;
 }
 
-
-/*.filter {
-	-fx-background-image: url("FilterBase.png");
-	-fx-background-repeat: stretch;
-	-fx-background-size: cover;
-}*/
-
-.filter .choice-box {
-	-fx-background-color: transparent;
-}
-
 .member-box {
 	-fx-padding: 10;
 	-fx-spacing: 10;

@@ -36,11 +36,9 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 
 /**
- * This class creates a new window and lets the user input information into the database throught the GUI.
+ * This class creates a new window and lets the user input information into the database through the GUI.
  * 
- * @author 		Mattias Landkvist & Yu Jet Hua
- * @refactored 	Maans Thoernvik
- * 				Added new layout touches and input restrictions on all input fields.
+ * @author Mattias Landkvist, Måns Thörnvik & Yu Jet Hua
  */
 
 public class InputPage {
@@ -63,7 +61,10 @@ public class InputPage {
 	/**
 	 * Creates the view in which an ad can be created or updated.
 	 * 
+	 * @param boolean
 	 * @return GridPane with option to input animals
+	 * 
+	 * @author Mattias Landkvist & Måns Thörnvik
 	 */
 
 	public static GridPane viewInputAd(boolean updateAd) {
@@ -87,8 +88,10 @@ public class InputPage {
 	/**
 	 * Updates the incoming GridPane with label for information about inputs.
 	 * 
-	 * @param GridPane to add labels to.
+	 * @param GridPane to add labels to and a boolean
 	 * @return GridPane containing the labels neccessary to guide the user.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 
 	private static GridPane addInputLabels(GridPane inputGridPane, boolean updateAd) {
@@ -113,8 +116,10 @@ public class InputPage {
 	/**
 	 * Updates the incoming GridPane with textfields for input information.
 	 * 
-	 * @param initialized GridPane to add text fields to.
+	 * @param initialized GridPane to add text fields to and a boolean
 	 * @return GridPane containing the textfields neccessary for inputing information about ads.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 
 	private static GridPane addInputTextFields(GridPane inputGridPane, boolean updateAd) {
@@ -193,8 +198,10 @@ public class InputPage {
 	/**
 	 * Updates the incoming GridPane with boxes for input information.
 	 * 
-	 * @param initialized GridPane to add boxes to.
+	 * @param initialized GridPane to add boxes to and a boolean.
 	 * @return GridPane containing the boxes (choice and check) neccessary for inputing information about ads.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 
 	private static GridPane addInputBoxes(GridPane inputGridPane, boolean updateAd) {
@@ -358,8 +365,10 @@ public class InputPage {
 	/**
 	 * Updates the incoming GridPane with boxes for input information.
 	 * 
-	 * @param initialized GridPane to add buttons to.
+	 * @param initialized GridPane to add buttons to and a boolean.
 	 * @return GridPane containing the buttons neccessary for inputing information about ads.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 
 	private static GridPane addInputButtons(GridPane inputGridPane, boolean updateAd) {
@@ -469,6 +478,8 @@ public class InputPage {
 	 * Upload a picture to a specific ad/agency by making the outputStream of the image into a ByteArray and then inserting
 	 * arrays of 1024 byte until the image has been completely uploaded into the database.
 	 * 
+	 * @param int, File and a boolean.
+	 * 
 	 * @author Yu Jet Hua
 	 * @throws Exception
 	 */
@@ -520,6 +531,8 @@ public class InputPage {
 	/**
 	 * Method for finalizing and inputing values into the database, based on what has been entered into the input page GUI.
 	 * Values entered into TextFields and ChoiceBoxes are first validated before submitted with an INSERT.
+	 * 
+	 * @author Mattias Landkvist & Måns Thörnvik
 	 */
 
 	private static void inputAdValues() {
@@ -546,6 +559,10 @@ public class InputPage {
 	/**
 	 * Method for finalizing and inputing values into the database, based on what has been entered into the agency input 
 	 * page GUI.
+	 * 
+	 * @param TextField, TextField, TextField, PasswordField, TextField, TextField, TextField.
+	 * 
+	 * @author Mattias Landkvist & Måns Thörnvik
 	 */
 	
 	public static void inputAgencyValues(TextField tfName, TextField tfPhone, TextField tfEmail, PasswordField pfPassword, 
@@ -580,7 +597,7 @@ public class InputPage {
 	 * Updates the input Ad with the information in the filled out fields. If CHB re-activate has been checked, the ad will
 	 * set its start date to todays date and its end date to 90 days in the future. Updates the ad table when done.
 	 * 
-	 * @param Ad
+	 * @author Måns Thörnvik
 	 */
 	
 	public static void updateMemberAd() {
@@ -612,6 +629,7 @@ public class InputPage {
 	 * This method updates new input information from the TextFields after the "Save" button has been pressed, assuming
 	 * any new, valid information has been entered.
 	 * 
+	 * @author Måns Thörnvik
 	 */
 
 	public static void updateMemberInfo(AgencyExt inputAgency, TextField name, TextField phone, TextField email, 
@@ -642,6 +660,8 @@ public class InputPage {
 	/**
 	 * This method updates the users password information from the TextFields after the "Save" button has been pressed, assuming
 	 * any new, valid information has been entered.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static void updateMemberPassword(AgencyExt inputAgency, PasswordField password) {
@@ -657,6 +677,10 @@ public class InputPage {
 	
 	/**
 	 * Check for ' in the input to fix them
+	 * 
+	 * @param String to check
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static String correctInput(String input) {
@@ -682,6 +706,10 @@ public class InputPage {
 	
 	/**
 	 * Delete an ad.
+	 * 
+	 * @param Ad to delete
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static void deleteMemberAd(Ad ad) {
@@ -690,7 +718,9 @@ public class InputPage {
 	}
 	
 	/**
+	 * @return AgencyExt from global variable agency.
 	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static AgencyExt getAgency() {
@@ -698,7 +728,11 @@ public class InputPage {
 	}
 	
 	/**
+	 * Set global variable agency to input AgencyExt
 	 * 
+	 * @param AgencyExt
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static void setAgency(AgencyExt inputAgency) {
@@ -706,7 +740,9 @@ public class InputPage {
 	}
 	
 	/**
+	 * @return Ad from global variable ad.
 	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static Ad getAd() {
@@ -714,7 +750,11 @@ public class InputPage {
 	}
 	
 	/**
+	 * Set global variable ad to input Ad
 	 * 
+	 * @param Ad
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static void setAd(Ad inputAd) {

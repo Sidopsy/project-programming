@@ -4,11 +4,7 @@ package View;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import javax.xml.bind.DatatypeConverter;
 
 import org.controlsfx.control.Rating;
@@ -19,7 +15,6 @@ import Object.AgencyExt;
 import Object.Database;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -29,16 +24,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
  * Class for showing more information on a specific Ad. This window contains more information about said Ad and its corresponding Agency as well as an option
- * to press an button for adopting the animal and rating the agency. The button should remove the Ad from being listed in the application and prompt the
- * user to input feedback on the transaction with a 0 to 5 rating and a comment.
+ * to press an button for adopting the animal and rating the agency. The button removes the Ad from being listed in the application and prompt the
+ * user to input feedback on the transaction with a 1 to 5 star rating and a comment.
  * 
  * @author Mattias Landkvist & Yu Jet Hua
  */
@@ -54,8 +47,10 @@ public class AdView {
 	/**
 	 * This method returns a VBox with Ad and Agency information about the currently viewed Ad. 
 	 * 
-	 * @param Ad, AgencyID
+	 * @param Ad, int
 	 * @return VBox containing Ad and Agency information
+	 * 
+	 * @author Mattias Landkvist 
 	 */
 
 	public static VBox showAd(Ad ad, int agencyID) throws IOException, SQLException {
@@ -93,6 +88,8 @@ public class AdView {
 	 * 
 	 * @param Ad
 	 * @return VBox
+	 * 
+	 * @author Mattias Landkvist 
 	 */
 
 	private static VBox getAd(Ad ad) throws IOException, SQLException {
@@ -119,6 +116,14 @@ public class AdView {
 		return vbox;
 	}
 	
+	/**
+	 * Returns a byte[] from a string input.
+	 * 
+	 * @param s
+	 * @return byte[]
+	 * 
+	 * @author Yu Jet Hua
+	 */
 	public static byte[] toByteArray(String s) {
 	    return DatatypeConverter.parseHexBinary(s);
 	}
@@ -126,8 +131,10 @@ public class AdView {
 	/**
 	 * This method returns a Vbox containing information about the Agency that has the currently viewed Ad. 
 	 * 
-	 * @param agency
+	 * @param int
 	 * @return Vbox with agency information
+	 * 
+	 * @author Mattias Landkvist & Yu Jet Hua
 	 */
 
 	private static VBox getAgency(int agencyID){
@@ -198,6 +205,8 @@ public class AdView {
 	 * for a specific Ad. 
 	 * 
 	 * @return GridPane
+	 * 
+	 * @author Mattias Landkvist 
 	 */
 
 	private static GridPane showAgencyRater(int agencyID) {

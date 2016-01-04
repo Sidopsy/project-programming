@@ -43,7 +43,7 @@ import javafx.stage.Stage;
  * as advertisements submitted by him/her.
  * 
  * @since 2015-11-24
- * @author Maans Thoernvik for functionality & Madisen Whitfield for partial design.
+ * @author Maans Thoernvik, Mattias Landkvist & Madisen Whitfield.
  */
 
 public class MemberPage {
@@ -65,6 +65,8 @@ public class MemberPage {
 	/**
 	 * Displays the member page when called. This page lets the user see information about the account and allows for
 	 * alteration of this information as well as advertisements associated with this particular user.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 
 	public static void display(AgencyExt agencyInfo) {
@@ -147,7 +149,9 @@ public class MemberPage {
 
 	/**
 	 * Insert logo for agency
-	 * @return
+	 * @return HBox with a ImageView, a change logo Button and a save Button.
+	 * 
+	 * @author Maås Thörnvik
 	 */
 
 	private static HBox viewMemberLogo() {
@@ -206,6 +210,8 @@ public class MemberPage {
 	 * Creates a gridpane in which user/member information is shown.
 	 * 
 	 * @return GridPane outfitted with fields showing the user his or her information.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	private static GridPane viewMemberInfo() {
@@ -225,6 +231,8 @@ public class MemberPage {
 	 * 
 	 * @param initialized GridPane to add labels to.
 	 * @return GridPane containing the labels neccessary for showing member information.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	private static GridPane addMemberLabels(GridPane inputGridPane) {
@@ -252,6 +260,8 @@ public class MemberPage {
 	 * 
 	 * @param initialized GridPane to add TextFields to.
 	 * @return GridPane containing the TextFields neccessary for showing and changing member information.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	private static GridPane addMemberTextFields(GridPane inputGridPane) {
@@ -329,6 +339,8 @@ public class MemberPage {
 	 * 
 	 * @param initialized GridPane to add buttons to.
 	 * @return GridPane containing the buttons neccessary for showing and changing member information.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	private static GridPane addMemberButtons(GridPane inputGridPane) {
@@ -420,7 +432,9 @@ public class MemberPage {
 	 * This method is used to generate a TableView of ads, clickable by the user to display additional information about
 	 * it, as well as being able to alter it.
 	 * 
-	 * @return HBox containing a TableView of all the members associated advertisements.
+	 * @return TableView of all the members associated advertisements.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	@SuppressWarnings("unchecked")
@@ -490,6 +504,8 @@ public class MemberPage {
 	
 	/**
 	 * This method is used to refresh the table when an insert has been made.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static void refreshTable() {
@@ -515,6 +531,8 @@ public class MemberPage {
 	
 	/**
 	 * Upload a new picture to add to the ad
+	 * 
+	 * @author Yu Jet Hua
 	 */
 	
 	public static EventHandler<ActionEvent> loadPicture = new EventHandler<ActionEvent>() {
@@ -534,6 +552,8 @@ public class MemberPage {
 	
 	/**
 	 * Get info into member text fields, extracted from logged in agency.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	public static void resetInfoMemberFields() {
@@ -553,6 +573,8 @@ public class MemberPage {
 	
 	/**
 	 * Resets to remove error colors from member info text fields.
+	 * 
+	 * @author Måns Thörnvik
 	 */
 	
 	private static void resetColorMemberFields() {

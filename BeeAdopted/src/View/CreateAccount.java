@@ -27,8 +27,8 @@ import javafx.stage.Stage;
  * This class creates a new window in which the user can input information to add a new agency.
  * 
  * @since 2015-12-03
- * @author Madisen Whitfield
- * @refactor M??ns Th??rnvik: Re-styled the save function to be done with one button click instead of two.
+ * @author Madisen Whitfield & Yu Jet Hua
+ * @refactor Måns Thörnvik: Re-styled the save function to be done with one button click instead of two.
  */
 
 public class CreateAccount {
@@ -42,6 +42,8 @@ public class CreateAccount {
 
 	/**
 	 * Displays a window in which the user can enter information for a *NEW* agency.
+	 * 
+	 * @author Madisen Whitfield
 	 */
 
 	public static void display(){
@@ -60,16 +62,19 @@ public class CreateAccount {
 		addAgencyButtons(gridPane);
 		
 		sceneCA = new Scene(gridPane, 650, 300);
+		sceneCA.getStylesheets().add("style.css");
 		
 		window.setScene(sceneCA);
 		window.show();
 	}
 
 	/**
-	 * Updates the incoming GridPane with labels for member fillout form information.
+	 * Updates the incoming GridPane with labels for member fill out form information.
 	 * 
 	 * @param initialized GridPane to add labels to.
-	 * @return GridPane containing the labels neccessary for showing information about agency input fields.
+	 * @return GridPane containing the labels necessary for showing information about agency input fields.
+	 * 
+	 * @author Madisen Whitfield
 	 */
 	
 	private static GridPane addAgencyLabels(GridPane inputGridPane) {
@@ -108,7 +113,9 @@ public class CreateAccount {
 	 * Updates the incoming GridPane with TextFields for member input.
 	 * 
 	 * @param initialized GridPane to add TextFields to.
-	 * @return GridPane containing the TextFields neccessary for inputing agency information.
+	 * @return GridPane containing the TextFields necessary for inputing agency information.
+	 * 
+	 * @author Madisen Whitfield
 	 */
 	
 	private static GridPane addAgencyTextFields(GridPane inputGridPane) {
@@ -174,7 +181,9 @@ public class CreateAccount {
 	 * Updates the incoming GridPane with buttons for member input.
 	 * 
 	 * @param initialized GridPane to add buttons to.
-	 * @return GridPane containing the labels neccessary for saving and inputing member information.
+	 * @return GridPane containing the labels necessary for saving and inputing member information.
+	 * 
+	 * @author Madisen Whitfield
 	 */
 	
 	private static GridPane addAgencyButtons(GridPane inputGridPane) {

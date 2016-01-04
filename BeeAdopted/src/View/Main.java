@@ -1,56 +1,29 @@
 package View;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Observable;
-
 import org.controlsfx.control.RangeSlider;
-
-import com.sun.xml.internal.fastinfoset.vocab.SerializerVocabulary;
 
 import Control.Membership;
 import Object.Ad;
 import Object.Database;
 import javafx.application.Application;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.ObservableValueBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -91,15 +64,15 @@ public class Main extends Application {
 
 	/**
 	 * Start method that is launched with Application.launch(args). This builds the main windows shown on launch which is
-	 * the prompt for a location. This view also contains a button for going logging into the MemberPages, the code for this is in
-	 * startLocation().
+	 * the prompt for a location. This view also contains a button for logging into the MemberPages, the code for this is in
+	 * getCityChooser().
 	 * 
 	 * @param Stage
 	 */
 	public void start(Stage primaryStage){
 		window = primaryStage;
 		window.setTitle("Marketplace");	
-		
+
 		bpLayout1 = new BorderPane();				// BorderPane layout is used.
 		bpLayout1.setTop(getHeader());					// Top element of the BorderPane is retrieved, which is the iAdopt image.
 		bpLayout1.setCenter(getCityChooser());		// Center element of BorderPane contains the dropdown vbox.
@@ -115,9 +88,10 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method returs a header for use as a top element of a BorderPane. The header consists of the BeeAdopted Logo.
+	 * This method returns a header for use as a top element of a BorderPane. The header consists 
+	 * of the BeeAdopted logotype and a back arrow.
 	 * 
-	 * @return BorderPane with logotype and navigation button
+	 * @return BorderPane with logotype and navigation arrow
 	 */
 	private BorderPane getHeader(){
 		BorderPane header = new BorderPane();
@@ -141,7 +115,9 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Go to start view.
+	 * This method change the scene. Either from scene2 to scene1 or from any other scene to scene2. 
+	 * When changed to scene2 the ObservableList<Ad> in tvAd is iterated through, changing pictures 
+	 * to a size appropriate for showing in a TableView.
 	 */
 	public static void back(){
 		if(window.getScene() == scene2) {
@@ -155,10 +131,16 @@ public class Main extends Application {
 			window.setScene(scene2);
 		}
 	}
-	
+
+
+	/**
+	 * Refresh the content of the tvAd TableView.
+	 * 
+	 * @author Måns Thörnvik
+	 */
 	private static void refreshTable() {
 		ObservableList<Ad> adList = db.createObservableList(searchResults);
-		
+
 		tvAd.setItems(adList);
 		tvAd.refresh();
 	}
@@ -179,35 +161,35 @@ public class Main extends Application {
 		primaryFilters.getStyleClass().add("filter");
 		primaryFilters.setPadding(new Insets(10, 10, 10, 10));
 		primaryFilters.setSpacing(75);
-		
+
 		HBox buttons = new HBox();
 		buttons.setAlignment(Pos.CENTER);
 		buttons.setSpacing(25);
-		
+
 		obsListSpecies = db.createObservableList("Species",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Species FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Species;")));
 		db.closeConnection();
-		
+
 		obsListType = db.createObservableList("Type",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Type FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Type;")));
 		db.closeConnection();
-		
+
 		obsListGender = db.createObservableList("Gender",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Gender FROM Ads, Agencies, Addresses "
 						+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 						+ "and EndDate >= DATE('NOW') ORDER BY Gender;")));
 		db.closeConnection();
-		
+
 		obsListAgencies = db.createObservableList("Agencies",db.fetchResult(
 				db.executeQuery("SELECT DISTINCT Name FROM Agencies, Addresses "
 						+ "WHERE Agencies.ID == Addresses.AgencyID " + city
 						+ "ORDER BY Name;")));
 		db.closeConnection();
-		
+
 		cbSpecies = new ChoiceBox<>(obsListSpecies);
 		cbSpecies.setPrefWidth(150);
 		cbSpecies.setValue(cbSpecies.getItems().get(0));
@@ -219,10 +201,10 @@ public class Main extends Application {
 						db.executeQuery("SELECT Distinct Type FROM Ads "
 								+ "WHERE Species == '" + species + "' ORDER BY Type;")));
 				db.closeConnection();
-				
+
 				cbType.setItems(obsListType);
 				cbType.setValue(cbType.getItems().get(0));
-				
+
 				type = "Type";	// Reset value of string "type" when a new species is selected
 			} else {
 				species = (String) cbSpecies.getValue();
@@ -232,14 +214,14 @@ public class Main extends Application {
 								+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city
 								+ "and EndDate >= DATE('NOW') ORDER BY Type;")));
 				db.closeConnection();
-				
+
 				cbType.setItems(obsListType);
 				cbType.setValue(cbType.getItems().get(0));
-				
+
 				type = "Type";
 			}
 		});
-		
+
 		cbType = new ChoiceBox<>(obsListType);
 		cbType.setPrefWidth(150);
 		cbType.setValue(cbType.getItems().get(0));
@@ -252,7 +234,7 @@ public class Main extends Application {
 					+ "FROM Ads, Agencies, Addresses "
 					+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city 
 					+ "and EndDate >= DATE('NOW');";
-			
+
 			maxAgeStatement = "SELECT MAX(Age) "
 					+ "FROM Ads, Agencies, Addresses "
 					+ "WHERE Agencies.ID == Ads.AgencyID and Agencies.ID == Addresses.AgencyID " + city 
@@ -268,7 +250,7 @@ public class Main extends Application {
 		minAge = Integer.parseInt(db.fetchResult(db.executeQuery(minAgeStatement)).get(0).get(0));
 		maxAge = Integer.parseInt(db.fetchResult(db.executeQuery(maxAgeStatement)).get(0).get(0));		
 		db.closeConnection();
-		
+
 		rslAge = new RangeSlider();
 		rslAge.setMin(minAge);
 		rslAge.setMax(maxAge);
@@ -301,8 +283,8 @@ public class Main extends Application {
 		btnSearch.setOnAction(e -> {
 			search();
 			refreshTable();
-			});
-		
+		});
+
 		Button btnReset = new Button("Reset filters");
 		btnReset.setOnAction(e -> {
 			cbSpecies.setValue(cbSpecies.getItems().get(0));
@@ -316,13 +298,14 @@ public class Main extends Application {
 		buttons.getChildren().addAll(btnReset, btnSearch);
 		primaryFilters.getChildren().addAll(cbSpecies,cbType,rslAge,cbGender,cbAgency);
 		filters.getChildren().addAll(primaryFilters, buttons);
-		
+
 		return filters;
 	}
 
 	/**
-	 * This method has two functions. When you select an agency in scene 2 this method gets all ads for that specific agency. 
-	 * After this, you can specify conditions for which ads you want to view.
+	 * This method send a search query to the database and saves it to the global variable searchResults. 
+	 * Depending on what is specified in the global variables city, species, type, age, gender and agency
+	 * the search returns different results.
 	 */
 	public static void search(){
 		String searchStatement, searchSpecies, searchType, searchGender, searchAgency;
@@ -387,7 +370,7 @@ public class Main extends Application {
 		searchResults = db.fetchAd(db.executeQuery(searchStatement));
 		db.closeConnection();
 	}
-	
+
 	/**
 	 * This method returns a Vbox element containing a dropdown menu of all cities that agencies exist at and a button for
 	 * going to the input page.
@@ -441,11 +424,11 @@ public class Main extends Application {
 	}
 
 	/**
-	 * This method returns a table with properties and specific variables from the Ad object.
+	 * This method returns a VBox with a TableView<Ad> and a button. The button change the center layout to Compare.compareAds().
 	 * 
-	 * @return VBox with a tableview populated by n Ad objects from a database and a button.
+	 * @return VBox with a TableView populated by n Ad objects from a database and a button.
 	 */
-	
+
 	@SuppressWarnings("unchecked")
 	public VBox getTableViewAndCompare(){
 		VBox vbox = new VBox();
@@ -473,43 +456,35 @@ public class Main extends Application {
 		checkCol.setCellValueFactory(new PropertyValueFactory<>("check"));
 		checkCol.setCellFactory(new Callback<TableColumn<Ad, Boolean>, TableCell<Ad,Boolean>>(){
 			public TableCell<Ad, Boolean> call(TableColumn<Ad, Boolean> p) {
-			final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
-			ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
+				final CheckBoxTableCell<Ad, Boolean> ctCell = new CheckBoxTableCell<>();
+				ctCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>() {
 
-				@Override
-				public ObservableValue<Boolean> call(Integer index) {
-					return tvAd.getItems().get(index).getCheckProperty();
-				}
-				
-
-			});
-
-			return ctCell;
-		}
-
-	});
+					@Override
+					public ObservableValue<Boolean> call(Integer index) {
+						return tvAd.getItems().get(index).getCheckProperty();
+					}
+				});
+				return ctCell;
+			}
+		});
 
 		tvAd.setRowFactory( tv -> {
 			TableRow<Ad> row = new TableRow<>();
-
 			row.setOnMouseClicked(event -> {
-
 				if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
 					Ad ad = (Ad) row.getItem();
-					
-						try {
-							layoutViewAd = new BorderPane();
-							layoutViewAd.setTop(getHeader());
-							layoutViewAd.setCenter(AdView.showAd(ad, ad.getAgencyID()));
-							tvAd.refresh();
-							scene3 = new Scene(layoutViewAd,800,600);
-							scene3.getStylesheets().add("style.css");
-							window.setScene(scene3);
-							
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-					
+					try {
+						layoutViewAd = new BorderPane();
+						layoutViewAd.setTop(getHeader());
+						layoutViewAd.setCenter(AdView.showAd(ad, ad.getAgencyID()));
+						tvAd.refresh();
+						scene3 = new Scene(layoutViewAd,800,600);
+						scene3.getStylesheets().add("style.css");
+						window.setScene(scene3);
+
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 				}
 			});
 			return row ;
@@ -531,13 +506,16 @@ public class Main extends Application {
 			scene3.getStylesheets().add("style.css");
 			window.setScene(scene3);
 			compareAds.removeAll(compareAds);
-			
+
 		});
 
 		vbox.getChildren().addAll(tvAd, btnCompare);
 		return vbox;
 	}
-	
+
+	/**
+	 * @return VBox with the filter, the TableView and the compare Button.
+	 */
 	public VBox getAdSearchAndChooser(){
 		VBox vbox = new VBox();
 		vbox.setPadding(new Insets(0));
@@ -547,13 +525,15 @@ public class Main extends Application {
 
 		return vbox;
 	}
-	
+
+	/**
+	 * Ad every selected Ad to compareAds.
+	 * @param ObservableList<Ad> to go through
+	 */
 	private void getCheckedAds(ObservableList<Ad> adList){
-		System.out.println("Length: " + adList.toArray().length);
 		for(int i = 0; i < adList.size(); i++){
 			if(adList.get(i).getCheck()){
 				compareAds.add(tvAd.getItems().get(i));
-				System.out.println("true");	
 			}
 		}
 	}
