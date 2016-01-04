@@ -7,6 +7,12 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
+/**
+ * Class to show Ads in a scrollable GridPane.
+ * @author Mattias Landkvist
+ *
+ */
+
 public class Compare {
 
 	public static ScrollPane compareAds(ObservableList<Ad> adList) {
