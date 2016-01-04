@@ -17,7 +17,6 @@ import javafx.scene.image.Image;
  * This is an object that handles the Database communication. There are also static methods to handle ResultSet metaData for generic
  * result handling.
  * 
- * @since 2015-11-16
  * @author Maans Thoernvik
  */
 
@@ -30,7 +29,7 @@ public class Database {
 	private final String dbDriver;
 
 	/**
-	 * An empty constructor call to load the driver.
+	 * An empty constructor call to load the JDBC driver.
 	 */
 
 	public Database() {
@@ -46,10 +45,10 @@ public class Database {
 
 	/**
 	 * Setting the connection to the database based on the dbName and Type, foreign keys are also activated here using the SQLiteConfig object.
-	 * 
+	 * Setting up a connection happens automatically when you execute a query or update method.
 	 */
 
-	public void setConnection() {
+	private void setConnection() {
 		System.out.println(">> Setting connection to DB");
 		try {
 			SQLiteConfig dbProperties = new SQLiteConfig();
@@ -67,8 +66,7 @@ public class Database {
 	 * 
 	 * This method is not currently in use but is left if need for it arises in the future.
 	 * 
-	 * @return boolean
-	 * @throws SQLException
+	 * @return boolean representing true for "yes, foreign keys are active".
 	 */
 
 	public boolean foreignKeysOn() {
@@ -97,20 +95,20 @@ public class Database {
 
 	/**
 	 * Execute queries to the database. Note that this method SETS the connection but never closes it. Remember to use
-	 * closeConnection() when the ResultSet has been read and the information has been gathered.
+	 * closeConnection() when the ResultSet has been read and the information has been retrieved.
 	 * 
 	 * @param Query to be sent to the database.
 	 * @return ResultSet containing the result of the query.
 	 */
 
 	public ResultSet executeQuery(String query) {
-		setConnection();
+		setConnection();							// Sets the connection to the DB before a query is executed.
 		System.out.println(">> Executing query");
 	
 		try {
-			stmt = connect.prepareStatement(query);
-			resultSet = stmt.executeQuery();
-	
+			stmt = connect.prepareStatement(query);	// Prepares the incoming query
+			resultSet = stmt.executeQuery();		// Executes the query.
+				
 			connect.commit();
 		} catch (SQLException e) {System.err.println(e.getClass().getName() + ": " + e.getMessage());}
 	
@@ -124,26 +122,29 @@ public class Database {
 	 */
 
 	public void executeUpdate(String update){
-		setConnection();
+		setConnection();							// Sets the connection to the DB before an update is executed.
 		System.out.println(">> " + update.substring(0, 10));
 
 		try {
-			stmt = connect.prepareStatement(update);
-			stmt.executeUpdate();
+			stmt = connect.prepareStatement(update);// Prepares the incoming update.
+			stmt.executeUpdate();					// Executes the update.
 
 			connect.commit();
 		} catch (SQLException e) {System.err.println(e.getClass().getName() + ": " + e.getMessage());} 
 
-		closeConnection();
+		closeConnection();							// Closes the database connection.
 	}
 
 	/**
-	 * Method for updating pictures to existing entries in the database.
+	 * Method for updating pictures to existing entries in the database. Both advertisements and agency logotypes are
+	 * updated by means of this method.
+	 * 
+	 * @param String update command, byte[] of picture parameters, integer representing the ID of the item to be updated.
 	 */
 
 	public int updatePicture(String update, byte[] parameters, int id) {
 		int result = 0;							// Used for letting the caller know whether the update was successful.
-		setConnection();
+		setConnection();						// Sets the connection to the DB before an update is executed.
 		System.out.println(">> Picture update " + update.substring(7, 10) + ": " + id);
 		
 		try {
@@ -155,7 +156,7 @@ public class Database {
 			connect.commit();
 		} catch (Exception e) {System.err.println(e.getClass().getName() + ": " + e.getMessage());}
 		
-		closeConnection();
+		closeConnection();						// Closes the database connection.
 
 		return result;
 	}
@@ -168,14 +169,14 @@ public class Database {
 	 */
 
 	public int getColumnCount(ResultSet input) {
-		int iOutput = 0;
+		int columnCount = 0;
 		
 		try {
 			ResultSetMetaData rsMetaData = input.getMetaData();
-			iOutput = rsMetaData.getColumnCount();
+			columnCount = rsMetaData.getColumnCount();
 		} catch (Exception e) {System.err.println(e.getClass().getName() + ": " + e.getMessage());}
 		
-		return iOutput;
+		return columnCount;
 	}
 
 	/**
@@ -186,13 +187,13 @@ public class Database {
 	 */
 
 	public ArrayList<ArrayList<String>> fetchResult(ResultSet input) {
-		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
+		ArrayList<ArrayList<String>> resultList = new ArrayList<>();	// Creates an arraylist to put the results into.
 		try {	
-			int columnCount = getColumnCount(input);
-
+			int columnCount = getColumnCount(input);					// Retrieving column count of results for use in the
+																		// number of iterations in the for-loop below.
 			while (input.next()) {
 				ArrayList<String> result = new ArrayList<>();
-				for (int index = 1; index <= columnCount; index++) {
+				for (int index = 1; index <= columnCount; index++) {	// Re-iterating until the columnCount has been reached.
 					result.add(input.getString(index));
 				}
 				resultList.add(result);
@@ -210,19 +211,18 @@ public class Database {
 	 */
 
 	public ArrayList<Ad> fetchAd(ResultSet input) {
-		ArrayList<Ad> result = new ArrayList<>();
-
+		ArrayList<Ad> result = new ArrayList<>();						// Creates an arraylist to put the results into.
 		try {
 			while (input.next()) {
 				BufferedImage bufferedImage = null;
 				InputStream fis = null;
 				Image picture;
 				int id = input.getInt("Id");
-				try {														// Trying to read an image from the ResultSet.
+				try {													// Trying to read an image from the ResultSet.
 					fis = input.getBinaryStream("Picture"); 
 					bufferedImage = javax.imageio.ImageIO.read(fis);
 					picture = SwingFXUtils.toFXImage(bufferedImage, null);
-				} catch (NullPointerException | IOException e) {			// Null is returned when no picture is available,
+				} catch (NullPointerException | IOException e) {		// Null is returned when no picture is available,
 					picture = new Image("PlaceholderBig.png");			// default placeholder is used in this case.
 				}
 				String name = input.getString("Name");
@@ -253,7 +253,7 @@ public class Database {
 	 */
 
 	public ArrayList<Agency> fetchAgency(ResultSet input) {
-		ArrayList<Agency> result = new ArrayList<>();
+		ArrayList<Agency> result = new ArrayList<>();	// Creates an arraylist to put the results into.
 		try {    	
 			while (input.next()) {						// This while-loop adds the results to the arrayList.
 				int id = input.getInt("ID");
@@ -275,7 +275,7 @@ public class Database {
 	 */
 
 	public ArrayList<AgencyExt> fetchAgencyExt(ResultSet input) {
-		ArrayList<AgencyExt> result = new ArrayList<>();
+		ArrayList<AgencyExt> result = new ArrayList<>();// Creates an arraylist to put the results into.
 		try {	
 			while (input.next()) {						// This while-loop adds the results to the arrayList.
 				int id = input.getInt("ID");
@@ -362,7 +362,13 @@ public class Database {
 		} 
 		System.out.println(">> Closed DB connection");
 	}
-
+	
+	/**
+	 * A getter for the Connection object, useful to check whether the connection has been closed or not.
+	 * 
+	 * @return Connection
+	 */
+	
 	public Connection getConnection() {
 		return connect;
 	}

@@ -11,8 +11,8 @@ import javafx.scene.image.ImageView;
 /**
  * Object for ads, appropriate variables for displaying in the application.
  * 
- * @author Maans Thoernvik
- * @since 10-26-15
+ * @author Maans Thoernvik 
+ * @refactoredBy Mattias Landkvist * Added rating and picture inside the ad object.
  */
 
 public class Ad {
@@ -45,6 +45,7 @@ public class Ad {
 		this.rating.setScaleX(0.5);
 		this.rating.setScaleY(0.5);
 		
+		// BooleanProperty is initialized to false so that the checkboxes are unchecked by default.
 		this.check = new SimpleBooleanProperty(false);
         this.check.addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -54,6 +55,10 @@ public class Ad {
 			}
         });          
 	}
+	
+	/*
+	 * Below are getters for all ad variables.
+	 */
 	
 	public int getID(){
 		return id.get();

@@ -19,9 +19,8 @@ import javafx.scene.layout.HBox;
  * email and password, as well as an option to create a new account. This class also verifies the integrity of the input
  * email and password. It makes sure that the information corresponds to a user in the database.
  * 
- * @since 2015-12-03
  * @author Madisen Whitfield
- * @refactoredBy Maans Thoernvik & Mattias Landkvist * Added some styling and migrated verification into same class file.
+ * @refactoredBy Maans Thoernvik & Mattias Landkvist * Added some styling and migrated verification method into same class file.
  */
 
 public class Membership {
@@ -31,7 +30,7 @@ public class Membership {
 	 * This method created the loginBox where a user can enter his or her email address and password. There is also an option
 	 * for creating a new account.
 	 * 
-	 * @return HBox
+	 * @return HBox containing login fields and create account button.
 	 */
 	
 	public static HBox loginBox(){
@@ -45,22 +44,23 @@ public class Membership {
 		hbox.setSpacing(10);
 		hbox.setAlignment(Pos.CENTER);
 
+		// Below is every action taken when login is pressed.
 		btnLogin = new Button("Login");
 		btnLogin.setOnAction(e -> {
-			String email = tfEmail.getText();
+			String email = tfEmail.getText();		// retrieving text field information.
 			String password = pfPassword.getText();
 			
 			try {
-				if ((email.equals("admin")) && (password.equals("admin"))){
-					AdminPage.start();
+				if ((email.equals("admin")) && (password.equals("admin"))){		// Start of admin account login, this page was
+					AdminPage.start();											// never finished.
 				} else if(Membership.verify(email, password)) {
 					AgencyExt agencyInfo = db.fetchAgencyExt(db.executeQuery("SELECT * FROM AgencyExtended WHERE "
 												+ "Email = '" + email + "';")).get(0);
 					db.closeConnection();	
 					
-					MemberPage.display(agencyInfo);
+					MemberPage.display(agencyInfo);			// Using the member info retrieved this opens the Member page
 				} else {
-					alert.setAlertType(AlertType.ERROR);
+					alert.setAlertType(AlertType.ERROR);	// An error is displayed if the information entered was wrong.
 					alert.setTitle("Failiure");
 					alert.setHeaderText("Login failed");
 					alert.setContentText("Information entered was incorrect, please try again.");
@@ -70,7 +70,7 @@ public class Membership {
 				System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
 			} finally {
 				try {
-					if (!db.getConnection().isClosed()) {db.closeConnection();}
+					if (!db.getConnection().isClosed()) {db.closeConnection();}	// Added finally block since the connection locked sometimes.
 				} catch (SQLException e1) {
 					System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
 				}
@@ -82,6 +82,7 @@ public class Membership {
 			CreateAccount.display();
 		});
 		
+		// This button shows the login fields once pressed.
 		btnShow = new Button("Go to agency pages");
 		btnShow.setOnAction(e -> {
 			hbox.getChildren().removeAll(hbox.getChildren());
@@ -96,11 +97,10 @@ public class Membership {
 		return hbox;
 	}
 
-
 	/**
 	 * Validation method for input email and password.
 	 * 
-	 * @param two strings, a representing the email address and b the password.
+	 * @param two strings, "a" representing the email address and "b" the password.
 	 * @return boolean stating if information entered was correct (true) or incorrect.
 	 */
 	
@@ -111,16 +111,16 @@ public class Membership {
 		sql = "SELECT Email, Password FROM Agencies WHERE Email == '" + a + "' AND Password == '" + b + "';";
 		
 		try {
-			resultEmail = db.fetchResult(db.executeQuery(sql)).get(0).get(0);	// First arrayList, first item
-			resultPassword = db.fetchResult(db.executeQuery(sql)).get(0).get(1);// First arrayList, second item
+			resultEmail = db.fetchResult(db.executeQuery(sql)).get(0).get(0);	// First arrayList, finding the email
+			resultPassword = db.fetchResult(db.executeQuery(sql)).get(0).get(1);// First arrayList, finding the password
 		} catch (Exception e) {
 			System.err.println(">> ArrayList<AgencyExt> returned nothing...");
 		} finally {
 			db.closeConnection();
 		}
 		
+		// We needed to add length() > 0 since the users could otherwise enter nothing and would then get an error.
 		return((resultEmail.length() > 0) && (resultEmail.equals(a)) && 
 			  (resultPassword.length() > 0) && (resultPassword.equals(b)));
-
 	}
 }

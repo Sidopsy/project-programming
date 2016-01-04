@@ -5,9 +5,9 @@ import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Object for agencies, basic information for displaying in the application.
+ * As of now, these objects are not in use.
  * 
  * @author Maans Thoernvik
- * @since 10-26-15
  */
 
 public class Agency {

@@ -4,7 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 /**
  * Object for showing appropriate information about agencies addresses.
  * 
- * @author MTs
+ * @author Maans Thoernvik
  */
 
 public class Address {

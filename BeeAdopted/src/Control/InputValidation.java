@@ -3,7 +3,6 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import Object.Ad;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
@@ -15,14 +14,13 @@ import javafx.scene.control.TextField;
  * that are not filled out correctly are also carried out in this class. Date of ads are also checked, Ads with an EndDate of
  * today +1 day should not be displayed in the application.
  * 
- * @since 2015-12-05
- * @author M??ns Th??rnvik
+ * @author Maans Thoernvik
  */
 
 public class InputValidation {
 	
 	/**
-	 * Used to validate all input fields at once. This only checks that allowed valued have been entered into CBs and TFs for new
+	 * Used to validate all ad input fields at once. This only checks that allowed valued have been entered into CBs and TFs for new
 	 * and updated Ads, not agencies.
 	 * 
 	 * @return boolean representing if all text inputs are correct and shows the program that it is OK to go ahead and send the
@@ -200,7 +198,7 @@ public class InputValidation {
 	/**
 	 * Validates phone numbers.
 	 * 
-	 * @param TextField containing a swedish phone number.
+	 * @param TextField containing a phone number.
 	 * @return boolean representing if value entered was within its limits (true) or not.
 	 */
 	
@@ -234,8 +232,8 @@ public class InputValidation {
 			for (int index = 0; index < tf.getLength(); index++) {
 				if (!(Character.isDigit(tf.getText().charAt(index))) && 
 					!(Character.isAlphabetic(tf.getText().charAt(index))) &&
-					!(tf.getText().charAt(index) == '@') &&
-					!(tf.getText().charAt(index) == '.')) {
+					!(tf.getText().charAt(index) == '@') &&				// There needs to be an @ symbol and a dot. Otherwise
+					!(tf.getText().charAt(index) == '.')) {				// it cannot be a valid email address.
 					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
 					return false;
 				}
@@ -282,8 +280,8 @@ public class InputValidation {
 	 */
 	
 	public static boolean validateInputZip(TextField tf) {
-		if (tf.getLength() == 5) {										// Checking number of characters in TF
-			for (int index = 0; index < tf.getLength(); index++)	{
+		if (tf.getLength() == 5) {										// Checking number of characters in TF, must be
+			for (int index = 0; index < tf.getLength(); index++)	{	// five, otherwise it is not a valid ZIP-code in Sweden.
 				if (!Character.isDigit(tf.getText().charAt(index))) {
 					tf.setStyle("-fx-focus-color: red ; -fx-text-inner-color: red ; -fx-text-box-border: red;");
 					return false;										// Loop is broken, a character that is not alphabetical was found

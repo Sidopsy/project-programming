@@ -3,9 +3,9 @@ import javafx.beans.property.SimpleStringProperty;
 
 /**
  * Object for agencies, containing extended information about them in order for users to get more detailed information.
+ * These objects are used to display agency information, both in member pages and when an advertisement has been clicked.
  * 
  * @author Maans Thoernvik
- * @since 10-26-15
  */
 
 public class AgencyExt extends Agency {
